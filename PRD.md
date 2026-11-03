@@ -137,7 +137,7 @@ Palette warna yang digunakan:
 | `color-muted` | `#8BBEB2` | Muted Teal | Garis grid, teks sekunder |
 | `color-accent` | `#E6F9AF` | Lime Cream | Highlight, aksen CTA, nilai kritis |
 
-**Tipografi:** Playfair Display — heading `font-semibold`, body Jakarta Sans Plus
+**Tipografi:** Plus Jakarta Sans — heading dan body menggunakan satu keluarga font agar dashboard konsisten dan mudah dipindai.
 
 **Ikon:** Lucide React.
 
@@ -166,3 +166,84 @@ Sidebar kiri dengan 4 menu icon + label, atau tab bar horizontal di bagian atas.
 - **PP No. 22 Tahun 2021** — Baku mutu udara ambien nasional (NAAQS Indonesia: PM2.5 tahunan 15 µg/m³, 24-jam 55 µg/m³)
 - **Permen LHK No. 14 Tahun 2020** — Kategori dan perhitungan ISPU
 - **WHO Air Quality Guidelines 2021** — PM2.5 tahunan 5 µg/m³, 24-jam 15 µg/m³
+
+## Struktur Repository
+```
+gelar-rasa-2026/
+├── public/
+│   └── data/                  # Data JSON/CSV hasil preprocessing
+│       ├── aqms/              # Per-stasiun & agregasi
+│       └── health/            # Health outcomes
+├──src/
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── Navbar.jsx          
+│   │   │   └── ModuleLayout.jsx    
+│   │   └── ui/
+│   │       ├── MetricCard.jsx      
+│   │       └── Badge.jsx           
+│   │
+│   ├── map/
+│   │   └── StationMap.jsx          
+│   │
+│   ├── lib/
+│   │   ├── constants.js            
+│   │   └── formatters.js           
+│   │
+│   ├── hooks/
+│   │   ├── useFilter.js            
+│   │   ├── useAqmsData.js          
+│   │   └── useHealthData.js  
+│   │      
+│   ├── app/                   # Next.js App Router
+│   │   │   ├── layout.jsx         # Root layout + navbar
+│   │   │   ├── page.jsx           # Redirect ke /overview
+│   │   │   ├── overview/          # [Dev 1] Modul Overview
+│   │   │   ├── kualitas-udara/    # [Dev 2] Modul Kualitas Udara
+│   │   │   ├── korelasi/          # [Dev 3] Modul Korelasi Polutan
+│   │   │   ├── pm25-kesehatan/    # [Dev 3] Modul PM2.5 × Kesehatan
+│   │   │   ├── kecukupan-stasiun/ # [Dev 1] Modul Kecukupan Stasiun
+│   │   │   └── insight/           # [Dev 1] Modul Insight & Rekomendasi
+├── .env.example
+├── .eslintrc.json
+├── .prettierrc
+├── next.config.ts
+├── tailwind.config.ts
+├── tsconfig.json
+├── README.md
+└── PRD.md
+```
+
+`public/data/aqms` dan `public/data/health` dipertahankan dengan `.gitkeep` sebelum file hasil preprocessing tersedia. Data JSON di folder ini diakses melalui URL `/data/...`, bukan melalui import file langsung.
+
+Alias import `@/*` menunjuk ke `src/*`. Contoh: `@/components/ui/MetricCard` berarti `src/components/ui/MetricCard.jsx`.
+
+### Komponen yang Bisa Digunakan Kembali
+
+- `components/layout/Navbar`: navigasi utama dan penanda route aktif. Dipasang sekali di `app/layout.jsx`.
+- `components/layout/ModuleLayout`: mengatur offset navbar, lebar konten, header modul, dan jarak antar section. Gunakan sebagai wrapper setiap `page.jsx` modul.
+- `components/layout/ModuleLayout` juga mengekspor `Section` untuk judul section dan spacing yang konsisten.
+- `components/ui/Card`: panel dasar dengan surface, border, radius, dan shadow dari design token. Gunakan untuk panel atau kartu baru agar tidak mengulang style.
+- `components/ui/MetricCard`: angka KPI dengan label, unit, badge, subtext, dan opsi accent.
+- `components/ui/Badge`: badge kategori manual; gunakan `IspuBadge` jika kategori harus dihitung dari nilai PM2.5.
+- `components/ui/LoadingSpinner` dan `ErrorState`: state loading/error standar untuk hasil fetch.
+- `components/shared/FilterBar`: kontrol rentang tanggal global. State tetap dimiliki page melalui `useFilter` dan callback dikirim sebagai props.
+- `components/shared/IspuLegend`: legenda warna kategori ISPU yang bersumber dari `ISPU_CATEGORIES`, sehingga tidak perlu menulis warna manual di tiap halaman.
+- `map/StationMap`: peta Leaflet client-only. Import dengan `next/dynamic` dan `{ ssr: false }` karena Leaflet membutuhkan browser.
+
+Komponen reusable sebaiknya menerima data dan callback melalui props. Hindari mengambil data langsung di komponen UI agar komponen yang sama bisa dipakai di Overview, Kualitas Udara, dan Insight.
+
+### Hooks dan Lib
+
+**Hooks**
+
+- `useAqmsData.js`: mengambil ringkasan nasional, daftar stasiun, timeseries stasiun, dan pola rata-rata per jam dari `/data/aqms`.
+- `useHealthData.js`: mengambil ringkasan kesehatan dan agregasi per rumah sakit dari `/data/health`.
+- `useFilter.js`: menyimpan filter tanggal, stasiun, region, dan polutan. Gunakan `filterByDate` untuk data yang memiliki field `date` atau `month` berformat ISO.
+
+**Lib**
+
+- `lib/constants.js`: sumber tunggal untuk kategori ISPU, breakpoint PM2.5, metadata polutan, outcome kesehatan, tipe stasiun, warna region, serta nama bulan/hari. Tambahkan metadata domain di sini, bukan di komponen.
+- `lib/formatters.js`: fungsi murni untuk konversi ISPU (`calcIspu`, `getIspuFromPm25`), format angka/satuan/tanggal, dan label stasiun. Gunakan fungsi ini agar tampilan angka konsisten di semua modul.
+
+Aturan praktis: `components` mengatur tampilan, `hooks` mengatur state/fetch, dan `lib` mengatur aturan domain atau formatting yang tidak bergantung pada React.

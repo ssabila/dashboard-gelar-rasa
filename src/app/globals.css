@@ -1,0 +1,455 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+@import 'tailwindcss';
+@import './filter.css';
+@import 'leaflet/dist/leaflet.css';
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────── */
+:root {
+  /* Palette */
+  --color-bg:        #FAFAFA;   /* Canvas halaman */
+  --color-surface:   #18314F;   /* Deep Space Blue — card, panel */
+  --color-elevated:  #384E77;   /* Dusk Blue — chart area, filter aktif */
+  --color-muted:     #8BBEB2;   /* Muted Teal — grid, teks sekunder, border */
+  --color-accent:    #E6F9AF;   /* Lime Cream — highlight, nilai kritis, CTA */
+  --color-nav:       #0D0630;   /* Sidebar / navbar */
+
+  /* Semantic */
+  --color-text-primary:   #18314F;   /* Deep Space Blue — heading, label utama */
+  --color-text-secondary: #55706E;   /* Teal gelap — deskripsi, caption */
+  --color-text-disabled:  #7C9693;   /* Teks non-aktif */
+  --color-text-on-surface: #F0F4FF;  /* Teks di atas Deep Space Blue */
+  --color-border:         rgba(24, 49, 79, 0.12);
+  --color-border-strong:  rgba(24, 49, 79, 0.24);
+
+  /* ISPU Category Colors */
+  --ispu-baik:            #4ADE80;   /* Baik (0–50) */
+  --ispu-sedang:          #FACC15;   /* Sedang (51–100) */
+  --ispu-tidak-sehat:     #FB923C;   /* Tidak Sehat (101–200) */
+  --ispu-sangat-tidak:    #F87171;   /* Sangat Tidak Sehat (201–300) */
+  --ispu-berbahaya:       #C026D3;   /* Berbahaya (>300) */
+
+  /* Typography */
+  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Spacing scale (dipakai di komponen agar konsisten) */
+  --space-section: 2.5rem;
+  --space-card:    1.25rem;
+
+  /* Radius */
+  --radius-card:  0.75rem;
+  --radius-badge: 0.375rem;
+  --radius-btn:   0.5rem;
+
+  /* Transition */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+
+  /* Navbar height — dipakai di layout untuk offset */
+  --navbar-h: 3.5rem;
+  --sidebar-w: 17rem;
+  --mobile-bar-h: 4.25rem;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  background-image: linear-gradient(135deg, rgba(139, 190, 178, 0.1), transparent 34rem);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;       /* 15px — lebih nyaman di dashboard padat */
+  line-height: 1.6;
+  min-height: 100dvh;
+}
+
+/* ─── Application shell ─────────────────────────────────────────────────── */
+.app-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  display: flex;
+  width: var(--sidebar-w);
+  flex-direction: column;
+  gap: 1.5rem;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-nav);
+  padding: 1.5rem 1rem 1rem;
+  backdrop-filter: blur(18px);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+}
+
+.sidebar-brand strong,
+.sidebar-brand span,
+.sidebar-footer span,
+.sidebar-footer strong {
+  display: block;
+}
+
+.sidebar-brand strong {
+  color: var(--color-accent);
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.sidebar-brand span {
+  margin-top: 0.3rem;
+  color: var(--color-text-secondary);
+  font-size: 0.61rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.brand-mark,
+.sidebar-footer-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--color-bg);
+  background: var(--color-accent);
+}
+
+.brand-mark {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-btn);
+}
+
+.sidebar-context {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 0.6rem 0.7rem;
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+}
+
+.status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--ispu-baik);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.12);
+}
+
+.sidebar-label {
+  margin: 0 0.7rem 0.55rem;
+  color: var(--color-text-disabled);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  padding: 0.65rem 0.75rem;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.sidebar-link:hover {
+  border-color: var(--color-border);
+  background: rgba(56, 78, 119, 0.32);
+  color: var(--color-text-primary);
+  transform: translateX(2px);
+}
+
+.sidebar-link.is-active {
+  border-color: rgba(230, 249, 175, 0.2);
+  background: rgba(230, 249, 175, 0.1);
+  color: var(--color-accent);
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: auto;
+  border-top: 1px solid var(--color-border);
+  padding: 1rem 0.5rem 0;
+}
+
+.sidebar-footer-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-elevated);
+  color: var(--color-accent);
+}
+
+.sidebar-footer span {
+  color: var(--color-text-disabled);
+  font-size: 0.65rem;
+}
+
+.sidebar-footer strong {
+  margin-top: 0.15rem;
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.app-main {
+  margin-left: var(--sidebar-w);
+  padding-top: 0.25rem;
+}
+
+.page-header {
+  max-width: 62rem;
+  margin-top: 0;
+}
+
+.page-title {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.page-description {
+  margin: 0.2rem 0 0;
+  line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+  .app-sidebar {
+    inset: 0 0 auto;
+    width: 100%;
+    height: var(--mobile-bar-h);
+    display: block;
+    overflow: hidden;
+    padding: 0.7rem 1rem 0;
+  }
+
+  .sidebar-brand {
+    position: absolute;
+    top: 0.85rem;
+    left: 1rem;
+  }
+
+  .sidebar-context,
+  .sidebar-label,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .app-sidebar nav {
+    margin-left: 10.5rem;
+    overflow-x: auto;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    width: max-content;
+    gap: 0.25rem;
+  }
+
+  .sidebar-link {
+    min-height: 2.8rem;
+    white-space: nowrap;
+  }
+
+  .app-main {
+    margin-left: 0;
+    padding-top: calc(var(--mobile-bar-h) + 1.25rem);
+  }
+}
+
+/* ─── Typography ─────────────────────────────────────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--font-body);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+h4, h5, h6, p, span, li, label {
+  font-family: var(--font-body);
+}
+
+h1 { font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 700; }
+h2 { font-size: clamp(1.375rem, 2.5vw, 1.75rem); font-weight: 600; }
+h3 { font-size: clamp(1.125rem, 2vw, 1.375rem); font-weight: 600; }
+h4 { font-size: 1rem;    font-weight: 600; }
+h5 { font-size: 0.875rem; font-weight: 500; }
+
+p {
+  max-width: 68ch;
+  color: var(--color-text-secondary);
+}
+
+/* Caption / label kecil */
+.text-caption {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* Angka besar di MetricCard */
+.text-metric {
+  font-family: var(--font-body);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text-primary);
+}
+
+/* ─── Data cards ─────────────────────────────────────────────────────────── */
+.card-surface {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: linear-gradient(145deg, var(--color-surface), #1D3D5C);
+  border-color: rgba(139, 190, 178, 0.2);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card-surface:hover {
+  transform: translateY(-2px);
+  border-color: rgba(230, 249, 175, 0.32);
+  box-shadow: 0 10px 28px rgba(13, 6, 48, 0.18);
+}
+
+.metric-card {
+  min-height: 9.5rem;
+}
+
+.metric-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.2rem;
+  background: var(--metric-accent, var(--color-muted));
+  content: '';
+}
+
+.metric-card-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: var(--color-muted);
+}
+
+.metric-card-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
+  border-radius: 999px;
+  background: var(--metric-accent, var(--color-muted));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--metric-accent, var(--color-muted)) 14%, transparent);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: var(--color-bg); }
+::-webkit-scrollbar-thumb  { background: var(--color-elevated); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
+
+/* ─── Recharts override ──────────────────────────────────────────────────── */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--color-border);
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border-strong) !important;
+  border-radius: var(--radius-card) !important;
+  color: var(--color-text-on-surface) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+}
+
+.recharts-legend-item-text {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8125rem !important;
+}
+
+/* ─── Leaflet override ───────────────────────────────────────────────────── */
+.leaflet-container {
+  background: var(--color-surface);
+  font-family: var(--font-body);
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--color-surface);
+  color: var(--color-text-on-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.leaflet-popup-tip {
+  background: var(--color-surface);
+}
+
+.leaflet-control-zoom a {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  color: var(--color-text-primary) !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--color-elevated) !important;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 3px 10px rgba(24, 49, 79, 0.18);
+}
+
+.leaflet-control-zoom a:hover {
+  color: var(--color-accent) !important;
+  background: var(--color-nav) !important;
+}
+/* ─── Focus visible ──────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ─── Utility classes ────────────────────────────────────────────────────── */
+.surface        { background: var(--color-surface); }
+.surface-raised { background: var(--color-elevated); }
+.card-border    { border: 1px solid var(--color-border); }
+.accent-text    { color: var(--color-accent); }
+.muted-text     { color: var(--color-text-secondary); }

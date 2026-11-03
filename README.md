@@ -11,15 +11,14 @@
 
 | Layer | Teknologi |
 | --- | --- |
-| Framework | **Next.js 14** (App Router) |
+| Framework | **Next.js 16** (App Router) |
 | Bahasa | **Javascript** |
 | Styling | **Tailwind CSS** |
-| Visualisasi | **Apache Echart** + **react-leaflet** (peta) |
-| State Management | **Zustand** |
+| Visualisasi | **Apache ECharts** + **Leaflet** (peta) |
+| State Management | React hooks lokal (`useFilter`) |
 | Data fetching | Next.js Server Components + `fetch` |
 | Linting & Format | ESLint · Prettier |
-| CI/CD | GitHub Actions |
-| Hosting | Vercel |
+| Peta | **Leaflet + Carto tiles**, tanpa API key |
 
 ### Struktur Repo
 
@@ -62,12 +61,43 @@ gelar-rasa-2026/
 ├── .env.example
 ├── .eslintrc.json
 ├── .prettierrc
-├── next.config.ts
-├── tailwind.config.ts
-├── tsconfig.json
+├── next.config.js / next.config.mjs
+├── tailwind.config.js
+├── jsconfig.json
 ├── README.md
 └── PRD.md
 ```
+`public/data/aqms` dan `public/data/health` dipertahankan dengan `.gitkeep` sebelum file hasil preprocessing tersedia. Data JSON di folder ini diakses melalui URL `/data/...`, bukan melalui import file langsung.
+
+Alias import `@/*` menunjuk ke `src/*`. Contoh: `@/components/ui/MetricCard` berarti `src/components/ui/MetricCard.jsx`.
+
+### Komponen yang Bisa Digunakan Kembali
+
+- `components/layout/Navbar`: navigasi utama dan penanda route aktif. Dipasang sekali di `app/layout.jsx`.
+- `components/layout/ModuleLayout`: mengatur offset navbar, lebar konten, header modul, dan jarak antar section. Gunakan sebagai wrapper setiap `page.jsx` modul.
+- `components/layout/ModuleLayout` juga mengekspor `Section` untuk judul section dan spacing yang konsisten.
+- `components/ui/Card`: panel dasar dengan surface, border, radius, dan shadow dari design token. Gunakan untuk panel atau kartu baru agar tidak mengulang style.
+- `components/ui/MetricCard`: angka KPI dengan label, unit, badge, subtext, dan opsi accent.
+- `components/ui/Badge`: badge kategori manual; gunakan `IspuBadge` jika kategori harus dihitung dari nilai PM2.5.
+- `components/ui/LoadingSpinner` dan `ErrorState`: state loading/error standar untuk hasil fetch.
+- `map/StationMap`: peta Leaflet client-only. Import dengan `next/dynamic` dan `{ ssr: false }` karena Leaflet membutuhkan browser.
+
+Komponen reusable sengaja dibatasi pada primitive yang stabil. Filter, legenda, dan pola visual yang hanya relevan untuk satu modul sebaiknya tetap lokal di `src/app/<modul>/` agar setiap developer bebas membangun storytelling yang sesuai datanya.
+
+### Hooks dan Lib
+
+**Hooks**
+
+- `useAqmsData.js`: mengambil ringkasan nasional, daftar stasiun, timeseries stasiun, dan pola rata-rata per jam dari `/data/aqms`.
+- `useHealthData.js`: mengambil ringkasan kesehatan dan agregasi per rumah sakit dari `/data/health`.
+- `useFilter.js`: menyimpan filter tanggal, stasiun, region, dan polutan. Gunakan `filterByDate` untuk data yang memiliki field `date` atau `month` berformat ISO.
+
+**Lib**
+
+- `lib/constants.js`: sumber tunggal untuk kategori ISPU, breakpoint PM2.5, metadata polutan, outcome kesehatan, tipe stasiun, warna region, serta nama bulan/hari. Tambahkan metadata domain di sini, bukan di komponen.
+- `lib/formatters.js`: fungsi murni untuk konversi ISPU (`calcIspu`, `getIspuFromPm25`), format angka/satuan/tanggal, dan label stasiun. Gunakan fungsi ini agar tampilan angka konsisten di semua modul.
+
+Aturan praktis: `components` mengatur tampilan, `hooks` mengatur state/fetch, dan `lib` mengatur aturan domain atau formatting yang tidak bergantung pada React.
 
 ### Development Workflow
 
@@ -102,10 +132,10 @@ docs: update README
 
 #### Code Style
 
-- Jalankan `npm run lint` dan `npm run format` sebelum commit.
+- Jalankan `npm run lint` sebelum commit. Gunakan formatter yang disepakati tim jika tersedia.
 - Komponen menggunakan **named export**, bukan default export (kecuali page).
 - Semua props dideklarasikan dengan JavaScript interface.
-- Warna hanya dari design token di `tailwind.config.ts` (lihat Design System di PRD).
+- Warna UI hanya dari design token di `src/app/globals.css` dan token Tailwind yang tersedia.
 
 ### Setup & Environment
 
@@ -152,5 +182,12 @@ NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 | `npm run build` | Production build |
 | `npm run start` | Jalankan production build lokal |
 | `npm run lint` | ESLint check |
-| `npm run format` | Prettier format |
 | `python scripts/preprocess.py` | Konversi Parquet → JSON/CSV |
+
+#### Workflow Kolaborasi
+
+- Setiap developer mengerjakan satu modul di `src/app/<modul>/` dan memakai `ModuleLayout`, `Section`, serta komponen UI bersama.
+- Data hasil preprocessing masuk ke `public/data/aqms/` atau `public/data/health/`; jangan mengubah struktur JSON tanpa memperbarui hook dan dokumentasi kontraknya.
+- Aturan domain dan label bersama berada di `src/lib/`; jangan menduplikasi breakpoint ISPU atau warna kategori di halaman modul.
+- Semua perubahan UI memakai token di `src/app/globals.css`. Sidebar menggunakan `--color-nav`, sedangkan canvas halaman menggunakan `--color-bg` (`#FAFAFA`).
+- Sebelum pull request, jalankan `npm run lint` dan `npm run build`, lalu jelaskan route, data, dan komponen yang berubah.
