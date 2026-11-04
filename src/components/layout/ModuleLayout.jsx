@@ -8,13 +8,13 @@ export function ModuleLayout({ title, description, children }) {
 
   return (
     <main
-      className="app-main min-h-dvh w-full max-w-[1440px] mx-auto px-7 pb-16 pt-6"
+      className="app-main min-h-dvh w-full max-w-[1480px] mx-auto px-8 pb-16 pt-7"
     >
       {/* Page header — opsional, Overview skip ini */}
       {hasHeader && (
         <div
-          className="page-header mb-6 pb-4"
-          style={{ borderBottom: '1px solid rgba(24,49,79,0.1)' }}
+          className="page-header mb-7 pb-5"
+          style={{ borderBottom: '1px solid var(--color-border)' }}
         >
           <h1
             className="page-title"
@@ -34,7 +34,7 @@ export function ModuleLayout({ title, description, children }) {
       )}
 
       {/* Konten */}
-      <div className="flex flex-col gap-8">
+      <div className="module-content flex flex-col gap-5">
         {children}
       </div>
     </main>
@@ -46,9 +46,9 @@ export function ModuleLayout({ title, description, children }) {
  */
 export function Section({ title, description, children, className = '' }) {
   return (
-    <section className={`flex flex-col gap-4 ${className}`}>
+    <section className={`dashboard-section flex flex-col gap-4 ${className}`}>
       {(title || description) && (
-        <div>
+        <div className="dashboard-section-heading">
           {title && (
             <h3
               style={{

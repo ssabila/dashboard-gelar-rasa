@@ -5,10 +5,10 @@
 export function Card({ children, className = '', style = {} }) {
   return (
     <div
-      className={`card-surface p-5 ${className}`}
+      className={`card-surface p-4 md:p-5 ${className}`}
       style={{
         background: '#FFFFFF',
-        borderColor: 'rgba(24, 49, 79, 0.08)',
+        borderColor: 'var(--color-card-border)',
         color: 'var(--color-text-primary)',
         ...style,
       }}

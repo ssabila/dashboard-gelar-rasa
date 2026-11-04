@@ -14,6 +14,27 @@
   font-family: var(--font-body);
 }
 
+.overview-filter {
+  position: relative;
+}
+
+.overview-filter::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: var(--radius-card) 0 0 var(--radius-card);
+  background: var(--color-accent);
+  content: '';
+}
+
+.overview-filter input[type='date'] {
+  min-height: 2.25rem;
+}
+
+.overview-filter button {
+  white-space: nowrap;
+}
+
 /* Date field */
 .date-field {
   display: flex;
@@ -54,5 +75,13 @@
   .date-filter.surface-raised {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .overview-filter {
+    align-items: stretch;
+  }
+
+  .overview-filter > .flex-1 {
+    min-width: 100%;
   }
 }

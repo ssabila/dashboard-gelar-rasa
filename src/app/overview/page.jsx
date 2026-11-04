@@ -48,7 +48,7 @@ function OverviewFilters({ filters, onDateChange, onReset }) {
 
   return (
     <div
-      className="flex flex-wrap items-center gap-3 rounded-[0.875rem] border px-4 py-3"
+      className="overview-filter flex flex-wrap items-center gap-3 rounded-[0.875rem] border px-4 py-3"
       style={{
         background: '#FFFFFF',
         borderColor: 'rgba(24,49,79,0.1)',
@@ -284,7 +284,7 @@ export default function OverviewPage() {
         {stLoading && <LoadingSpinner />}
         {stError && <ErrorState message={stError} />}
         {!stLoading && !stError && (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+          <div className="dashboard-kpi-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
             <MetricCard
               label="Rata-rata PM2.5 Nasional"
               value={avgPm25 != null ? formatNumber(avgPm25, 1) : '—'}

@@ -73,10 +73,9 @@ export function CoverageMap({
         zoomControl: true,
       })
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map)
 
       ;[['pane-circles', 410], ['pane-links', 420], ['pane-stations', 430], ['pane-dist', 440]].forEach(
@@ -123,6 +122,7 @@ export function CoverageMap({
   useEffect(() => {
     if (!ready || !geo) return
     const { L, map } = rt.current
+    if (!L || !map || typeof L.geoJSON !== 'function') return
     geoLayerRef.current?.remove()
 
     const layer = L.geoJSON(geo, {
@@ -159,7 +159,9 @@ export function CoverageMap({
   /* ── Zoom ke pulau terpilih ── */
   useEffect(() => {
     if (!ready || !geoLayerRef.current) return
+    if (typeof rt.current.L?.featureGroup !== 'function') return
     const { L, map } = rt.current
+    if (!L || !map) return
     if (!pulau) {
       map.flyTo(INDONESIA.center, INDONESIA.zoom, { duration: 0.8 })
       return
@@ -175,6 +177,7 @@ export function CoverageMap({
   useEffect(() => {
     if (!ready) return
     const { L, circles } = rt.current
+    if (!L || !circles) return
     circles.clearLayers()
     if (!showCircles || !radius) return
     stations.forEach((s) => {
@@ -195,6 +198,7 @@ export function CoverageMap({
   useEffect(() => {
     if (!ready) return
     const { L, links } = rt.current
+    if (!L || !links) return
     links.clearLayers()
     if (!showLinks) return
     const byKode = new Map(stations.map((s) => [s.kode, s]))
@@ -215,6 +219,7 @@ export function CoverageMap({
   useEffect(() => {
     if (!ready) return
     const { L, stations: layer } = rt.current
+    if (!L || !layer) return
     layer.clearLayers()
     if (!showStations) return
     stations.forEach((s) => {
@@ -239,6 +244,7 @@ export function CoverageMap({
   useEffect(() => {
     if (!ready) return
     const { L, cands } = rt.current
+    if (!L || !cands) return
     cands.clearLayers()
     candidates.forEach((c) => {
       if (!Number.isFinite(c.lat) || !Number.isFinite(c.lon)) return
@@ -272,6 +278,7 @@ export function CoverageMap({
   useEffect(() => {
     if (!ready) return
     const { L, map, dist } = rt.current
+    if (!L || !map || !dist) return
     dist.clearLayers()
     if (!selected) return
 

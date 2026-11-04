@@ -107,7 +107,7 @@ export function SliderField({ label, valueLabel, min, max, step = 1, value, onCh
 
 export function ChartCard({ title, subtitle, children, className = '', action }) {
   return (
-    <Card className={`flex flex-col gap-3 ${className}`}>
+    <Card className={`chart-card flex flex-col gap-3 ${className}`}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <h4 style={{ margin: 0, color: NAVY }}>{title}</h4>

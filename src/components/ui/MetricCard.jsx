@@ -31,12 +31,12 @@ export function MetricCard({
       className="metric-card card-surface p-5"
       style={{ '--metric-accent': accentColor }}
     >
-      <div className="flex flex-col gap-3 h-full">
+      <div className="metric-card-content flex flex-col gap-3 h-full pl-1">
 
         {/* Top row: label + icon */}
         <div className="flex items-start justify-between gap-2">
           <p
-            className="metric-card-label text-xs font-medium leading-snug"
+            className="metric-card-label text-xs font-semibold leading-snug"
             style={{ color: 'var(--color-text-secondary)', maxWidth: 'none', margin: 0 }}
           >
             {label}

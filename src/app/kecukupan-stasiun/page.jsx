@@ -238,7 +238,7 @@ export default function KecukupanStasiunPage() {
           </Card>
 
           {/* ── KPI ── */}
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+          <div className="dashboard-kpi-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
             <MetricCard
               label="Stasiun Aktif"
               value={kpi.active}
@@ -316,7 +316,7 @@ export default function KecukupanStasiunPage() {
                 {METRICS.find((m) => m.id === metric)?.hint}
               </p>
 
-              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_21rem]">
+              <div className="dashboard-map-grid grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
                 <div className="overflow-hidden rounded-card border" style={{ borderColor: 'var(--color-border)' }}>
                   <CoverageMap
                     geo={geo.data}
@@ -354,7 +354,7 @@ export default function KecukupanStasiunPage() {
 
           {/* ── 1. Kondisi saat ini ── */}
           <Section title="1. Kondisi saat ini" description="Di mana stasiun berada, dan seberapa jarang dibanding luas wilayahnya?">
-            <div className="grid gap-4 xl:grid-cols-2">
+            <div className="dashboard-card-grid grid gap-4 lg:grid-cols-2">
               <ChartCard
                 title="Kepadatan stasiun per pulau"
                 subtitle="Klik batang untuk memfilter halaman ke pulau itu. Garis putus-putus: benchmark relatif (rata-rata nasional), bukan standar resmi."
@@ -383,7 +383,7 @@ export default function KecukupanStasiunPage() {
 
           {/* ── 2. Keandalan ── */}
           <Section title="2. Seberapa andal data yang ada?" description="Stasiun yang ada hanya berguna bila datanya lengkap dan mewakili berbagai tipe lokasi.">
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <div className="dashboard-card-grid grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
               <ChartCard
                 title="Kelengkapan data per stasiun dan bulan"
                 subtitle="Persen jam valid dibanding jam seharusnya. Stasiun diurutkan dari yang paling tidak lengkap (bawah)."
@@ -406,7 +406,7 @@ export default function KecukupanStasiunPage() {
 
           {/* ── 3. Radius & redundansi ── */}
           <Section title="3. Seberapa jauh satu stasiun bisa mewakili?" description="Radius cakupan diturunkan dari data: seberapa cepat kemiripan PM2.5 antar stasiun menurun terhadap jarak.">
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <div className="dashboard-card-grid grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
               <ChartCard title="Peluruhan korelasi terhadap jarak" subtitle="Titik: pasangan stasiun. Garis biru: median per rentang jarak. Garis hijau: radius yang dipakai untuk buffer.">
                 <DecayChart corr={corr.data} />
               </ChartCard>
@@ -447,11 +447,11 @@ export default function KecukupanStasiunPage() {
 
           {/* ── 4. Rekomendasi ── */}
           <Section title="4. Di mana stasiun baru paling dibutuhkan?" description={`Lima lokasi dipilih berurutan agar tambahan luas daratan tercakup (radius ${recs.data.radius_km} km) sebesar mungkin, dibobot risiko PM2.5.`}>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="dashboard-card-grid grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {recs.data.greedy.map((r) => <RecommendationCard key={r.kab_id} rec={r} onFocus={focusKab} />)}
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-2">
+            <div className="dashboard-card-grid grid gap-4 lg:grid-cols-2">
               <ChartCard
                 title="Berapa stasiun tambahan yang efisien?"
                 subtitle="Kurva biasanya melandai (diminishing returns): setelah titik tertentu, tiap stasiun baru menambah sedikit. Geser slider di peta untuk melihat posisi."
@@ -491,7 +491,7 @@ export default function KecukupanStasiunPage() {
               </ChartCard>
             </div>
 
-            <div className="grid gap-4 xl:grid-cols-2">
+            <div className="dashboard-card-grid grid gap-4 lg:grid-cols-2">
               <ChartCard title={`Ranking kandidat${pulau ? ` · ${pulau}` : ''}`} subtitle="Kabupaten yang jauh dari stasiun, dengan PM2.5 estimasi tinggi dan luas tak terlayani besar.">
                 <GapRankTable rows={ranked} onFocus={focusKab} weightsChanged={weightsChanged} />
               </ChartCard>
