@@ -2,15 +2,18 @@ import { Card } from './Card'
 import { Badge } from './Badge'
 
 /**
- * MetricCard — satu angka besar dengan label, satuan, dan badge opsional.
+ * MetricCard — KPI card dengan desain light-mode.
  *
  * Props:
- *   label      string   — deskripsi metrik, misal 'Rata-rata PM2.5 Nasional'
- *   value      string   — nilai yang ditampilkan, misal '43.1'
- *   unit       string   — satuan, misal 'µg/m³'
- *   badge      object   — { label, color, bg } dari ISPU_CATEGORIES (opsional)
- *   subtext    string   — keterangan kecil di bawah nilai (opsional)
- *   accent     boolean  — pakai warna accent untuk nilai (default false)
+ *   label        string   — deskripsi metrik
+ *   value        string   — nilai utama
+ *   unit         string   — satuan (opsional)
+ *   badge        object   — { label, color, bg } dari ISPU_CATEGORIES (opsional)
+ *   subtext      string   — keterangan kecil (opsional)
+ *   trend        string   — misal '+2.3%' untuk delta (opsional)
+ *   trendUp      boolean  — apakah trend positif (hijau) atau negatif (merah)
+ *   icon         ReactNode — ikon kecil di pojok kanan atas (opsional)
+ *   accentColor  string   — warna aksen strip kiri
  */
 export function MetricCard({
   label,
@@ -18,60 +21,83 @@ export function MetricCard({
   unit,
   badge,
   subtext,
-  accent = false,
+  trend,
+  trendUp,
+  icon,
   accentColor = 'var(--color-muted)',
 }) {
   return (
-    <Card className="metric-card" style={{ '--metric-accent': accentColor }}>
-      <div className="flex flex-col gap-3">
+    <div
+      className="metric-card card-surface p-5"
+      style={{ '--metric-accent': accentColor }}
+    >
+      <div className="flex flex-col gap-3 h-full">
 
-        {/* Label */}
-        <p
-          className="metric-card-label text-xs font-medium uppercase tracking-wide leading-tight"
-        >
-          <span className="metric-card-dot" aria-hidden="true" />
-          {label}
-        </p>
+        {/* Top row: label + icon */}
+        <div className="flex items-start justify-between gap-2">
+          <p
+            className="metric-card-label text-xs font-medium leading-snug"
+            style={{ color: 'var(--color-text-secondary)', maxWidth: 'none', margin: 0 }}
+          >
+            {label}
+          </p>
+          {icon && (
+            <div
+              className="kpi-icon-circle"
+              style={{
+                background: `${accentColor}18`,
+                color: accentColor,
+              }}
+              aria-hidden="true"
+            >
+              {icon}
+            </div>
+          )}
+        </div>
 
-        {/* Nilai + badge */}
-        <div className="flex items-end gap-3 flex-wrap">
+        {/* Value */}
+        <div className="flex items-end gap-2 flex-wrap mt-auto">
           <span
-            className="text-metric leading-none"
-            style={{
-              fontFamily: 'var(--font-body)',
-              color: accent ? 'var(--color-accent)' : 'var(--color-text-on-surface)',
-            }}
+            className="text-metric"
+            style={{ color: 'var(--color-text-primary)' }}
           >
             {value ?? '—'}
           </span>
 
           {unit && (
             <span
-              className="text-sm mb-0.5"
-              style={{ color: 'var(--color-muted)' }}
+              className="text-xs mb-1 font-medium"
+              style={{ color: 'var(--color-text-secondary)' }}
             >
               {unit}
             </span>
           )}
+        </div>
 
+        {/* Bottom row: badge + trend */}
+        <div className="flex items-center gap-2 flex-wrap">
           {badge && (
-            <div className="mb-1">
-              <Badge label={badge.label} color={badge.color} bg={badge.bg} />
-            </div>
+            <Badge label={badge.label} color={badge.color} bg={badge.bg} />
+          )}
+          {trend && (
+            <span
+              className="text-xs font-semibold"
+              style={{ color: trendUp ? 'var(--ispu-baik)' : 'var(--ispu-tidak-sehat)' }}
+            >
+              {trendUp ? '↑' : '↓'} {trend}
+            </span>
+          )}
+          {subtext && !badge && !trend && (
+            <p
+              className="text-xs leading-snug"
+              style={{ color: 'var(--color-text-secondary)', maxWidth: 'none', margin: 0 }}
+            >
+              {subtext}
+            </p>
           )}
         </div>
 
-        {/* Subtext */}
-        {subtext && (
-          <p
-            className="text-xs leading-snug"
-            style={{ color: 'var(--color-muted)', maxWidth: 'none' }}
-          >
-            {subtext}
-          </p>
-        )}
-
       </div>
-    </Card>
+    </div>
   )
 }
