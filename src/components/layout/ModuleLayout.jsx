@@ -1,76 +1,34 @@
 /**
- * ModuleLayout — wrapper yang dipakai di setiap page.jsx modul.
- * Revisi: tanpa page-header bawaan; Overview punya welcome section sendiri.
- * Modul lain bisa tetap pakai title + description seperti biasa.
+ * ModuleLayout — wrapper setiap halaman modul.
+ * Props: title, description (pertanyaan yang dijawab halaman), eyebrow, actions.
  */
-export function ModuleLayout({ title, description, children }) {
-  const hasHeader = Boolean(title)
-
+export function ModuleLayout({ title, description, eyebrow, actions, children }) {
   return (
-    <main
-      className="app-main min-h-dvh w-full max-w-[1480px] mx-auto px-8 pb-16 pt-7"
-    >
-      {/* Page header — opsional, Overview skip ini */}
-      {hasHeader && (
-        <div
-          className="page-header mb-7 pb-5"
-          style={{ borderBottom: '1px solid var(--color-border)' }}
-        >
-          <h1
-            className="page-title"
-            style={{ fontFamily: 'var(--font-body)', color: 'var(--color-text-primary)' }}
-          >
-            {title}
-          </h1>
-          {description && (
-            <p
-              className="page-description text-sm mt-1"
-              style={{ color: 'var(--color-text-secondary)', maxWidth: 'none' }}
-            >
-              {description}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Konten */}
-      <div className="module-content flex flex-col gap-5">
+    <main className="app-main">
+      <div className="page-inner">
+        {(title || actions) && (
+          <header className="page-header">
+            <div>
+              {eyebrow && <span className="page-eyebrow">{eyebrow}</span>}
+              {title && <h1 className="page-title">{title}</h1>}
+              {description && <p className="page-description">{description}</p>}
+            </div>
+            {actions && <div className="page-actions">{actions}</div>}
+          </header>
+        )}
         {children}
       </div>
     </main>
   )
 }
 
-/**
- * Section — pembungkus per-bagian dalam sebuah modul.
- */
 export function Section({ title, description, children, className = '' }) {
   return (
-    <section className={`dashboard-section flex flex-col gap-4 ${className}`}>
+    <section className={`section ${className}`.trim()}>
       {(title || description) && (
-        <div className="dashboard-section-heading">
-          {title && (
-            <h3
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.9375rem',
-                fontWeight: 600,
-                color: 'var(--color-text-primary)',
-                margin: 0,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {title}
-            </h3>
-          )}
-          {description && (
-            <p
-              className="text-sm mt-1"
-              style={{ color: 'var(--color-text-secondary)', margin: '0.2rem 0 0', maxWidth: 'none' }}
-            >
-              {description}
-            </p>
-          )}
+        <div>
+          {title && <h2 className="section-title">{title}</h2>}
+          {description && <p className="section-desc">{description}</p>}
         </div>
       )}
       {children}

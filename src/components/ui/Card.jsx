@@ -1,19 +1,24 @@
 /**
- * Card — panel dasar dengan surface putih untuk light-mode canvas.
- * Gunakan sebagai wrapper panel baru agar style konsisten.
+ * Card — panel dasar. Varian: default | flush | tint | dark
  */
-export function Card({ children, className = '', style = {} }) {
+export function Card({ children, className = '', style, variant = 'default', as: Tag = 'div', ...rest }) {
+  const v = variant === 'default' ? '' : ` card--${variant}`
   return (
-    <div
-      className={`card-surface p-4 md:p-5 ${className}`}
-      style={{
-        background: '#FFFFFF',
-        borderColor: 'var(--color-card-border)',
-        color: 'var(--color-text-primary)',
-        ...style,
-      }}
-    >
+    <Tag className={`card${v} ${className}`.trim()} style={style} {...rest}>
       {children}
+    </Tag>
+  )
+}
+
+/** Header kartu: judul, subjudul, dan aksi/ikon di kanan. */
+export function CardHeader({ title, subtitle, action }) {
+  return (
+    <div className="card-head">
+      <div>
+        <h3 className="card-title">{title}</h3>
+        {subtitle && <p className="card-sub">{subtitle}</p>}
+      </div>
+      {action}
     </div>
   )
 }

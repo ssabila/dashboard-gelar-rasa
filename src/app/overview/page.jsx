@@ -1,27 +1,20 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import {
-  Activity,
-  AlertTriangle,
-  BarChart2,
-  CalendarDays,
-  Cpu,
-  Heart,
-  MapPin,
-  RefreshCw,
-  RotateCcw,
-  Skull,
-  Wind,
-} from 'lucide-react'
+import { useCallback, useMemo } from 'react'
+import { Activity, AlertTriangle, Cpu, MapPin, Skull, Wind } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
+import { Card, CardHeader } from '@/components/ui/Card'
 import { MetricCard } from '@/components/ui/MetricCard'
 import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
+import { FilterBar } from '@/components/shared/FilterBar'
+import { IspuLegend } from '@/components/shared/IspuLegend'
 import { useStations } from '@/hooks/useAqmsData'
 import { useHealthSummary } from '@/hooks/useHealthData'
 import { useFilter } from '@/hooks/useFilter'
-import { ISPU_CATEGORIES } from '@/lib/constants'
-import { formatPm25, formatNumber, getIspuFromPm25 } from '@/lib/formatters'
+import { POLLUTANTS } from '@/lib/constants'
+import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
+import { IspuDonut, KeyInsights, StationRanking, shortName } from './panels'
 
 // Leaflet tidak bisa SSR — dynamic import wajib
 const StationMap = dynamic(
@@ -29,352 +22,141 @@ const StationMap = dynamic(
   { ssr: false, loading: () => <LoadingSpinner label="Memuat peta..." /> }
 )
 
-/* ══════════════════════════════════════════
-   Filter component
-══════════════════════════════════════════ */
-function OverviewFilters({ filters, onDateChange, onReset }) {
-  const presets = [
-    { label: 'Semua data', start: '2024-01-01', end: '2026-10-14' },
-    { label: 'Tahun 2026', start: '2026-01-01', end: '2026-10-14' },
-    { label: 'Tahun 2025', start: '2025-01-01', end: '2025-12-31' },
-    { label: 'Tahun 2024', start: '2024-01-01', end: '2024-12-31' },
-  ]
+const EMPTY = []
 
-  const fmtDate = (v) =>
-    !v ? 'Pilih tanggal'
-    : new Date(`${v}T00:00:00`).toLocaleDateString('id-ID', {
-        day: '2-digit', month: 'short', year: 'numeric',
-      })
-
-  return (
-    <div
-      className="overview-filter flex flex-wrap items-center gap-3 rounded-[0.875rem] border px-4 py-3"
-      style={{
-        background: '#FFFFFF',
-        borderColor: 'rgba(24,49,79,0.1)',
-        boxShadow: '0 1px 4px rgba(24,49,79,0.06)',
-      }}
-    >
-      {/* Icon */}
-      <div
-        className="flex items-center justify-center rounded-[0.5rem] h-9 w-9 flex-shrink-0"
-        style={{ background: 'rgba(56,78,119,0.08)', color: 'var(--color-elevated)' }}
-      >
-        <CalendarDays size={17} />
-      </div>
-
-      {/* Period label */}
-      <div className="mr-2">
-        <p style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', margin: 0, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-          Periode analisis
-        </p>
-        <strong style={{ fontSize: '0.8rem', color: 'var(--color-text-primary)', fontWeight: 600 }}>
-          {fmtDate(filters.dateStart)} — {fmtDate(filters.dateEnd)}
-        </strong>
-      </div>
-
-      {/* Date inputs */}
-      <div className="flex items-center gap-2 flex-1 min-w-[14rem]">
-        <label className="date-field">
-          <span>Mulai</span>
-          <input
-            type="date"
-            value={filters.dateStart}
-            max={filters.dateEnd}
-            onChange={(e) => onDateChange(e.target.value, filters.dateEnd)}
-          />
-        </label>
-        <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.72rem', paddingBottom: '0.4rem', alignSelf: 'flex-end' }}>—</span>
-        <label className="date-field">
-          <span>Selesai</span>
-          <input
-            type="date"
-            value={filters.dateEnd}
-            min={filters.dateStart}
-            onChange={(e) => onDateChange(filters.dateStart, e.target.value)}
-          />
-        </label>
-      </div>
-
-      {/* Presets */}
-      <div className="flex items-center gap-1.5 flex-wrap">
-        {presets.map((p) => {
-          const active = filters.dateStart === p.start && filters.dateEnd === p.end
-          return (
-            <button
-              key={p.label}
-              type="button"
-              onClick={() => onDateChange(p.start, p.end)}
-              style={{
-                fontSize: '0.7rem',
-                fontWeight: 500,
-                padding: '0.3rem 0.7rem',
-                borderRadius: '999px',
-                border: `1px solid ${active ? 'var(--color-elevated)' : 'rgba(24,49,79,0.14)'}`,
-                background: active ? 'rgba(56,78,119,0.1)' : 'transparent',
-                color: active ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                transition: 'all 150ms ease',
-                fontFamily: 'var(--font-body)',
-              }}
-            >
-              {p.label}
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Reset */}
-      <button
-        type="button"
-        onClick={onReset}
-        className="flex items-center gap-1.5 ml-auto"
-        style={{
-          fontSize: '0.72rem',
-          fontWeight: 600,
-          padding: '0.35rem 0.75rem',
-          borderRadius: 'var(--radius-btn)',
-          border: '1px solid rgba(24,49,79,0.16)',
-          background: 'transparent',
-          color: 'var(--color-text-secondary)',
-          cursor: 'pointer',
-          fontFamily: 'var(--font-body)',
-        }}
-      >
-        <RotateCcw size={12} />
-        Reset
-      </button>
-    </div>
-  )
-}
-
-/* ══════════════════════════════════════════
-   ISPU Legend
-══════════════════════════════════════════ */
-function IspuLegend() {
-  return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-1">
-      {ISPU_CATEGORIES.map((cat) => (
-        <span
-          key={cat.id}
-          className="inline-flex items-center gap-1.5"
-          style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', fontWeight: 500 }}
-        >
-          <span
-            style={{
-              width: '0.6rem',
-              height: '0.6rem',
-              borderRadius: '50%',
-              background: cat.color,
-              display: 'inline-block',
-              flexShrink: 0,
-              boxShadow: `0 0 5px ${cat.color}60`,
-            }}
-          />
-          {cat.label}
-        </span>
-      ))}
-      <span
-        style={{
-          fontSize: '0.7rem',
-          color: 'var(--color-text-disabled)',
-          marginLeft: 'auto',
-          fontStyle: 'italic',
-        }}
-      >
-        Kategori berdasarkan ISPU PM2.5 (Permen LHK No. 14/2020)
-      </span>
-    </div>
-  )
-}
-
-/* ══════════════════════════════════════════
-   Main Page
-══════════════════════════════════════════ */
 export default function OverviewPage() {
-  const { data: stations, loading: stLoading, error: stError } = useStations()
+  const { data: stations, loading, error } = useStations()
   const { data: health } = useHealthSummary()
-  const { filters, setDateRange, setStation, resetFilters } = useFilter()
+  const { filters, setDateRange, setStation, setRegion, resetFilters } = useFilter()
+  const { who, naaqs } = POLLUTANTS.pm25
 
-  // Hitung KPI
-  const avgPm25 =
-    stations && stations.length
-      ? stations.reduce((s, x) => s + (x.avg_pm25 ?? 0), 0) / stations.length
-      : null
+  const all = stations ?? EMPTY
+  const regions = useMemo(
+    () => [...new Set(all.map((s) => s.region_group).filter(Boolean))].sort(),
+    [all]
+  )
+  const scoped = useMemo(
+    () => (filters.regionGroup ? all.filter((s) => s.region_group === filters.regionGroup) : all),
+    [all, filters.regionGroup]
+  )
 
-  const activeCount = stations?.filter((s) => s.status_operasional === 'Active').length ?? null
-  const exceedNaaqs = stations?.filter((s) => (s.avg_pm25 ?? 0) > 25).length ?? null
-  const ispuCat = avgPm25 != null ? getIspuFromPm25(avgPm25) : null
+  const k = useMemo(() => {
+    const valid = scoped.filter((s) => Number.isFinite(s.avg_pm25))
+    const avg = valid.length ? valid.reduce((s, x) => s + x.avg_pm25, 0) / valid.length : null
+    const exceed = valid.filter((s) => s.avg_pm25 > naaqs).length
+    const top = valid.reduce((m, s) => (!m || s.avg_pm25 > m.avg_pm25 ? s : m), null)
+    return {
+      n: scoped.length,
+      avg,
+      active: scoped.filter((s) => s.status_operasional === 'Active').length,
+      exceed,
+      exceedPct: valid.length ? (exceed / valid.length) * 100 : 0,
+      top,
+    }
+  }, [scoped, naaqs])
 
-  // Tanggal hari ini sebagai label
-  const today = new Date().toLocaleDateString('id-ID', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  })
+  const handleSelect = useCallback((s) => setStation(s.location_id), [setStation])
 
   return (
     <ModuleLayout
-      title=""
-      description=""
+      eyebrow="Gambaran besar"
+      title="Overview"
+      description="Di mana dan seberapa buruk kondisi udara Indonesia? Ringkasan jaringan stasiun AQMS dan snapshot dampak kesehatannya."
     >
-      {/* ── Welcome header ── */}
-      <div className="flex items-start justify-between gap-4 -mt-2">
-        <div>
-          <h1
-            style={{
-              fontSize: 'clamp(1.4rem, 2.5vw, 1.9rem)',
-              fontWeight: 800,
-              color: 'var(--color-text-primary)',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1,
-              margin: 0,
-            }}
-          >
-            Selamat datang kembali 👋
-          </h1>
-          <p
-            style={{
-              fontSize: '0.8125rem',
-              color: 'var(--color-text-secondary)',
-              margin: '0.3rem 0 0',
-              maxWidth: 'none',
-            }}
-          >
-            {today} · Memantau kualitas udara dari 27 stasiun AQMS di seluruh Indonesia
-          </p>
-        </div>
-
-        {/* Refresh hint */}
-        <div
-          className="flex items-center gap-1.5 flex-shrink-0 mt-1"
-          style={{ fontSize: '0.72rem', color: 'var(--color-text-disabled)', fontWeight: 500 }}
-        >
-          <RefreshCw size={12} />
-          <span>Jan 2024 — Okt 2026</span>
-        </div>
-      </div>
-
-      {/* ── Filter ── */}
-      <OverviewFilters
+      <FilterBar
         filters={filters}
         onDateChange={setDateRange}
         onReset={resetFilters}
+        regions={regions}
+        onRegionChange={setRegion}
       />
 
-      {/* ── KPI Cards ── */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2
-            style={{
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              color: 'var(--color-text-primary)',
-              margin: 0,
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Indikator Utama
-          </h2>
-          <span
-            style={{ fontSize: '0.72rem', color: 'var(--color-text-disabled)', fontWeight: 500 }}
-          >
-            Periode terpilih
-          </span>
-        </div>
+      {error && <ErrorState message={error} />}
+      {loading && <Card><LoadingSpinner /></Card>}
 
-        {stLoading && <LoadingSpinner />}
-        {stError && <ErrorState message={stError} />}
-        {!stLoading && !stError && (
-          <div className="dashboard-kpi-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
+      {!loading && !error && (
+        <>
+          {/* ── Baris 1: KPI kecil ── */}
+          <div className="kpi-grid">
             <MetricCard
-              label="Rata-rata PM2.5 Nasional"
-              value={avgPm25 != null ? formatNumber(avgPm25, 1) : '—'}
+              variant="hero"
+              label="Rata-rata PM2.5 nasional"
+              value={k.avg != null ? formatNumber(k.avg, 1) : '—'}
               unit="µg/m³"
-              badge={ispuCat}
-              accentColor="var(--color-elevated)"
-              icon={<Wind size={16} />}
+              badge={k.avg != null ? getIspuFromPm25(k.avg) : null}
+              subtext={k.avg != null ? `${formatNumber(k.avg / who, 1)}× pedoman WHO` : null}
+              icon={<Wind size={18} />}
             />
             <MetricCard
-              label="Stasiun Aktif"
-              value={activeCount}
-              unit={`dari ${stations?.length ?? 27}`}
+              label="Stasiun aktif"
+              value={k.active}
+              unit={`dari ${k.n}`}
+              subtext={k.n - k.active > 0 ? `${k.n - k.active} tidak aktif` : 'Semua beroperasi'}
               accentColor="var(--ispu-baik)"
-              icon={<Cpu size={16} />}
+              icon={<Cpu size={18} />}
             />
             <MetricCard
-              label="Stasiun Melebihi NAAQS"
-              value={exceedNaaqs}
+              label="Melebihi baku mutu NAAQS"
+              value={k.exceed}
               unit="stasiun"
+              subtext={`${formatNumber(k.exceedPct, 0)}% dari jaringan · > ${naaqs} µg/m³`}
               accentColor="var(--ispu-tidak-sehat)"
-              icon={<AlertTriangle size={16} />}
+              icon={<AlertTriangle size={18} />}
             />
             <MetricCard
-              label="Total Rawat Inap Napas"
+              label="Rawat inap pernapasan"
               value={health ? formatNumber(health.total_resp) : '—'}
               unit="kasus"
-              accentColor="var(--ispu-sedang)"
-              icon={<Activity size={16} />}
+              subtext="Seluruh RS rujukan"
+              accentColor="#B58900"
+              icon={<Activity size={18} />}
             />
             <MetricCard
-              label="Total Kematian"
+              label="Total kematian"
               value={health ? formatNumber(health.total_death) : '—'}
               unit="jiwa"
+              subtext="Seluruh RS rujukan"
               accentColor="var(--ispu-sangat-tidak)"
-              icon={<Skull size={16} />}
+              icon={<Skull size={18} />}
             />
             <MetricCard
-              label="PM2.5 Tertinggi"
-              value={health ? formatPm25(health.max_pm25_station?.avg_pm25) : '—'}
-              subtext={health?.max_pm25_station?.kota_kabupaten}
+              label="PM2.5 stasiun tertinggi"
+              value={k.top ? formatNumber(k.top.avg_pm25, 1) : '—'}
+              unit="µg/m³"
+              subtext={k.top ? shortName(k.top) : null}
               accentColor="var(--ispu-berbahaya)"
-              icon={<MapPin size={16} />}
+              icon={<MapPin size={18} />}
             />
           </div>
-        )}
-      </div>
 
-      {/* ── Map ── */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2
-              style={{
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                color: 'var(--color-text-primary)',
-                margin: 0,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Sebaran 27 Stasiun AQMS
-            </h2>
-            <p
-              style={{
-                fontSize: '0.75rem',
-                color: 'var(--color-text-secondary)',
-                margin: '0.15rem 0 0',
-                maxWidth: 'none',
-              }}
-            >
-              Klik marker untuk melihat detail stasiun
-            </p>
+          {/* ── Baris 2: peta + panel samping ── */}
+          <div className="layout-main">
+            <Card>
+              <CardHeader
+                title={`Sebaran ${k.n} stasiun AQMS`}
+                subtitle="Warna titik = kategori ISPU dari rata-rata PM2.5. Klik titik untuk detail stasiun."
+                action={<span className="count-pill">{filters.regionGroup ?? 'Seluruh Indonesia'}</span>}
+              />
+              <div className="map-frame">
+                <StationMap stations={scoped} onSelect={handleSelect} height="500px" />
+              </div>
+              <div className="map-foot">
+                <IspuLegend note="ISPU PM2.5 · Permen LHK No. 14/2020" />
+              </div>
+            </Card>
+
+            <div className="layout-side">
+              <StationRanking stations={scoped} />
+              <IspuDonut stations={scoped} />
+            </div>
           </div>
-        </div>
 
-        <div className="map-panel">
-          <StationMap
-            stations={stations ?? []}
-            onSelect={setStation}
-            height="460px"
-          />
-        </div>
-
-        <div
-          className="mt-3 px-1 pb-1"
-        >
-          <IspuLegend />
-        </div>
-      </div>
-
+          {/* ── Baris 3: temuan singkat ── */}
+          <Section title="Temuan singkat" description="Cuplikan dari data yang sedang ditampilkan. Buka halaman terkait untuk analisis lengkap.">
+            <KeyInsights stations={scoped} avgPm25={k.avg} />
+          </Section>
+        </>
+      )}
     </ModuleLayout>
   )
 }
