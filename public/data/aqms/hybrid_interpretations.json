@@ -1,0 +1,116 @@
+[
+  {
+    "topic": "Kondisi umum jaringan",
+    "finding": "Dataset mencatat 27 lokasi dan 23 sensor aktif. Median kelengkapan historis per stasiun-polutan adalah 20,0%, sedangkan median jarak ke stasiun terdekat adalah 186,5 km.",
+    "meaning": "Status aktif tidak otomatis berarti data historis lengkap. Jarak median digunakan sebagai indikasi keterisolasian relatif, bukan ukuran cakupan wilayah."
+  },
+  {
+    "topic": "Administrative gap",
+    "finding": "491 dari 517 wilayah administratif (95,0%) tidak memiliki titik AQMS yang berada di dalam poligonnya.",
+    "meaning": "Angka ini menunjukkan ketidakmerataan lokasi stasiun pada unit administratif yang dipakai dalam analisis. Wilayah tersebut belum otomatis tidak terpantau secara atmosferik.",
+    "top_candidates": [
+      {
+        "admin_name": "KEPULAUAN SANGIHE",
+        "priority_score": 0.9999999999999999,
+        "nearest_station_km": 807.4456357955697,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "admin_name": "MALUKU BARAT DAYA",
+        "priority_score": 0.996712917361411,
+        "nearest_station_km": 799.8709835553714,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "admin_name": "MALAKA",
+        "priority_score": 0.9852490352438271,
+        "nearest_station_km": 773.4539658193639,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "admin_name": "KEPULAUAN TALAUD",
+        "priority_score": 0.9791800488761198,
+        "nearest_station_km": 759.4687800968593,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "admin_name": "TIMOR TENGAH SELATAN",
+        "priority_score": 0.9788477623116613,
+        "nearest_station_km": 758.7030691468773,
+        "coverage_50km_pct": 0.0
+      }
+    ]
+  },
+  {
+    "topic": "Coverage buffer eksploratif",
+    "finding": "Median area yang beririsan dengan buffer stasiun adalah 0,0% untuk radius 25 km dan 0,0% untuk radius 50 km.",
+    "meaning": "Buffer hanya menunjukkan kedekatan geometris terhadap stasiun. Nilai ini bukan persentase cakupan monitoring aktual karena tidak memodelkan topografi, meteorologi, emisi, atau representativitas tipe stasiun."
+  },
+  {
+    "topic": "Environmental pressure",
+    "finding": "Rata-rata PM2.5 tertinggi pada wilayah administratif yang memiliki pengukuran adalah 89,4 ug/m3 di PALEMBANG.",
+    "meaning": "Indikator ini hanya menggambarkan kondisi di lokasi yang memiliki stasiun. Nilainya tidak boleh diekstrapolasi ke wilayah administratif tanpa pengukuran."
+  },
+  {
+    "topic": "Frekuensi pelampauan",
+    "finding": "Persentase pelampauan PM2.5 >55 ug/m3 tertinggi yang terukur adalah 62,6% di JAMBI.",
+    "meaning": "Pelampauan berulang dapat menjadi sinyal tekanan lingkungan untuk kajian lanjutan, tetapi bukan bukti tunggal bahwa wilayah tersebut harus mendapat stasiun baru."
+  },
+  {
+    "topic": "Prioritas pengembangan jaringan",
+    "finding": "Ranking MCDA menggabungkan administrative gap, jarak, coverage buffer 50 km, dan kepadatan stasiun dengan bobot asumsi 30%/35%/25%/10%.",
+    "meaning": "Kandidat teratas adalah wilayah untuk kajian lanjutan karena menggabungkan beberapa indikasi kesenjangan. Ranking bukan keputusan otomatis dan tidak menetapkan koordinat stasiun baru.",
+    "top_candidates": [
+      {
+        "rank": 1,
+        "admin_name": "KEPULAUAN SANGIHE",
+        "priority_score": 0.9999999999999999,
+        "admin_gap": 1,
+        "nearest_station_km": 807.4456357955697,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "rank": 2,
+        "admin_name": "MALUKU BARAT DAYA",
+        "priority_score": 0.996712917361411,
+        "admin_gap": 1,
+        "nearest_station_km": 799.8709835553714,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "rank": 3,
+        "admin_name": "MALAKA",
+        "priority_score": 0.9852490352438271,
+        "admin_gap": 1,
+        "nearest_station_km": 773.4539658193639,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "rank": 4,
+        "admin_name": "KEPULAUAN TALAUD",
+        "priority_score": 0.9791800488761198,
+        "admin_gap": 1,
+        "nearest_station_km": 759.4687800968593,
+        "coverage_50km_pct": 0.0
+      },
+      {
+        "rank": 5,
+        "admin_name": "TIMOR TENGAH SELATAN",
+        "priority_score": 0.9788477623116613,
+        "admin_gap": 1,
+        "nearest_station_km": 758.7030691468773,
+        "coverage_50km_pct": 0.0
+      }
+    ]
+  },
+  {
+    "topic": "Sensitivitas bobot",
+    "finding": "Kandidat dengan rata-rata peringkat terbaik di seluruh skenario adalah KEPULAUAN SANGIHE (rata-rata peringkat 1,0).",
+    "meaning": "Semakin besar perubahan peringkat antar-skenario, semakin sensitif hasil terhadap asumsi bobot. Gunakan kandidat yang relatif stabil sebagai bahan prioritas kajian, bukan sebagai keputusan final."
+  },
+  {
+    "topic": "Batasan interpretasi",
+    "finding": "Dataset tidak menyediakan populasi, inventaris emisi, standar resmi radius cakupan, kondisi jalan, atau kelayakan teknis lokasi.",
+    "meaning": "Kesimpulan harus disampaikan sebagai indikasi kesenjangan pemantauan dan prioritas kajian lanjutan, bukan sebagai klaim cakupan aktual atau rekomendasi pembangunan final."
+  }
+]
