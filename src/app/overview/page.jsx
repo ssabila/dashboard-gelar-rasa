@@ -1,15 +1,20 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { CalendarDays, RotateCcw } from 'lucide-react'
+import { useCallback, useMemo } from 'react'
+import { Activity, AlertTriangle, Cpu, MapPin, Skull, Wind } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
+import { Card, CardHeader } from '@/components/ui/Card'
 import { MetricCard } from '@/components/ui/MetricCard'
 import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
+import { FilterBar } from '@/components/shared/FilterBar'
+import { IspuLegend } from '@/components/shared/IspuLegend'
 import { useStations } from '@/hooks/useAqmsData'
 import { useHealthSummary } from '@/hooks/useHealthData'
 import { useFilter } from '@/hooks/useFilter'
-import { ISPU_CATEGORIES } from '@/lib/constants'
-import { formatPm25, formatNumber, getIspuFromPm25 } from '@/lib/formatters'
+import { POLLUTANTS } from '@/lib/constants'
+import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
+import { IspuDonut, KeyInsights, StationRanking, shortName } from './panels'
 
 // Leaflet tidak bisa SSR — dynamic import wajib
 const StationMap = dynamic(
@@ -17,181 +22,141 @@ const StationMap = dynamic(
   { ssr: false, loading: () => <LoadingSpinner label="Memuat peta..." /> }
 )
 
-function OverviewFilters({ filters, onDateChange, onReset }) {
-  const presets = [
-    { label: 'Semua data', start: '2024-01-01', end: '2026-10-14' },
-    { label: 'Tahun 2026', start: '2026-01-01', end: '2026-10-14' },
-    { label: 'Tahun 2025', start: '2025-01-01', end: '2025-12-31' },
-  ]
-
-  const formatDate = (value) => {
-    if (!value) return 'Pilih tanggal'
-    return new Date(`${value}T00:00:00`).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    })
-  }
-
-  return (
-    <div className="date-filter surface-raised rounded-card border">
-      <button type="button" onClick={onReset} className="date-filter-reset">
-        <RotateCcw size={14} aria-hidden="true" />
-        Reset
-      </button>
-      <div className="date-filter-heading">
-        <div className="date-filter-title">
-          <span className="date-filter-icon" aria-hidden="true"><CalendarDays size={16} /></span>
-          <div>
-            <p>Periode analisis</p>
-            <strong>{formatDate(filters.dateStart)} - {formatDate(filters.dateEnd)}</strong>
-          </div>
-        </div>
-      </div>
-
-      <div className="date-filter-body">
-        <label className="date-field">
-          <span>Mulai</span>
-          <input
-            type="date"
-            value={filters.dateStart}
-            max={filters.dateEnd}
-            onChange={(event) => onDateChange(event.target.value, filters.dateEnd)}
-          />
-        </label>
-        <span className="date-range-arrow" aria-hidden="true">to</span>
-        <label className="date-field">
-          <span>Selesai</span>
-          <input
-            type="date"
-            value={filters.dateEnd}
-            min={filters.dateStart}
-            onChange={(event) => onDateChange(filters.dateStart, event.target.value)}
-          />
-        </label>
-      </div>
-
-      <div className="date-presets" aria-label="Preset periode">
-        <span>Rentang cepat</span>
-        <div className="date-preset-list">
-          {presets.map((preset) => {
-            const active = filters.dateStart === preset.start && filters.dateEnd === preset.end
-            return (
-              <button
-                key={preset.label}
-                type="button"
-                className={`date-preset${active ? ' is-active' : ''}`}
-                onClick={() => onDateChange(preset.start, preset.end)}
-              >
-                {preset.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function OverviewIspuLegend() {
-  return (
-    <div className="flex flex-wrap gap-x-4 gap-y-2" aria-label="Legenda kategori ISPU">
-      {ISPU_CATEGORIES.map((category) => (
-        <span key={category.id} className="inline-flex items-center gap-2 text-xs text-secondary">
-          <span className="h-2.5 w-2.5 rounded-full" style={{ background: category.color }} />
-          {category.label}
-        </span>
-      ))}
-    </div>
-  )
-}
+const EMPTY = []
 
 export default function OverviewPage() {
-  const { data: stations, loading: stLoading, error: stError } = useStations()
+  const { data: stations, loading, error } = useStations()
   const { data: health } = useHealthSummary()
-  const { filters, setDateRange, setStation, resetFilters } = useFilter()
+  const { filters, setDateRange, setStation, setRegion, resetFilters } = useFilter()
+  const { who, naaqs } = POLLUTANTS.pm25
 
-  // Hitung KPI dari data stasiun
-  const avgPm25 = stations
-    ? stations.reduce((s, x) => s + (x.avg_pm25 ?? 0), 0) / stations.length
-    : null
+  const all = stations ?? EMPTY
+  const regions = useMemo(
+    () => [...new Set(all.map((s) => s.region_group).filter(Boolean))].sort(),
+    [all]
+  )
+  const scoped = useMemo(
+    () => (filters.regionGroup ? all.filter((s) => s.region_group === filters.regionGroup) : all),
+    [all, filters.regionGroup]
+  )
 
-  const activeCount = stations?.filter((s) => s.status_operasional === 'Active').length ?? null
-  const exceedNaaqs = stations?.filter((s) => (s.avg_pm25 ?? 0) > 25).length ?? null
-  const ispuCat = avgPm25 != null ? getIspuFromPm25(avgPm25) : null
+  const k = useMemo(() => {
+    const valid = scoped.filter((s) => Number.isFinite(s.avg_pm25))
+    const avg = valid.length ? valid.reduce((s, x) => s + x.avg_pm25, 0) / valid.length : null
+    const exceed = valid.filter((s) => s.avg_pm25 > naaqs).length
+    const top = valid.reduce((m, s) => (!m || s.avg_pm25 > m.avg_pm25 ? s : m), null)
+    return {
+      n: scoped.length,
+      avg,
+      active: scoped.filter((s) => s.status_operasional === 'Active').length,
+      exceed,
+      exceedPct: valid.length ? (exceed / valid.length) * 100 : 0,
+      top,
+    }
+  }, [scoped, naaqs])
+
+  const handleSelect = useCallback((s) => setStation(s.location_id), [setStation])
 
   return (
     <ModuleLayout
+      eyebrow="Gambaran besar"
       title="Overview"
-      description="Ringkasan kondisi kualitas udara nasional dan snapshot dampak kesehatan."
+      description="Di mana dan seberapa buruk kondisi udara Indonesia? Ringkasan jaringan stasiun AQMS dan snapshot dampak kesehatannya."
     >
-
-      {/* Filter */}
-      <OverviewFilters
+      <FilterBar
         filters={filters}
         onDateChange={setDateRange}
         onReset={resetFilters}
+        regions={regions}
+        onRegionChange={setRegion}
       />
 
-      {/* KPI Cards */}
-      <Section title="Indikator Utama">
-        {stLoading && <LoadingSpinner />}
-        {stError && <ErrorState message={stError} />}
-        {!stLoading && !stError && (
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+      {error && <ErrorState message={error} />}
+      {loading && <Card><LoadingSpinner /></Card>}
+
+      {!loading && !error && (
+        <>
+          {/* ── Baris 1: KPI kecil ── */}
+          <div className="kpi-grid">
             <MetricCard
-              label="Rata-rata PM2.5 Nasional"
-              value={avgPm25 != null ? formatNumber(avgPm25, 1) : '—'}
+              variant="hero"
+              label="Rata-rata PM2.5 nasional"
+              value={k.avg != null ? formatNumber(k.avg, 1) : '—'}
               unit="µg/m³"
-              badge={ispuCat}
-              accentColor="var(--color-accent)"
+              badge={k.avg != null ? getIspuFromPm25(k.avg) : null}
+              subtext={k.avg != null ? `${formatNumber(k.avg / who, 1)}× pedoman WHO` : null}
+              icon={<Wind size={18} />}
             />
             <MetricCard
-              label="Stasiun Aktif"
-              value={activeCount}
-              unit={`dari ${stations?.length ?? 27}`}
+              label="Stasiun aktif"
+              value={k.active}
+              unit={`dari ${k.n}`}
+              subtext={k.n - k.active > 0 ? `${k.n - k.active} tidak aktif` : 'Semua beroperasi'}
               accentColor="var(--ispu-baik)"
+              icon={<Cpu size={18} />}
             />
             <MetricCard
-              label="Stasiun Melebihi NAAQS"
-              value={exceedNaaqs}
+              label="Melebihi baku mutu NAAQS"
+              value={k.exceed}
               unit="stasiun"
-              accent
+              subtext={`${formatNumber(k.exceedPct, 0)}% dari jaringan · > ${naaqs} µg/m³`}
               accentColor="var(--ispu-tidak-sehat)"
+              icon={<AlertTriangle size={18} />}
             />
             <MetricCard
-              label="Total Rawat Inap Napas"
+              label="Rawat inap pernapasan"
               value={health ? formatNumber(health.total_resp) : '—'}
               unit="kasus"
-              accentColor="var(--ispu-sedang)"
+              subtext="Seluruh RS rujukan"
+              accentColor="#B58900"
+              icon={<Activity size={18} />}
             />
             <MetricCard
-              label="Total Kematian"
+              label="Total kematian"
               value={health ? formatNumber(health.total_death) : '—'}
               unit="jiwa"
-              accentColor="var(--ispu-sangat-tidak-sehat)"
+              subtext="Seluruh RS rujukan"
+              accentColor="var(--ispu-sangat-tidak)"
+              icon={<Skull size={18} />}
             />
             <MetricCard
-              label="PM2.5 Tertinggi"
-              value={health ? formatPm25(health.max_pm25_station?.avg_pm25) : '—'}
-              subtext={health?.max_pm25_station?.kota_kabupaten}
-              accentColor="var(--color-muted)"
+              label="PM2.5 stasiun tertinggi"
+              value={k.top ? formatNumber(k.top.avg_pm25, 1) : '—'}
+              unit="µg/m³"
+              subtext={k.top ? shortName(k.top) : null}
+              accentColor="var(--ispu-berbahaya)"
+              icon={<MapPin size={18} />}
             />
           </div>
-        )}
-      </Section>
 
-      {/* Peta */}
-      <Section title="Sebaran 27 Stasiun AQMS">
-        <div
-          className="rounded-card border overflow-hidden"
-          style={{ borderColor: 'var(--color-border)' }}
-        >
-          <StationMap stations={stations ?? []} onSelect={setStation} />
-        </div>
-        <OverviewIspuLegend />
-      </Section>
+          {/* ── Baris 2: peta + panel samping ── */}
+          <div className="layout-main">
+            <Card>
+              <CardHeader
+                title={`Sebaran ${k.n} stasiun AQMS`}
+                subtitle="Warna titik = kategori ISPU dari rata-rata PM2.5. Klik titik untuk detail stasiun."
+                action={<span className="count-pill">{filters.regionGroup ?? 'Seluruh Indonesia'}</span>}
+              />
+              <div className="map-frame">
+                <StationMap stations={scoped} onSelect={handleSelect} height="500px" />
+              </div>
+              <div className="map-foot">
+                <IspuLegend note="ISPU PM2.5 · Permen LHK No. 14/2020" />
+              </div>
+            </Card>
 
+            <div className="layout-side">
+              <StationRanking stations={scoped} />
+              <IspuDonut stations={scoped} />
+            </div>
+          </div>
+
+          {/* ── Baris 3: temuan singkat ── */}
+          <Section title="Temuan singkat" description="Cuplikan dari data yang sedang ditampilkan. Buka halaman terkait untuk analisis lengkap.">
+            <KeyInsights stations={scoped} avgPm25={k.avg} />
+          </Section>
+        </>
+      )}
     </ModuleLayout>
   )
 }

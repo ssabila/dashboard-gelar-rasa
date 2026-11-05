@@ -1,114 +1,75 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { getIspuFromPm25 } from '@/lib/formatters'
-import { formatPm25 } from '@/lib/formatters'
+import { getIspuFromPm25, formatPm25 } from '@/lib/formatters'
+
+const esc = (s) =>
+  String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 
 /**
- * StationMap — peta Leaflet 27 stasiun AQMS.
- * Menggunakan dynamic import karena Leaflet tidak SSR-compatible.
- *
- * Props:
- *   stations   array   — dari useStations(). Setiap item minimal punya:
- *                        { location_id, kota_kabupaten, latitude_dd, longitude_dd,
- *                          avg_pm25, status_operasional }
- *   height     string  — CSS height (default '420px')
- *   onSelect   fn      — (station) => void, dipanggil saat marker diklik (opsional)
- *
- * Penggunaan:
- *   import dynamic from 'next/dynamic'
- *   const StationMap = dynamic(() => import('@/map/StationMap')
- *     .then(m => m.StationMap), { ssr: false })
+ * StationMap — peta Leaflet stasiun AQMS (client-only; import via next/dynamic { ssr: false }).
+ * Props: stations (array), height (CSS), onSelect (station) => void
+ * Berikan `stations` yang identitasnya stabil (useMemo) agar peta tidak dibuat ulang.
  */
 export function StationMap({ stations = [], height = '420px', onSelect }) {
   const mapRef = useRef(null)
   const instanceRef = useRef(null)
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
     if (!mapRef.current) return
-
     let disposed = false
 
-    // Dynamic import Leaflet supaya tidak crash di SSR
-    import('leaflet').then((L) => {
-      if (disposed) return
+    import('leaflet').then((mod) => {
+      if (disposed || !mapRef.current) return
+      const L = mod.default ?? mod
 
-      // Fix default marker icon path (issue Leaflet + webpack)
-      delete L.Icon.Default.prototype._getIconUrl
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      })
+      const map = L.map(mapRef.current, { center: [-2.5, 118], zoom: 5, minZoom: 4, zoomControl: true })
 
-      const map = L.map(mapRef.current, {
-        center: [-2.5, 118],
-        zoom: 5,
-        zoomControl: true,
-      })
+      // Scroll halaman tidak "tersangkut" di peta: wheel-zoom aktif setelah peta diklik
+      map.scrollWheelZoom.disable()
+      map.on('focus', () => map.scrollWheelZoom.enable())
+      map.on('blur', () => map.scrollWheelZoom.disable())
 
-      // Leaflet handles the map; OpenStreetMap supplies the public tile images.
-      L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-          maxZoom: 19,
-          attribution: '&copy; OpenStreetMap contributors',
-        }
-      ).addTo(map)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      }).addTo(map)
 
-      // Render marker
+      const points = []
       stations.forEach((station) => {
+        if (!Number.isFinite(station.latitude_dd) || !Number.isFinite(station.longitude_dd)) return
         const cat = getIspuFromPm25(station.avg_pm25)
-        const color = cat?.color ?? '#4A6480'
+        const color = cat?.color ?? '#94A3B8'
 
         const icon = L.divIcon({
           className: '',
-          html: `<div style="
-            width:14px; height:14px; border-radius:50%;
-            background:${color};
-            border: 2px solid rgba(255,255,255,0.35);
-            box-shadow: 0 0 8px ${color}80;
-            cursor:pointer;
-          "></div>`,
-          iconSize: [14, 14],
-          iconAnchor: [7, 7],
+          html: `<div style="width:16px;height:16px;border-radius:50%;background:${color};
+            border:2.5px solid #fff;box-shadow:0 0 0 1px rgba(24,49,79,.28),0 3px 8px ${color}99;cursor:pointer"></div>`,
+          iconSize: [16, 16],
+          iconAnchor: [8, 8],
           popupAnchor: [0, -10],
         })
 
-        const marker = L.marker(
-          [station.latitude_dd, station.longitude_dd],
-          { icon }
-        ).addTo(map)
+        const marker = L.marker([station.latitude_dd, station.longitude_dd], { icon }).addTo(map)
+        points.push([station.latitude_dd, station.longitude_dd])
 
-        // Popup
-        marker.bindPopup(`
-          <div style="font-family:'Plus Jakarta Sans',sans-serif; min-width:160px;">
-            <p style="font-weight:600; font-size:13px; margin:0 0 6px; color:#F0F4FF">
-              ${station.kota_kabupaten}
-            </p>
-            <p style="font-size:11px; color:#8BBEB2; margin:0 0 4px">
-              ${station.location_id}
-            </p>
-            <p style="font-size:12px; margin:0 0 4px; color:#F0F4FF">
-              PM2.5 rata-rata: <strong>${formatPm25(station.avg_pm25)}</strong>
-            </p>
-            <span style="
-              display:inline-block; font-size:11px; font-weight:500;
-              padding:2px 8px; border-radius:4px;
-              color:${color}; background:${color}20;
-              border:1px solid ${color}40;
-            ">${cat?.label ?? '—'}</span>
-            <p style="font-size:10px; color:#8BBEB2; margin:6px 0 0">
-              ${station.status_operasional ?? ''}
-            </p>
-          </div>
-        `, { maxWidth: 240 })
+        marker.bindPopup(
+          `<div style="font-family:'Plus Jakarta Sans',sans-serif;min-width:170px">
+            <div style="font-weight:700;font-size:13px;color:#18314F">${esc(station.kota_kabupaten)}</div>
+            <div style="font-size:11px;color:#55706E;margin:2px 0 8px">${esc(station.location_id)}${station.region_group ? ' · ' + esc(station.region_group) : ''}</div>
+            <div style="font-size:12px;color:#18314F">PM2.5 rata-rata <strong>${esc(formatPm25(station.avg_pm25))}</strong></div>
+            <span style="display:inline-block;margin-top:6px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;
+              color:#18314F;background:${color}33;border:1px solid ${color}">${esc(cat?.label ?? '—')}</span>
+            <div style="font-size:10.5px;color:#7C9693;margin-top:8px">${esc(station.status_operasional ?? '')}</div>
+          </div>`,
+          { maxWidth: 260 }
+        )
 
-        if (onSelect) {
-          marker.on('click', () => onSelect(station))
-        }
+        if (onSelect) marker.on('click', () => onSelect(station))
       })
+
+      if (points.length > 1) map.fitBounds(points, { padding: [36, 36], maxZoom: 7 })
 
       instanceRef.current = map
     })
@@ -123,8 +84,8 @@ export function StationMap({ stations = [], height = '420px', onSelect }) {
   return (
     <div
       ref={mapRef}
-      style={{ height, width: '100%', borderRadius: '0.75rem', overflow: 'hidden' }}
-      aria-label="Peta 27 stasiun AQMS Indonesia"
+      style={{ height, width: '100%' }}
+      aria-label="Peta stasiun AQMS Indonesia"
     />
   )
 }
