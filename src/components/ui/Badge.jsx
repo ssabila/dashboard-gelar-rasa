@@ -7,7 +7,7 @@ export function Badge({ label, color, bg, size = 'sm' }) {
       className="badge"
       style={{
         fontSize: size === 'xs' ? '0.6875rem' : '0.75rem',
-        color,
+        color: `color-mix(in srgb, ${color} 55%, #18314F)`,
         background: bg,
         border: `1px solid ${color}40`,
       }}

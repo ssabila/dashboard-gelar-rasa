@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useCallback, useMemo } from 'react'
-import { Activity, AlertTriangle, Cpu, MapPin, Skull, Wind } from 'lucide-react'
+import { Activity, AlertTriangle, CalendarRange, Cpu, MapPin, Skull, Wind } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { MetricCard } from '@/components/ui/MetricCard'
@@ -60,6 +60,7 @@ export default function OverviewPage() {
   return (
     <ModuleLayout
       eyebrow="Gambaran besar"
+      actions={<span className="coverage-chip"><CalendarRange size={13} aria-hidden="true" />Data Jan 2024 – Okt 2026</span>}
       title="Overview"
       description="Di mana dan seberapa buruk kondisi udara Indonesia? Ringkasan jaringan stasiun AQMS dan snapshot dampak kesehatannya."
     >
