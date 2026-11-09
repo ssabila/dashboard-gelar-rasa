@@ -1,0 +1,457 @@
+{
+  "total_unique_locations": 27,
+  "by_region_group": [
+    {
+      "category": "Jakarta",
+      "count": 3,
+      "percentage": 11.11
+    },
+    {
+      "category": "Kalimantan Tengah",
+      "count": 3,
+      "percentage": 11.11
+    },
+    {
+      "category": "Bogor",
+      "count": 2,
+      "percentage": 7.41
+    },
+    {
+      "category": "Yogyakarta",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Aceh",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sumatera Barat",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Riau",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Jambi",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kepulauan Riau",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Bengkulu",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Papua Barat Daya",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Jawa Timur",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sulawesi Selatan",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sulawesi Tengah",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kalimantan Barat",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sumatera Selatan",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Lampung",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Papua",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sumatera Utara",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kalimantan Timur",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kalimantan Selatan",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sumatera",
+      "count": 1,
+      "percentage": 3.7
+    }
+  ],
+  "by_provinsi": [
+    {
+      "category": "DKI Jakarta",
+      "count": 3,
+      "percentage": 11.11
+    },
+    {
+      "category": "Kalimantan Tengah",
+      "count": 3,
+      "percentage": 11.11
+    },
+    {
+      "category": "Jawa Barat",
+      "count": 2,
+      "percentage": 7.41
+    },
+    {
+      "category": "Jambi",
+      "count": 2,
+      "percentage": 7.41
+    },
+    {
+      "category": "D.I. Yogyakarta",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Aceh",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sumatera Barat",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Riau",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kepulauan Riau",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Bengkulu",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Papua Barat Daya",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Jawa Timur",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sulawesi Selatan",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sulawesi Tengah",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kalimantan Barat",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sumatera Selatan",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Lampung",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Papua Selatan",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sumatera Utara",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kalimantan Timur",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kalimantan Selatan",
+      "count": 1,
+      "percentage": 3.7
+    }
+  ],
+  "by_site_type": [
+    {
+      "category": "Urban Background",
+      "count": 4,
+      "percentage": 14.81
+    },
+    {
+      "category": "Regional / Clean Background",
+      "count": 4,
+      "percentage": 14.81
+    },
+    {
+      "category": "Traffic / Roadside",
+      "count": 2,
+      "percentage": 7.41
+    },
+    {
+      "category": "Peatland Buffer / Urban",
+      "count": 2,
+      "percentage": 7.41
+    },
+    {
+      "category": "Industrial Perimeter",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Peatland Boundary",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Industrial Perimeter / Maritime",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Urban Coastal Background",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Coastal / Regional Background",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Urban Background / Valley",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Industrial / Karst Perimeter",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Peatland Boundary / Inland",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Peatland Boundary / Airport",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Peatland Buffer / Urban Artery",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Urban Background / Highway Corridor",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Coastal / Remote Savanna",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Industrial & Deforestation Buffer",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Airport & Peatland Buffer",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Peatland & Plantation Hinterland",
+      "count": 1,
+      "percentage": 3.7
+    }
+  ],
+  "by_karakteristik_wilayah": [
+    {
+      "category": "Pusat Pemerintahan & Komersial Padat",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Industri Berat, Pelabuhan & Pesisir",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Jalur Arteri Bandara & Permukiman Padat Penduduk",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Pusat Permukiman Kota, Koridor Hutan Tropis & Gambut",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Sentra Logistik Kelapa Sawit & Lahan Gambut",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Dataran Tinggi Pegunungan Puncak, Agrowisata & Background Baseline",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Lembah Perkotaan Padat, Terminal Bus & Koridor Hujan",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Pusat Pendidikan, Komersial & Aglomerasi Urban Yogyakarta",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Lembah Seulawah, Agrikultur & Clean Background",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Dataran Tinggi Bukit Barisan, Hutan Lindung & Global Baseline",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Penyangga Gambut, Koridor Urban & Lalu Lintas Udara",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Aglomerasi Perkotaan & Daerah Aliran Sungai Batanghari",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Industri Manufaktur, Pelabuhan & Maritim Selat Malaka",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Pesisir Pantai Barat Sumatra & Permukiman Urban",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Pesisir Kepulauan Tropis, Pelabuhan & Coastal Background",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Lembah Cekungan Dataran Tinggi, Pertanian & Agrowisata",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Karst Maros-Pangkep, Industri Semen & Hinterland Urban",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Hutan Hujan Tropis Pegunungan Primer (Pristine Control Group)",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Pedalaman Lembah Sungai Kapuas & Lahan Gambut Inland",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Hutan Rawa Gambut Pesisir & Sentra Perkebunan Sawit",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Sentra Logistik, Pesisir Rawa Gambut & Koridor Sungai Musi",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Koridor Agroklimat, Perkebunan & Jalur Arteri Lintas Sumatra",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Pesisir Selatan Papua, Sabana Tropis & Perbatasan Terluar",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Metropolitan Sumatra Utara, Pusat Bisnis & Arteri Komersial",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Lembah Sungai Mahakam, Koridor Hutan Tropis-Tambang Batubara & Penyangga IKN",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Dataran Rendah Rawa Gambut, Sentra Agroklimat & Koridor Bandara Syamsudin Noor",
+      "count": 1,
+      "percentage": 3.7
+    },
+    {
+      "category": "Kawasan Hinterland Rawa Gambut & Perkebunan Kelapa Sawit Pedalaman",
+      "count": 1,
+      "percentage": 3.7
+    }
+  ],
+  "methodology_note": "Jumlah dihitung dari lokasi pemantauan unik. Menunjukkan konsentrasi sebaran dalam dataset, bukan cakupan wilayah secara definitif."
+}

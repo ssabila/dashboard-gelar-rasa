@@ -18,8 +18,8 @@ const NAVY = '#18314F'
  *
  * Props:
  *   geo            FeatureCollection coverage_kabupaten.geojson
- *   stations       station_quality.stations (difilter pulau bila perlu)
- *   redundantPairs station_correlation.redundant_pairs
+ *   stations       daftar stasiun yang sudah diperkaya metrik jaringan
+ *   redundantPairs pasangan stasiun redundan (opsional)
  *   kabById        Map(kab_id → baris tabel kabupaten, memuat lat/lon)
  *   metric, ctx    metrik warna & konteks skala (lib/coverage)
  *   pulau          string | null — pulau terpilih (lainnya diredupkan)

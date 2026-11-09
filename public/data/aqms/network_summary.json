@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "title": "AQMS Monitoring Network Adequacy Summary",
+    "description": "Ringkasan penilaian kecukupan jaringan pemantauan kualitas udara berdasarkan data tabular aktual.",
+    "generated_at": "2026-11-09T07:03:06.796040",
+    "source_data": "sites.csv, sensors.csv, metadata_sensors.csv, metadata_dates.csv, 27 AQMS CSVs",
+    "boundary_notice": "SHP hanya digunakan sebagai layer batas visual netral; seluruh metrik dihitung dari data tabular."
+  },
+  "kpi": {
+    "total_monitoring_locations": 27,
+    "total_sensors": 27,
+    "sensor_status": {
+      "active": 23,
+      "intermittent": 3,
+      "defective": 1
+    },
+    "nearest_distance_km": {
+      "median": 186.47,
+      "mean": 266.62,
+      "min": 0.87,
+      "max": 1318.66
+    },
+    "observation_completeness": {
+      "overall_completeness_pct": 90.83,
+      "total_expected_hours": 659664,
+      "total_recorded_records": 667981,
+      "total_valid_records": 599185
+    },
+    "pm25_unit_groups": {
+      "mass_concentration_ug_m3_stations": 24,
+      "ppm_original_stations": 3,
+      "unknown_unit_stations": 0,
+      "conversion_applied": 0,
+      "note": "Satuan ppm dan ug/m3 diproses dan ditampilkan terpisah tanpa konversi."
+    }
+  },
+  "insights": {
+    "insight_distribution": "Distribusi stasiun paling terkonsentrasi pada **Jakarta**, dengan **3 lokasi** dalam dataset.",
+    "insight_distance": "Jarak ke stasiun terdekat paling besar tercatat pada **AQMS-MER-01 (Kabupaten Merauke)**, yaitu **1318.66 km**.",
+    "insight_completeness": "Kelengkapan pengamatan terendah ditemukan pada **AQMS-JMB-02 (Kabupaten Muaro Jambi)**, sebesar **0.50%**.",
+    "insight_pm25_groups": "Sebanyak **24 stasiun** memiliki data PM2.5 dalam kelompok ug/m3, dan **3 stasiun** dalam kelompok ppm.",
+    "insight_unit_separation": "Data PM2.5 dalam ppm ditampilkan terpisah karena tidak tersedia dasar konversi yang tervalidasi."
+  }
+}

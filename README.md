@@ -18,7 +18,7 @@
 | State Management | React hooks lokal (`useFilter`) |
 | Data fetching | Next.js Server Components + `fetch` |
 | Linting & Format | ESLint · Prettier |
-| Peta | **Leaflet + Carto tiles**, tanpa API key |
+| Peta | **Leaflet + OpenStreetMap tiles**, tanpa API key |
 
 ### Struktur Repo
 
@@ -88,7 +88,8 @@ Komponen reusable sengaja dibatasi pada primitive yang stabil. Filter, legenda, 
 
 **Hooks**
 
-- `useAqmsData.js`: mengambil ringkasan nasional, daftar stasiun, timeseries stasiun, dan pola rata-rata per jam dari `/data/aqms`.
+- `useAqmsData.js`: mengambil ringkasan Overview, daftar stasiun, agregat periode/wilayah, dan data T4 dari `/data/aqms` serta `/data`.
+- `useKecukupanData.js`: mengambil dataset ringkas jaringan, kelengkapan, jarak tetangga, prioritas, dan polygon kabupaten dari `/data/aqms`.
 - `useHealthData.js`: mengambil ringkasan kesehatan dan agregasi per rumah sakit dari `/data/health`.
 - `useFilter.js`: menyimpan filter tanggal, stasiun, region, dan polutan. Gunakan `filterByDate` untuk data yang memiliki field `date` atau `month` berformat ISO.
 
