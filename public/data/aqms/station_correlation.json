@@ -1,1 +1,2440 @@
-{"stations":["JKT-01","JKT-02","JKT-03","KTG-01","KTG-02","BGR-01","BGR-02","YKY-01","IDP-01","KTB-01","PKU-01","JMB-01","BTM-01","BGL-01","SRG-01","MLG-01","MRS-01","PLU-01","STG-01","PKN-01","PLB-01","PSW-01","MER-01","MDN-01","SM2-01","BJB-01","JMB-02"],"dendrogram_order":[25,23,22,5,21,26,6,8,3,4,18,9,19,20,12,10,11,7,17,14,13,15,16,24,0,1,2],"matrix":[[1.0,0.934,0.929,0.435,0.436,-0.006,0.047,0.779,0.174,0.674,0.773,0.765,0.791,0.821,0.818,0.821,0.823,0.808,0.707,0.636,0.787,null,null,null,0.889,null,null],[0.934,1.0,0.934,0.439,0.44,-0.004,0.037,0.79,0.196,0.678,0.777,0.768,0.795,0.828,0.826,0.828,0.829,0.816,0.71,0.64,0.787,null,null,null,0.894,null,null],[0.929,0.934,1.0,0.444,0.444,-0.016,0.034,0.774,0.187,0.67,0.769,0.761,0.786,0.813,0.811,0.814,0.816,0.799,0.703,0.632,0.778,null,null,null,0.893,null,null],[0.435,0.439,0.444,1.0,1.0,-0.016,0.026,0.32,-0.048,0.739,0.637,0.647,0.638,0.384,0.379,0.382,0.385,0.378,0.708,0.749,0.692,null,null,null,0.501,null,null],[0.436,0.44,0.444,1.0,1.0,-0.016,0.026,0.32,-0.048,0.738,0.637,0.647,0.638,0.385,0.379,0.382,0.385,0.378,0.708,0.749,0.692,null,null,null,0.501,null,null],[-0.006,-0.004,-0.016,-0.016,-0.016,1.0,-0.0,-0.024,-0.019,-0.009,-0.009,-0.009,-0.011,-0.023,-0.015,-0.02,-0.02,-0.014,-0.008,-0.009,-0.027,null,null,null,0.016,null,null],[0.047,0.037,0.034,0.026,0.026,-0.0,1.0,0.057,0.043,0.022,0.03,0.028,0.032,0.054,0.049,0.048,0.053,0.055,0.023,0.019,-0.013,null,null,null,0.016,null,null],[0.779,0.79,0.774,0.32,0.32,-0.024,0.057,1.0,0.499,0.591,0.719,0.702,0.754,0.962,0.96,0.963,0.963,0.95,0.616,0.54,0.693,null,null,null,0.614,null,null],[0.174,0.196,0.187,-0.048,-0.048,-0.019,0.043,0.499,1.0,0.028,0.077,0.068,0.097,0.278,0.277,0.278,0.279,0.272,0.028,0.008,-0.018,null,null,null,0.104,null,null],[0.674,0.678,0.67,0.739,0.738,-0.009,0.022,0.591,0.028,1.0,0.936,0.944,0.939,0.664,0.659,0.662,0.667,0.657,0.985,0.997,0.893,null,null,null,0.669,null,null],[0.773,0.777,0.769,0.637,0.637,-0.009,0.03,0.719,0.077,0.936,1.0,0.999,0.997,0.787,0.783,0.786,0.789,0.772,0.977,0.91,0.948,null,null,null,0.802,null,null],[0.765,0.768,0.761,0.647,0.647,-0.009,0.028,0.702,0.068,0.944,0.999,1.0,0.996,0.773,0.768,0.771,0.774,0.757,0.983,0.92,0.948,null,null,null,0.796,null,null],[0.791,0.795,0.786,0.638,0.638,-0.011,0.032,0.754,0.097,0.939,0.997,0.996,1.0,0.822,0.817,0.82,0.823,0.807,0.974,0.912,0.95,null,null,null,0.8,null,null],[0.821,0.828,0.813,0.384,0.385,-0.023,0.054,0.962,0.278,0.664,0.787,0.773,0.822,1.0,0.992,0.995,0.996,0.983,0.691,0.614,0.771,null,null,null,0.671,null,null],[0.818,0.826,0.811,0.379,0.379,-0.015,0.049,0.96,0.277,0.659,0.783,0.768,0.817,0.992,1.0,0.993,0.994,0.981,0.686,0.608,0.767,null,null,null,0.669,null,null],[0.821,0.828,0.814,0.382,0.382,-0.02,0.048,0.963,0.278,0.662,0.786,0.771,0.82,0.995,0.993,1.0,0.997,0.984,0.688,0.611,0.769,null,null,null,0.67,null,null],[0.823,0.829,0.816,0.385,0.385,-0.02,0.053,0.963,0.279,0.667,0.789,0.774,0.823,0.996,0.994,0.997,1.0,0.984,0.693,0.617,0.77,null,null,null,0.674,null,null],[0.808,0.816,0.799,0.378,0.378,-0.014,0.055,0.95,0.272,0.657,0.772,0.757,0.807,0.983,0.981,0.984,0.984,1.0,0.679,0.608,0.756,null,null,null,0.661,null,null],[0.707,0.71,0.703,0.708,0.708,-0.008,0.023,0.616,0.028,0.985,0.977,0.983,0.974,0.691,0.686,0.688,0.693,0.679,1.0,0.975,0.931,null,null,null,0.731,null,null],[0.636,0.64,0.632,0.749,0.749,-0.009,0.019,0.54,0.008,0.997,0.91,0.92,0.912,0.614,0.608,0.611,0.617,0.608,0.975,1.0,0.868,null,null,null,0.63,null,null],[0.787,0.787,0.778,0.692,0.692,-0.027,-0.013,0.693,-0.018,0.893,0.948,0.948,0.95,0.771,0.767,0.769,0.77,0.756,0.931,0.868,1.0,null,null,null,0.83,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[0.889,0.894,0.893,0.501,0.501,0.016,0.016,0.614,0.104,0.669,0.802,0.796,0.8,0.671,0.669,0.67,0.674,0.661,0.731,0.63,0.83,null,null,null,1.0,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],"pairs":[{"a":"JKT-01","b":"JKT-02","dist_km":16.74,"corr":0.934},{"a":"JKT-01","b":"JKT-03","dist_km":10.719,"corr":0.929},{"a":"JKT-01","b":"KTG-01","dist_km":900.508,"corr":0.435},{"a":"JKT-01","b":"KTG-02","dist_km":790.756,"corr":0.436},{"a":"JKT-01","b":"BGR-01","dist_km":59.466,"corr":-0.006},{"a":"JKT-01","b":"BGR-02","dist_km":47.502,"corr":0.047},{"a":"JKT-01","b":"YKY-01","dist_km":425.972,"corr":0.779},{"a":"JKT-01","b":"IDP-01","dist_km":1801.596,"corr":0.174},{"a":"JKT-01","b":"KTB-01","dist_km":972.372,"corr":0.674},{"a":"JKT-01","b":"PKU-01","dist_km":948.416,"corr":0.773},{"a":"JKT-01","b":"JMB-01","dist_km":616.768,"corr":0.765},{"a":"JKT-01","b":"BTM-01","dist_km":865.275,"corr":0.791},{"a":"JKT-01","b":"BGL-01","dist_km":562.229,"corr":0.821},{"a":"JKT-01","b":"SRG-01","dist_km":2777.869,"corr":0.818},{"a":"JKT-01","b":"MLG-01","dist_km":665.104,"corr":0.821},{"a":"JKT-01","b":"MRS-01","dist_km":1416.234,"corr":0.823},{"a":"JKT-01","b":"PLU-01","dist_km":1564.376,"corr":0.808},{"a":"JKT-01","b":"STG-01","dist_km":864.846,"corr":0.707},{"a":"JKT-01","b":"PKN-01","dist_km":661.715,"corr":0.636},{"a":"JKT-01","b":"PLB-01","dist_km":430.122,"corr":0.787},{"a":"JKT-01","b":"PSW-01","dist_km":214.0,"corr":null},{"a":"JKT-01","b":"MER-01","dist_km":3711.276,"corr":null},{"a":"JKT-01","b":"MDN-01","dist_km":1401.283,"corr":null},{"a":"JKT-01","b":"SM2-01","dist_km":1309.324,"corr":0.889},{"a":"JKT-01","b":"BJB-01","dist_km":938.829,"corr":null},{"a":"JKT-01","b":"JMB-02","dist_km":615.93,"corr":null},{"a":"JKT-02","b":"JKT-03","dist_km":25.999,"corr":0.934},{"a":"JKT-02","b":"KTG-01","dist_km":883.809,"corr":0.439},{"a":"JKT-02","b":"KTG-02","dist_km":774.096,"corr":0.44},{"a":"JKT-02","b":"BGR-01","dist_km":65.209,"corr":-0.004},{"a":"JKT-02","b":"BGR-02","dist_km":57.172,"corr":0.037},{"a":"JKT-02","b":"YKY-01","dist_km":415.212,"corr":0.79},{"a":"JKT-02","b":"IDP-01","dist_km":1807.29,"corr":0.196},{"a":"JKT-02","b":"KTB-01","dist_km":978.932,"corr":0.678},{"a":"JKT-02","b":"PKU-01","dist_km":952.623,"corr":0.777},{"a":"JKT-02","b":"JMB-01","dist_km":619.93,"corr":0.768},{"a":"JKT-02","b":"BTM-01","dist_km":864.091,"corr":0.795},{"a":"JKT-02","b":"BGL-01","dist_km":572.698,"corr":0.828},{"a":"JKT-02","b":"SRG-01","dist_km":2761.607,"corr":0.826},{"a":"JKT-02","b":"MLG-01","dist_km":652.775,"corr":0.828},{"a":"JKT-02","b":"MRS-01","dist_km":1400.546,"corr":0.829},{"a":"JKT-02","b":"PLU-01","dist_km":1547.753,"corr":0.816},{"a":"JKT-02","b":"STG-01","dist_km":850.133,"corr":0.71},{"a":"JKT-02","b":"PKN-01","dist_km":645.262,"corr":0.64},{"a":"JKT-02","b":"PLB-01","dist_km":432.872,"corr":0.787},{"a":"JKT-02","b":"PSW-01","dist_km":223.703,"corr":null},{"a":"JKT-02","b":"MER-01","dist_km":3696.95,"corr":null},{"a":"JKT-02","b":"MDN-01","dist_km":1405.549,"corr":null},{"a":"JKT-02","b":"SM2-01","dist_km":1292.617,"corr":0.894},{"a":"JKT-02","b":"BJB-01","dist_km":922.204,"corr":null},{"a":"JKT-02","b":"JMB-02","dist_km":619.086,"corr":null},{"a":"JKT-03","b":"KTG-01","dist_km":908.436,"corr":0.444},{"a":"JKT-03","b":"KTG-02","dist_km":798.494,"corr":0.444},{"a":"JKT-03","b":"BGR-01","dist_km":64.864,"corr":-0.016},{"a":"JKT-03","b":"BGR-02","dist_km":50.671,"corr":0.034},{"a":"JKT-03","b":"YKY-01","dist_km":436.512,"corr":0.774},{"a":"JKT-03","b":"IDP-01","dist_km":1792.499,"corr":0.187},{"a":"JKT-03","b":"KTB-01","dist_km":962.999,"corr":0.67},{"a":"JKT-03","b":"PKU-01","dist_km":939.925,"corr":0.769},{"a":"JKT-03","b":"JMB-01","dist_km":608.764,"corr":0.761},{"a":"JKT-03","b":"BTM-01","dist_km":859.342,"corr":0.786},{"a":"JKT-03","b":"BGL-01","dist_km":551.808,"corr":0.813},{"a":"JKT-03","b":"SRG-01","dist_km":2787.601,"corr":0.811},{"a":"JKT-03","b":"MLG-01","dist_km":675.803,"corr":0.814},{"a":"JKT-03","b":"MRS-01","dist_km":1426.421,"corr":0.816},{"a":"JKT-03","b":"PLU-01","dist_km":1573.5,"corr":0.799},{"a":"JKT-03","b":"STG-01","dist_km":869.134,"corr":0.703},{"a":"JKT-03","b":"PKN-01","dist_km":668.794,"corr":0.632},{"a":"JKT-03","b":"PLB-01","dist_km":422.362,"corr":0.778},{"a":"JKT-03","b":"PSW-01","dist_km":203.824,"corr":null},{"a":"JKT-03","b":"MER-01","dist_km":3721.906,"corr":null},{"a":"JKT-03","b":"MDN-01","dist_km":1392.743,"corr":null},{"a":"JKT-03","b":"SM2-01","dist_km":1317.301,"corr":0.893},{"a":"JKT-03","b":"BJB-01","dist_km":947.953,"corr":null},{"a":"JKT-03","b":"JMB-02","dist_km":607.929,"corr":null},{"a":"KTG-01","b":"KTG-02","dist_km":112.028,"corr":1.0},{"a":"KTG-01","b":"BGR-01","dist_km":919.311,"corr":-0.016},{"a":"KTG-01","b":"BGR-02","dist_km":926.152,"corr":0.026},{"a":"KTG-01","b":"YKY-01","dist_km":729.049,"corr":0.32},{"a":"KTG-01","b":"IDP-01","dist_km":2215.932,"corr":-0.048},{"a":"KTG-01","b":"KTB-01","dist_km":1519.664,"corr":0.739},{"a":"KTG-01","b":"PKU-01","dist_km":1415.184,"corr":0.637},{"a":"KTG-01","b":"JMB-01","dist_km":1143.257,"corr":0.647},{"a":"KTG-01","b":"BTM-01","dist_km":1149.383,"corr":0.638},{"a":"KTG-01","b":"BGL-01","dist_km":1300.889,"corr":0.384},{"a":"KTG-01","b":"SRG-01","dist_km":1938.271,"corr":0.379},{"a":"KTG-01","b":"MLG-01","dist_km":648.899,"corr":0.382},{"a":"KTG-01","b":"MRS-01","dist_km":700.094,"corr":0.385},{"a":"KTG-01","b":"PLU-01","dist_km":699.85,"corr":0.378},{"a":"KTG-01","b":"STG-01","dist_km":370.75,"corr":0.708},{"a":"KTG-01","b":"PKN-01","dist_km":254.187,"corr":0.749},{"a":"KTG-01","b":"PLB-01","dist_km":1026.334,"corr":0.692},{"a":"KTG-01","b":"PSW-01","dist_km":1023.165,"corr":null},{"a":"KTG-01","b":"MER-01","dist_km":3014.321,"corr":null},{"a":"KTG-01","b":"MDN-01","dist_km":1793.94,"corr":null},{"a":"KTG-01","b":"SM2-01","dist_km":408.91,"corr":0.501},{"a":"KTG-01","b":"BJB-01","dist_km":175.191,"corr":null},{"a":"KTG-01","b":"JMB-02","dist_km":1142.558,"corr":null},{"a":"KTG-02","b":"BGR-01","dist_km":811.279,"corr":-0.016},{"a":"KTG-02","b":"BGR-02","dist_km":817.56,"corr":0.026},{"a":"KTG-02","b":"YKY-01","dist_km":645.492,"corr":0.32},{"a":"KTG-02","b":"IDP-01","dist_km":2132.864,"corr":-0.048},{"a":"KTG-02","b":"KTB-01","dist_km":1420.496,"corr":0.738},{"a":"KTG-02","b":"PKU-01","dist_km":1320.059,"corr":0.637},{"a":"KTG-02","b":"JMB-01","dist_km":1040.019,"corr":0.647},{"a":"KTG-02","b":"BTM-01","dist_km":1062.562,"corr":0.638},{"a":"KTG-02","b":"BGL-01","dist_km":1190.824,"corr":0.385},{"a":"KTG-02","b":"SRG-01","dist_km":2046.888,"corr":0.379},{"a":"KTG-02","b":"MLG-01","dist_km":597.894,"corr":0.382},{"a":"KTG-02","b":"MRS-01","dist_km":783.232,"corr":0.385},{"a":"KTG-02","b":"PLU-01","dist_km":809.146,"corr":0.378},{"a":"KTG-02","b":"STG-01","dist_km":332.725,"corr":0.708},{"a":"KTG-02","b":"PKN-01","dist_km":143.34,"corr":0.749},{"a":"KTG-02","b":"PLB-01","dist_km":918.009,"corr":0.692},{"a":"KTG-02","b":"PSW-01","dist_km":911.14,"corr":null},{"a":"KTG-02","b":"MER-01","dist_km":3108.681,"corr":null},{"a":"KTG-02","b":"MDN-01","dist_km":1709.228,"corr":null},{"a":"KTG-02","b":"SM2-01","dist_km":519.764,"corr":0.501},{"a":"KTG-02","b":"BJB-01","dist_km":235.47,"corr":null},{"a":"KTG-02","b":"JMB-02","dist_km":1039.3,"corr":null},{"a":"BGR-01","b":"BGR-02","dist_km":18.155,"corr":-0.0},{"a":"BGR-01","b":"YKY-01","dist_km":393.517,"corr":-0.024},{"a":"BGR-01","b":"IDP-01","dist_km":1852.134,"corr":-0.019},{"a":"BGR-01","b":"KTB-01","dist_km":1021.501,"corr":-0.009},{"a":"BGR-01","b":"PKU-01","dist_km":1001.889,"corr":-0.009},{"a":"BGR-01","b":"JMB-01","dist_km":671.993,"corr":-0.009},{"a":"BGR-01","b":"BTM-01","dist_km":924.195,"corr":-0.011},{"a":"BGR-01","b":"BGL-01","dist_km":601.655,"corr":-0.023},{"a":"BGR-01","b":"SRG-01","dist_km":2777.372,"corr":-0.015},{"a":"BGR-01","b":"MLG-01","dist_km":637.978,"corr":-0.02},{"a":"BGR-01","b":"MRS-01","dist_km":1409.515,"corr":-0.02},{"a":"BGR-01","b":"PLU-01","dist_km":1571.568,"corr":-0.014},{"a":"BGR-01","b":"STG-01","dist_km":904.87,"corr":-0.008},{"a":"BGR-01","b":"PKN-01","dist_km":687.259,"corr":-0.009},{"a":"BGR-01","b":"PLB-01","dist_km":486.104,"corr":-0.027},{"a":"BGR-01","b":"PSW-01","dist_km":258.704,"corr":null},{"a":"BGR-01","b":"MER-01","dist_km":3692.836,"corr":null},{"a":"BGR-01","b":"MDN-01","dist_km":1454.479,"corr":null},{"a":"BGR-01","b":"SM2-01","dist_km":1327.124,"corr":0.016},{"a":"BGR-01","b":"BJB-01","dist_km":946.833,"corr":null},{"a":"BGR-01","b":"JMB-02","dist_km":671.164,"corr":null},{"a":"BGR-02","b":"YKY-01","dist_km":410.758,"corr":0.057},{"a":"BGR-02","b":"IDP-01","dist_km":1834.285,"corr":0.043},{"a":"BGR-02","b":"KTB-01","dist_km":1003.547,"corr":0.022},{"a":"BGR-02","b":"PKU-01","dist_km":984.506,"corr":0.03},{"a":"BGR-02","b":"JMB-01","dist_km":655.076,"corr":0.028},{"a":"BGR-02","b":"BTM-01","dist_km":909.252,"corr":0.032},{"a":"BGR-02","b":"BGL-01","dist_km":583.558,"corr":0.054},{"a":"BGR-02","b":"SRG-01","dist_km":2789.483,"corr":0.049},{"a":"BGR-02","b":"MLG-01","dist_km":654.68,"corr":0.048},{"a":"BGR-02","b":"MRS-01","dist_km":1422.87,"corr":0.053},{"a":"BGR-02","b":"PLU-01","dist_km":1581.74,"corr":0.055},{"a":"BGR-02","b":"STG-01","dist_km":904.45,"corr":0.023},{"a":"BGR-02","b":"PKN-01","dist_km":691.91,"corr":0.019},{"a":"BGR-02","b":"PLB-01","dist_km":469.486,"corr":-0.013},{"a":"BGR-02","b":"PSW-01","dist_km":240.627,"corr":null},{"a":"BGR-02","b":"MER-01","dist_km":3708.486,"corr":null},{"a":"BGR-02","b":"MDN-01","dist_km":1437.016,"corr":null},{"a":"BGR-02","b":"SM2-01","dist_km":1334.373,"corr":0.016},{"a":"BGR-02","b":"BJB-01","dist_km":956.656,"corr":null},{"a":"BGR-02","b":"JMB-02","dist_km":654.249,"corr":null},{"a":"YKY-01","b":"IDP-01","dist_km":2203.932,"corr":0.499},{"a":"YKY-01","b":"KTB-01","dist_km":1383.32,"corr":0.591},{"a":"YKY-01","b":"PKU-01","dist_km":1342.351,"corr":0.719},{"a":"YKY-01","b":"JMB-01","dist_km":1006.646,"corr":0.702},{"a":"YKY-01","b":"BTM-01","dist_km":1202.719,"corr":0.754},{"a":"YKY-01","b":"BGL-01","dist_km":987.908,"corr":0.962},{"a":"YKY-01","b":"SRG-01","dist_km":2442.536,"corr":0.96},{"a":"YKY-01","b":"MLG-01","dist_km":247.925,"corr":0.963},{"a":"YKY-01","b":"MRS-01","dist_km":1062.755,"corr":0.963},{"a":"YKY-01","b":"PLU-01","dist_km":1281.632,"corr":0.95},{"a":"YKY-01","b":"STG-01","dist_km":875.881,"corr":0.616},{"a":"YKY-01","b":"PKN-01","dist_km":577.817,"corr":0.54},{"a":"YKY-01","b":"PLB-01","dist_km":821.835,"corr":0.693},{"a":"YKY-01","b":"PSW-01","dist_km":638.833,"corr":null},{"a":"YKY-01","b":"MER-01","dist_km":3308.575,"corr":null},{"a":"YKY-01","b":"MDN-01","dist_km":1792.627,"corr":null},{"a":"YKY-01","b":"SM2-01","dist_km":1103.647,"corr":0.614},{"a":"YKY-01","b":"BJB-01","dist_km":687.063,"corr":null},{"a":"YKY-01","b":"JMB-02","dist_km":1005.779,"corr":null},{"a":"IDP-01","b":"KTB-01","dist_km":832.029,"corr":0.028},{"a":"IDP-01","b":"PKU-01","dist_km":862.461,"corr":0.077},{"a":"IDP-01","b":"JMB-01","dist_km":1197.546,"corr":0.068},{"a":"IDP-01","b":"BTM-01","dist_km":1071.635,"corr":0.097},{"a":"IDP-01","b":"BGL-01","dist_km":1280.185,"corr":0.278},{"a":"IDP-01","b":"SRG-01","dist_km":4039.075,"corr":0.277},{"a":"IDP-01","b":"MLG-01","dist_km":2407.465,"corr":0.278},{"a":"IDP-01","b":"MRS-01","dist_km":2914.801,"corr":0.279},{"a":"IDP-01","b":"PLU-01","dist_km":2854.063,"corr":0.272},{"a":"IDP-01","b":"STG-01","dist_km":1873.184,"corr":0.028},{"a":"IDP-01","b":"PKN-01","dist_km":2012.681,"corr":0.008},{"a":"IDP-01","b":"PLB-01","dist_km":1382.28,"corr":-0.018},{"a":"IDP-01","b":"PSW-01","dist_km":1594.748,"corr":null},{"a":"IDP-01","b":"MER-01","dist_km":5216.898,"corr":null},{"a":"IDP-01","b":"MDN-01","dist_km":425.024,"corr":null},{"a":"IDP-01","b":"SM2-01","dist_km":2494.928,"corr":0.104},{"a":"IDP-01","b":"BJB-01","dist_km":2368.216,"corr":null},{"a":"IDP-01","b":"JMB-02","dist_km":1198.414,"corr":null},{"a":"KTB-01","b":"PKU-01","dist_km":144.613,"corr":0.936},{"a":"KTB-01","b":"JMB-01","dist_km":393.336,"corr":0.944},{"a":"KTB-01","b":"BTM-01","dist_km":443.481,"corr":0.939},{"a":"KTB-01","b":"BGL-01","dist_km":455.491,"corr":0.664},{"a":"KTB-01","b":"SRG-01","dist_km":3438.235,"corr":0.659},{"a":"KTB-01","b":"MLG-01","dist_km":1598.938,"corr":0.662},{"a":"KTB-01","b":"MRS-01","dist_km":2195.119,"corr":0.667},{"a":"KTB-01","b":"PLU-01","dist_km":2206.902,"corr":0.657},{"a":"KTB-01","b":"STG-01","dist_km":1234.21,"corr":0.985},{"a":"KTB-01","b":"PKN-01","dist_km":1284.614,"corr":0.997},{"a":"KTB-01","b":"PLB-01","dist_km":565.435,"corr":0.893},{"a":"KTB-01","b":"PSW-01","dist_km":763.389,"corr":null},{"a":"KTB-01","b":"MER-01","dist_km":4527.435,"corr":null},{"a":"KTB-01","b":"MDN-01","dist_km":459.781,"corr":null},{"a":"KTB-01","b":"SM2-01","dist_km":1865.358,"corr":0.669},{"a":"KTB-01","b":"BJB-01","dist_km":1647.838,"corr":null},{"a":"KTB-01","b":"JMB-02","dist_km":394.167,"corr":null},{"a":"PKU-01","b":"JMB-01","dist_km":335.777,"corr":0.999},{"a":"PKU-01","b":"BTM-01","dist_km":304.582,"corr":0.997},{"a":"PKU-01","b":"BGL-01","dist_km":490.736,"corr":0.787},{"a":"PKU-01","b":"SRG-01","dist_km":3320.399,"corr":0.783},{"a":"PKU-01","b":"MLG-01","dist_km":1545.497,"corr":0.786},{"a":"PKU-01","b":"MRS-01","dist_km":2100.436,"corr":0.789},{"a":"PKU-01","b":"PLU-01","dist_km":2094.209,"corr":0.772},{"a":"PKU-01","b":"STG-01","dist_km":1113.984,"corr":0.977},{"a":"PKU-01","b":"PKN-01","dist_km":1188.376,"corr":0.91},{"a":"PKU-01","b":"PLB-01","dist_km":522.171,"corr":0.948},{"a":"PKU-01","b":"PSW-01","dist_km":750.152,"corr":null},{"a":"PKU-01","b":"MER-01","dist_km":4428.586,"corr":null},{"a":"PKU-01","b":"MDN-01","dist_km":452.927,"corr":null},{"a":"PKU-01","b":"SM2-01","dist_km":1747.787,"corr":0.802},{"a":"PKU-01","b":"BJB-01","dist_km":1551.232,"corr":null},{"a":"PKU-01","b":"JMB-02","dist_km":336.643,"corr":null},{"a":"JMB-01","b":"BTM-01","dist_km":310.962,"corr":0.996},{"a":"JMB-01","b":"BGL-01","dist_km":288.99,"corr":0.773},{"a":"JMB-01","b":"SRG-01","dist_km":3075.779,"corr":0.768},{"a":"JMB-01","b":"MLG-01","dist_km":1212.664,"corr":0.771},{"a":"JMB-01","b":"MRS-01","dist_km":1807.304,"corr":0.774},{"a":"JMB-01","b":"PLU-01","dist_km":1838.743,"corr":0.757},{"a":"JMB-01","b":"STG-01","dist_km":891.498,"corr":0.983},{"a":"JMB-01","b":"PKN-01","dist_km":900.861,"corr":0.92},{"a":"JMB-01","b":"PLB-01","dist_km":187.319,"corr":0.948},{"a":"JMB-01","b":"PSW-01","dist_km":429.045,"corr":null},{"a":"JMB-01","b":"MER-01","dist_km":4140.715,"corr":null},{"a":"JMB-01","b":"MDN-01","dist_km":787.603,"corr":null},{"a":"JMB-01","b":"SM2-01","dist_km":1508.072,"corr":0.796},{"a":"JMB-01","b":"BJB-01","dist_km":1262.647,"corr":null},{"a":"JMB-01","b":"JMB-02","dist_km":0.868,"corr":null},{"a":"BTM-01","b":"BGL-01","dist_km":590.243,"corr":0.822},{"a":"BTM-01","b":"SRG-01","dist_km":3029.462,"corr":0.817},{"a":"BTM-01","b":"MLG-01","dist_km":1374.619,"corr":0.82},{"a":"BTM-01","b":"MRS-01","dist_km":1845.577,"corr":0.823},{"a":"BTM-01","b":"PLU-01","dist_km":1811.717,"corr":0.807},{"a":"BTM-01","b":"STG-01","dist_km":825.762,"corr":0.974},{"a":"BTM-01","b":"PKN-01","dist_km":941.055,"corr":0.912},{"a":"BTM-01","b":"PLB-01","dist_km":456.379,"corr":0.95},{"a":"BTM-01","b":"PSW-01","dist_km":709.549,"corr":null},{"a":"BTM-01","b":"MER-01","dist_km":4161.324,"corr":null},{"a":"BTM-01","b":"MDN-01","dist_km":647.093,"corr":null},{"a":"BTM-01","b":"SM2-01","dist_km":1459.806,"corr":0.8},{"a":"BTM-01","b":"BJB-01","dist_km":1297.572,"corr":null},{"a":"BTM-01","b":"JMB-02","dist_km":311.395,"corr":null},{"a":"BGL-01","b":"SRG-01","dist_km":3236.935,"corr":0.992},{"a":"BGL-01","b":"MLG-01","dist_km":1222.802,"corr":0.995},{"a":"BGL-01","b":"MRS-01","dist_km":1917.33,"corr":0.996},{"a":"BGL-01","b":"PLU-01","dist_km":1999.947,"corr":0.983},{"a":"BGL-01","b":"STG-01","dist_km":1108.189,"corr":0.691},{"a":"BGL-01","b":"PKN-01","dist_km":1047.484,"corr":0.614},{"a":"BGL-01","b":"PLB-01","dist_km":284.319,"corr":0.771},{"a":"BGL-01","b":"PSW-01","dist_km":349.26,"corr":null},{"a":"BGL-01","b":"MER-01","dist_km":4240.846,"corr":null},{"a":"BGL-01","b":"MDN-01","dist_km":913.869,"corr":null},{"a":"BGL-01","b":"SM2-01","dist_km":1691.523,"corr":0.671},{"a":"BGL-01","b":"BJB-01","dist_km":1392.632,"corr":null},{"a":"BGL-01","b":"JMB-02","dist_km":288.853,"corr":null},{"a":"SRG-01","b":"MLG-01","dist_km":2213.955,"corr":0.993},{"a":"SRG-01","b":"MRS-01","dist_km":1380.112,"corr":0.994},{"a":"SRG-01","b":"PLU-01","dist_km":1238.561,"corr":0.981},{"a":"SRG-01","b":"STG-01","dist_km":2206.441,"corr":0.686},{"a":"SRG-01","b":"PKN-01","dist_km":2190.079,"corr":0.608},{"a":"SRG-01","b":"PLB-01","dist_km":2964.568,"corr":0.767},{"a":"SRG-01","b":"PSW-01","dist_km":2938.531,"corr":null},{"a":"SRG-01","b":"MER-01","dist_km":1318.657,"corr":null},{"a":"SRG-01","b":"MDN-01","dist_km":3640.24,"corr":null},{"a":"SRG-01","b":"SM2-01","dist_km":1573.003,"corr":0.669},{"a":"SRG-01","b":"BJB-01","dist_km":1849.378,"corr":null},{"a":"SRG-01","b":"JMB-02","dist_km":3075.124,"corr":null},{"a":"MLG-01","b":"MRS-01","dist_km":835.203,"corr":0.997},{"a":"MLG-01","b":"PLU-01","dist_km":1090.336,"corr":0.984},{"a":"MLG-01","b":"STG-01","dist_km":894.563,"corr":0.688},{"a":"MLG-01","b":"PKN-01","dist_km":586.822,"corr":0.611},{"a":"MLG-01","b":"PLB-01","dist_km":1033.533,"corr":0.769},{"a":"MLG-01","b":"PSW-01","dist_km":874.066,"corr":null},{"a":"MLG-01","b":"MER-01","dist_km":3060.68,"corr":null},{"a":"MLG-01","b":"MDN-01","dist_km":1989.57,"corr":null},{"a":"MLG-01","b":"SM2-01","dist_km":967.281,"corr":0.67},{"a":"MLG-01","b":"BJB-01","dist_km":551.906,"corr":null},{"a":"MLG-01","b":"JMB-02","dist_km":1211.798,"corr":null},{"a":"MRS-01","b":"PLU-01","dist_km":378.338,"corr":0.984},{"a":"MRS-01","b":"STG-01","dist_km":1060.538,"corr":0.693},{"a":"MRS-01","b":"PKN-01","dist_km":912.093,"corr":0.617},{"a":"MRS-01","b":"PLB-01","dist_km":1665.178,"corr":0.77},{"a":"MRS-01","b":"PSW-01","dist_km":1594.107,"corr":null},{"a":"MRS-01","b":"MER-01","dist_km":2333.472,"corr":null},{"a":"MRS-01","b":"MDN-01","dist_km":2491.821,"corr":null},{"a":"MRS-01","b":"SM2-01","dist_km":569.057,"corr":0.674},{"a":"MRS-01","b":"BJB-01","dist_km":549.439,"corr":null},{"a":"MRS-01","b":"JMB-02","dist_km":1806.534,"corr":null},{"a":"PLU-01","b":"STG-01","dist_km":986.564,"corr":0.679},{"a":"PLU-01","b":"PKN-01","dist_km":952.477,"corr":0.608},{"a":"PLU-01","b":"PLB-01","dist_km":1726.178,"corr":0.756},{"a":"PLU-01","b":"PSW-01","dist_km":1710.627,"corr":null},{"a":"PLU-01","b":"MER-01","dist_km":2365.305,"corr":null},{"a":"PLU-01","b":"MDN-01","dist_km":2441.496,"corr":null},{"a":"PLU-01","b":"SM2-01","dist_km":360.664,"corr":0.661},{"a":"PLU-01","b":"BJB-01","dist_km":625.549,"corr":null},{"a":"PLU-01","b":"JMB-02","dist_km":1838.073,"corr":null},{"a":"STG-01","b":"PKN-01","dist_km":308.804,"corr":0.975},{"a":"STG-01","b":"PLB-01","dist_km":824.077,"corr":0.931},{"a":"STG-01","b":"PSW-01","dist_km":910.08,"corr":null},{"a":"STG-01","b":"MER-01","dist_km":3344.101,"corr":null},{"a":"STG-01","b":"MDN-01","dist_km":1456.81,"corr":null},{"a":"STG-01","b":"SM2-01","dist_km":634.442,"corr":0.731},{"a":"STG-01","b":"BJB-01","dist_km":544.09,"corr":null},{"a":"STG-01","b":"JMB-02","dist_km":890.963,"corr":null},{"a":"PKN-01","b":"PLB-01","dist_km":775.199,"corr":0.868},{"a":"PKN-01","b":"PSW-01","dist_km":771.179,"corr":null},{"a":"PKN-01","b":"MER-01","dist_km":3242.878,"corr":null},{"a":"PKN-01","b":"MDN-01","dist_km":1587.97,"corr":null},{"a":"PKN-01","b":"SM2-01","dist_km":657.291,"corr":0.63},{"a":"PKN-01","b":"BJB-01","dist_km":363.343,"corr":null},{"a":"PKN-01","b":"JMB-02","dist_km":900.126,"corr":null},{"a":"PLB-01","b":"PSW-01","dist_km":253.569,"corr":null},{"a":"PLB-01","b":"MER-01","dist_km":3996.812,"corr":null},{"a":"PLB-01","b":"MDN-01","dist_km":974.625,"corr":null},{"a":"PLB-01","b":"SM2-01","dist_km":1411.065,"corr":0.83},{"a":"PLB-01","b":"BJB-01","dist_km":1129.088,"corr":null},{"a":"PLB-01","b":"JMB-02","dist_km":186.467,"corr":null},{"a":"PSW-01","b":"MER-01","dist_km":3905.717,"corr":null},{"a":"PSW-01","b":"MDN-01","dist_km":1201.192,"corr":null},{"a":"PSW-01","b":"SM2-01","dist_km":1428.421,"corr":null},{"a":"PSW-01","b":"BJB-01","dist_km":1089.465,"corr":null},{"a":"PSW-01","b":"JMB-02","dist_km":428.27,"corr":null},{"a":"MER-01","b":"MDN-01","dist_km":4800.511,"corr":null},{"a":"MER-01","b":"SM2-01","dist_km":2725.859,"corr":null},{"a":"MER-01","b":"BJB-01","dist_km":2879.601,"corr":null},{"a":"MER-01","b":"JMB-02","dist_km":4139.948,"corr":null},{"a":"MDN-01","b":"SM2-01","dist_km":2084.176,"corr":null},{"a":"MDN-01","b":"BJB-01","dist_km":1944.423,"corr":null},{"a":"MDN-01","b":"JMB-02","dist_km":788.463,"corr":null},{"a":"SM2-01","b":"BJB-01","dist_km":419.589,"corr":null},{"a":"SM2-01","b":"JMB-02","dist_km":1507.453,"corr":null},{"a":"BJB-01","b":"JMB-02","dist_km":1261.897,"corr":null}],"binned":[{"bin":"(0, 25]","median":0.9292,"q25":0.4644,"q75":0.9315,"n":3},{"bin":"(25, 50]","median":0.4908,"q25":0.269,"q75":0.7126,"n":2},{"bin":"(50, 100]","median":-0.0038,"q25":-0.0061,"q75":0.0343,"n":5},{"bin":"(100, 200]","median":0.9422,"q25":0.8894,"q75":0.9611,"n":4},{"bin":"(200, 400]","median":0.8582,"q25":0.7184,"q75":0.9816,"n":14},{"bin":"(400, 800]","median":0.6342,"q25":0.3789,"q75":0.7875,"n":54},{"bin":"(800, 1600]","median":0.6913,"q25":0.3846,"q75":0.814,"n":102},{"bin":"(1600, 6000]","median":0.6694,"q25":0.2342,"q75":0.7954,"n":47}],"fit":{"a":0.6933,"L_km":5000.0,"r2":-0.0446,"radius_fit_km":1634.0161,"used_fallback":true,"radius_used_km":50},"radius_used_km":50,"redundant_pairs":[{"a":"JKT-02","b":"JKT-03","dist_km":25.999,"corr":0.934},{"a":"JKT-01","b":"JKT-02","dist_km":16.74,"corr":0.934},{"a":"JKT-01","b":"JKT-03","dist_km":10.719,"corr":0.929}],"params":{"corr_threshold":0.5,"cluster_corr":0.8,"redundant_corr":0.85,"redundant_dist_km":100,"use_anomaly":false}}
+{
+  "unit_scope": "Korelasi dan fit hanya untuk kelompok µg/m³.",
+  "params": {
+    "min_hours_per_day": 18,
+    "min_overlap_days": 180,
+    "redundant_corr": 0.8,
+    "corr_threshold": 0.5,
+    "dist_bins_km": [
+      0,
+      50,
+      100,
+      200,
+      400,
+      800,
+      1600,
+      3200
+    ]
+  },
+  "fit": {
+    "a": 0.4879642124515291,
+    "L_km": 28815.50244422305,
+    "n_pairs": 207
+  },
+  "radius_status": "tidak_teridentifikasi",
+  "radius_used_km": null,
+  "binned": [
+    {
+      "bin": "(0, 50]",
+      "median": 0.9292071422951743,
+      "q25": 0.04723688628607235,
+      "q75": 0.9337540268313662,
+      "n": 5
+    },
+    {
+      "bin": "(50, 100]",
+      "median": -0.003778550620955939,
+      "q25": -0.006122647606573935,
+      "q75": 0.03431267933259663,
+      "n": 5
+    },
+    {
+      "bin": "(100, 200]",
+      "median": 0.9423182238091802,
+      "q25": 0.8894125807648092,
+      "q75": 0.9613144461121074,
+      "n": 4
+    },
+    {
+      "bin": "(200, 400]",
+      "median": 0.8585888242292801,
+      "q25": 0.718366773532274,
+      "q75": 0.9816022349861637,
+      "n": 14
+    },
+    {
+      "bin": "(400, 800]",
+      "median": 0.6342006065032364,
+      "q25": 0.379314505268699,
+      "q75": 0.7877679451005896,
+      "n": 54
+    },
+    {
+      "bin": "(800, 1600]",
+      "median": 0.6876592613948653,
+      "q25": 0.3849125087435876,
+      "q75": 0.8139675634644998,
+      "n": 102
+    },
+    {
+      "bin": "(1600, 3200]",
+      "median": 0.6693337397290425,
+      "q25": 0.19141658390455152,
+      "q75": 0.7954503626111109,
+      "n": 43
+    }
+  ],
+  "pairs": [
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-BGR-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-BGR-01",
+      "corr": -0.022697639372324697,
+      "dist_km": 601.65,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-BGR-02",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-BGR-02",
+      "corr": 0.0537591218490301,
+      "dist_km": 583.56,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-BTM-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-BTM-01",
+      "corr": 0.8216726277777658,
+      "dist_km": 590.24,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-IDP-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-IDP-01",
+      "corr": 0.2780693039047984,
+      "dist_km": 1280.18,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-JKT-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-JKT-01",
+      "corr": 0.8205721722790907,
+      "dist_km": 562.23,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-JKT-02",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-JKT-02",
+      "corr": 0.8275936354906678,
+      "dist_km": 572.7,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-JKT-03",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-JKT-03",
+      "corr": 0.8125248632670765,
+      "dist_km": 551.81,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-JMB-01",
+      "corr": 0.7728969091744379,
+      "dist_km": 288.99,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.6646339692549942,
+      "dist_km": 455.49,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.38481370115702135,
+      "dist_km": 1300.89,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.38520893150328656,
+      "dist_km": 1190.82,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.995255369002007,
+      "dist_km": 1222.8,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.9957703567550849,
+      "dist_km": 1917.33,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.6139892271239242,
+      "dist_km": 1047.48,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.7876057990572434,
+      "dist_km": 490.74,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.7734848373634462,
+      "dist_km": 284.32,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.9828508382100096,
+      "dist_km": 1999.94,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.6707379403858148,
+      "dist_km": 1691.52,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.9923885988758259,
+      "dist_km": 3236.93,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.6911066042578392,
+      "dist_km": 1108.19,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGL-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-BGL-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.9622628966374296,
+      "dist_km": 987.91,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-BGR-02",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-BGR-02",
+      "corr": -0.000369238271333424,
+      "dist_km": 18.15,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-BTM-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-BTM-01",
+      "corr": -0.010683997556178514,
+      "dist_km": 924.19,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-IDP-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-IDP-01",
+      "corr": -0.018872086654865936,
+      "dist_km": 1852.13,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-JKT-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-JKT-01",
+      "corr": -0.006122647606573935,
+      "dist_km": 59.47,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-JKT-02",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-JKT-02",
+      "corr": -0.003778550620955939,
+      "dist_km": 65.21,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-JKT-03",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-JKT-03",
+      "corr": -0.01628583761827333,
+      "dist_km": 64.86,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-JMB-01",
+      "corr": -0.00891918844007293,
+      "dist_km": 671.99,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-KTB-01",
+      "corr": -0.009316781515946646,
+      "dist_km": 1021.5,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-KTG-01",
+      "corr": -0.016364188238698264,
+      "dist_km": 919.31,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": -0.01635791621823333,
+      "dist_km": 811.28,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": -0.020095743419918977,
+      "dist_km": 637.98,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": -0.019596333177953007,
+      "dist_km": 1409.51,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": -0.008797475572859067,
+      "dist_km": 687.26,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": -0.00855165028310222,
+      "dist_km": 1001.89,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": -0.0312730046513097,
+      "dist_km": 486.1,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": -0.01345607763717386,
+      "dist_km": 1571.57,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.01559234612152848,
+      "dist_km": 1327.12,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": -0.015087822702719236,
+      "dist_km": 2777.37,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-STG-01",
+      "corr": -0.007851901187758987,
+      "dist_km": 904.87,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-BGR-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": -0.02376852714434785,
+      "dist_km": 393.52,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-BTM-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-BTM-01",
+      "corr": 0.031951046940498495,
+      "dist_km": 909.25,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-IDP-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-IDP-01",
+      "corr": 0.04301056779912578,
+      "dist_km": 1834.28,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-JKT-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-JKT-01",
+      "corr": 0.04723688628607235,
+      "dist_km": 47.5,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-JKT-02",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-JKT-02",
+      "corr": 0.03710032009703186,
+      "dist_km": 57.17,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-JKT-03",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-JKT-03",
+      "corr": 0.03431267933259663,
+      "dist_km": 50.67,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-JMB-01",
+      "corr": 0.028129424673920014,
+      "dist_km": 655.07,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.021641271642861948,
+      "dist_km": 1003.55,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.02573522488130755,
+      "dist_km": 926.15,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.025667736766911285,
+      "dist_km": 817.56,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.047993734488554415,
+      "dist_km": 654.68,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.0531695718948896,
+      "dist_km": 1422.87,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.018774817883674286,
+      "dist_km": 691.91,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.02952312350646681,
+      "dist_km": 984.5,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-PLB-01",
+      "corr": -0.01343163452129562,
+      "dist_km": 469.49,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.05488644627349891,
+      "dist_km": 1581.74,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.016450499044089052,
+      "dist_km": 1334.37,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.04920969646734948,
+      "dist_km": 2789.48,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.022885418742276124,
+      "dist_km": 904.45,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BGR-02",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-BGR-02",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.05686369904807308,
+      "dist_km": 410.76,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-IDP-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-IDP-01",
+      "corr": 0.09712006333858532,
+      "dist_km": 1071.63,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-JKT-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-JKT-01",
+      "corr": 0.7912294188868424,
+      "dist_km": 865.27,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-JKT-02",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-JKT-02",
+      "corr": 0.7947875235657036,
+      "dist_km": 864.09,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-JKT-03",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-JKT-03",
+      "corr": 0.7861819390523188,
+      "dist_km": 859.34,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-JMB-01",
+      "corr": 0.9960515820142201,
+      "dist_km": 310.96,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.9392219620504523,
+      "dist_km": 443.48,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.6375461785668334,
+      "dist_km": 1149.38,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.6377210916312418,
+      "dist_km": 1062.56,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.8198481281986054,
+      "dist_km": 1374.62,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.8233604688932185,
+      "dist_km": 1845.57,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.9124450903032101,
+      "dist_km": 941.05,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.9972420755804174,
+      "dist_km": 304.58,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.9499396030988706,
+      "dist_km": 456.38,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.8069053718110286,
+      "dist_km": 1811.71,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.8001331503514327,
+      "dist_km": 1459.8,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.817321349283094,
+      "dist_km": 3029.46,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.9736383207008728,
+      "dist_km": 825.76,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-BTM-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-BTM-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.7541411609075549,
+      "dist_km": 1202.72,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-JKT-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-JKT-01",
+      "corr": 0.17408308238024991,
+      "dist_km": 1801.59,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-JKT-02",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-JKT-02",
+      "corr": 0.19587971922511527,
+      "dist_km": 1807.29,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-JKT-03",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-JKT-03",
+      "corr": 0.18695344858398774,
+      "dist_km": 1792.5,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-JMB-01",
+      "corr": 0.06800632268143383,
+      "dist_km": 1197.54,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.027829465147938607,
+      "dist_km": 832.03,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-KTG-01",
+      "corr": -0.04838490606422267,
+      "dist_km": 2215.93,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": -0.04810557851443452,
+      "dist_km": 2132.86,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.27750801609973486,
+      "dist_km": 2407.46,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.27938790316635326,
+      "dist_km": 2914.8,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.00786010012436006,
+      "dist_km": 2012.68,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.0772374066032252,
+      "dist_km": 862.46,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": -0.014793488729893112,
+      "dist_km": 1382.28,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.2723732642039384,
+      "dist_km": 2854.06,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.10440212106205375,
+      "dist_km": 2494.92,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.27704853143116215,
+      "dist_km": 4039.07,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.027906856916665567,
+      "dist_km": 1873.18,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-IDP-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-IDP-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.4992013414897734,
+      "dist_km": 2203.93,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-JKT-02",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-JKT-02",
+      "corr": 0.9337540268313662,
+      "dist_km": 16.74,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-JKT-03",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-JKT-03",
+      "corr": 0.9292071422951743,
+      "dist_km": 10.72,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-JMB-01",
+      "corr": 0.7645829159271829,
+      "dist_km": 616.77,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.6743246263155399,
+      "dist_km": 972.37,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.43517955191428725,
+      "dist_km": 900.51,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.4358399212345674,
+      "dist_km": 790.75,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.8208828522911773,
+      "dist_km": 665.1,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.8226024380917631,
+      "dist_km": 1416.23,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.6362157520818196,
+      "dist_km": 661.71,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.7733299586004194,
+      "dist_km": 948.41,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.787598412582646,
+      "dist_km": 430.12,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.8084007281004105,
+      "dist_km": 1564.37,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.8890962445630816,
+      "dist_km": 1309.32,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.8182770618020901,
+      "dist_km": 2777.86,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.7073055430333111,
+      "dist_km": 864.84,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-JKT-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.778971786478913,
+      "dist_km": 425.97,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-JKT-03",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-JKT-03",
+      "corr": 0.9344208105060516,
+      "dist_km": 26.0,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-JMB-01",
+      "corr": 0.7678887741530462,
+      "dist_km": 619.93,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.6777573268685534,
+      "dist_km": 978.93,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.43945474717852007,
+      "dist_km": 883.81,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.43985902548909855,
+      "dist_km": 774.09,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.8278532768389901,
+      "dist_km": 652.77,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.8294654230070245,
+      "dist_km": 1400.54,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.6397395151759692,
+      "dist_km": 645.26,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.7764939428503447,
+      "dist_km": 952.62,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.7878219937817049,
+      "dist_km": 432.87,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.8158231752525296,
+      "dist_km": 1547.75,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.8936612702981822,
+      "dist_km": 1292.61,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.825959245984829,
+      "dist_km": 2761.6,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.7101318629680401,
+      "dist_km": 850.13,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-02",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-JKT-02",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.7897115723610951,
+      "dist_km": 415.21,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-JMB-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-JMB-01",
+      "corr": 0.7605627164084808,
+      "dist_km": 608.76,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.6702691185685661,
+      "dist_km": 963.0,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.4435034005529325,
+      "dist_km": 908.43,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.4439816678601682,
+      "dist_km": 798.49,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.8136806798581663,
+      "dist_km": 675.8,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.8160748457292553,
+      "dist_km": 1426.42,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.6321854609246532,
+      "dist_km": 668.79,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.7691539079796859,
+      "dist_km": 939.92,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.7789912522418867,
+      "dist_km": 422.36,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.7988794002785532,
+      "dist_km": 1573.5,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.8934044717818771,
+      "dist_km": 1317.3,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.8108672877847173,
+      "dist_km": 2787.6,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.7034707584582679,
+      "dist_km": 869.13,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JKT-03",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-JKT-03",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.7743373420443154,
+      "dist_km": 436.51,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-KTB-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-KTB-01",
+      "corr": 0.9436928110951139,
+      "dist_km": 393.34,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.6466614651992714,
+      "dist_km": 1143.26,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.6468491086981569,
+      "dist_km": 1040.02,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.7708327321699956,
+      "dist_km": 1212.66,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.7745101366429143,
+      "dist_km": 1807.3,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.9198691851462544,
+      "dist_km": 900.86,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.9993766329173366,
+      "dist_km": 335.78,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.948436684850907,
+      "dist_km": 187.32,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.757603994372592,
+      "dist_km": 1838.74,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.7956727716440722,
+      "dist_km": 1508.07,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.7684535489068312,
+      "dist_km": 3075.77,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.9826235034491967,
+      "dist_km": 891.5,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-JMB-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-JMB-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.7024810266520007,
+      "dist_km": 1006.64,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-KTG-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-KTG-01",
+      "corr": 0.738692563011531,
+      "dist_km": 1519.66,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.7383732678852575,
+      "dist_km": 1420.49,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.6617938506803683,
+      "dist_km": 1598.94,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.6675411409779156,
+      "dist_km": 2195.12,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.996921660203761,
+      "dist_km": 1284.61,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.9361997627674533,
+      "dist_km": 144.61,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.8931257917898656,
+      "dist_km": 565.43,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.657698712902177,
+      "dist_km": 2206.9,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.6693337397290425,
+      "dist_km": 1865.35,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.6588255513819827,
+      "dist_km": 3438.23,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.9854051933637835,
+      "dist_km": 1234.21,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTB-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-KTB-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.5907730142757137,
+      "dist_km": 1383.32,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-KTG-02",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-KTG-02",
+      "corr": 0.9999477298957085,
+      "dist_km": 112.03,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.3815890400239581,
+      "dist_km": 648.9,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.38475508425891364,
+      "dist_km": 700.09,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.7494573916245677,
+      "dist_km": 254.19,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.6367877815187294,
+      "dist_km": 1415.18,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.6866998134012434,
+      "dist_km": 1026.33,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.3785563270169459,
+      "dist_km": 699.85,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.500676443281499,
+      "dist_km": 408.91,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.37892311482502816,
+      "dist_km": 1938.27,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.708003234168176,
+      "dist_km": 370.75,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-KTG-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.31995023614821094,
+      "dist_km": 729.05,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-MLG-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-MLG-01",
+      "corr": 0.38195120646012604,
+      "dist_km": 597.89,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.38508812238844625,
+      "dist_km": 783.23,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.7490510347568772,
+      "dist_km": 143.34,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.6370095410168389,
+      "dist_km": 1320.06,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.6869769299786288,
+      "dist_km": 918.01,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.37882404245718976,
+      "dist_km": 809.14,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.5014751305762818,
+      "dist_km": 519.76,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.37929770405433116,
+      "dist_km": 2046.88,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.7079213800694747,
+      "dist_km": 332.72,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-KTG-02",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-KTG-02",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.32045913995900965,
+      "dist_km": 645.49,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-MRS-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-MRS-01",
+      "corr": 0.996638707620155,
+      "dist_km": 835.2,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.6109324810027936,
+      "dist_km": 586.82,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.785560468610712,
+      "dist_km": 1545.49,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.7716424423092996,
+      "dist_km": 1033.53,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.9836291684967836,
+      "dist_km": 1090.33,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.6700108062239535,
+      "dist_km": 967.28,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.9933181400777993,
+      "dist_km": 2213.95,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.6883415928111019,
+      "dist_km": 894.56,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MLG-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-MLG-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.9631239302330611,
+      "dist_km": 247.92,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-PKN-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-PKN-01",
+      "corr": 0.6170157212275295,
+      "dist_km": 912.09,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.789191637883071,
+      "dist_km": 2100.43,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.7720560525757368,
+      "dist_km": 1665.18,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.983938011240798,
+      "dist_km": 378.34,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.6741291665793808,
+      "dist_km": 569.06,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.9936267834365236,
+      "dist_km": 1380.11,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.6932967289532115,
+      "dist_km": 1060.54,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-MRS-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-MRS-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.9633840950648134,
+      "dist_km": 1062.75,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKN-01",
+      "location_b": "LOC-PKU-01",
+      "station_a": "AQMS-PKN-01",
+      "station_b": "AQMS-PKU-01",
+      "corr": 0.9104482219519384,
+      "dist_km": 1188.37,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKN-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-PKN-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.8689941121767669,
+      "dist_km": 775.2,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKN-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-PKN-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.608582939384275,
+      "dist_km": 952.48,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKN-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-PKN-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.6295633572955237,
+      "dist_km": 657.29,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKN-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-PKN-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.6081004972255116,
+      "dist_km": 2190.08,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKN-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-PKN-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.9745949062222609,
+      "dist_km": 308.8,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKN-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-PKN-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.539507869690175,
+      "dist_km": 577.82,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKU-01",
+      "location_b": "LOC-PLB-01",
+      "station_a": "AQMS-PKU-01",
+      "station_b": "AQMS-PLB-01",
+      "corr": 0.9487862073805791,
+      "dist_km": 522.17,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKU-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-PKU-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.7718373816453664,
+      "dist_km": 2094.21,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKU-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-PKU-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.8017090873391508,
+      "dist_km": 1747.78,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKU-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-PKU-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.7832038792165086,
+      "dist_km": 3320.39,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKU-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-PKU-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.9774272656415471,
+      "dist_km": 1113.98,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PKU-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-PKU-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.7184910245804674,
+      "dist_km": 1342.35,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLB-01",
+      "location_b": "LOC-PLU-01",
+      "station_a": "AQMS-PLB-01",
+      "station_b": "AQMS-PLU-01",
+      "corr": 0.7581542178475483,
+      "dist_km": 1726.18,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLB-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-PLB-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.8301584406616699,
+      "dist_km": 1411.06,
+      "overlap_days": 507
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLB-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-PLB-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.7698047440238855,
+      "dist_km": 2964.56,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLB-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-PLB-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.930110382289623,
+      "dist_km": 824.08,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLB-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-PLB-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.6947315763194536,
+      "dist_km": 821.83,
+      "overlap_days": 696
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLU-01",
+      "location_b": "LOC-SM2-01",
+      "station_a": "AQMS-PLU-01",
+      "station_b": "AQMS-SM2-01",
+      "corr": 0.6612775530351399,
+      "dist_km": 360.66,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLU-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-PLU-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.9814246236853092,
+      "dist_km": 1238.56,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLU-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-PLU-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.6795815211179526,
+      "dist_km": 986.56,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-PLU-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-PLU-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.9496560409701345,
+      "dist_km": 1281.63,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-SM2-01",
+      "location_b": "LOC-SRG-01",
+      "station_a": "AQMS-SM2-01",
+      "station_b": "AQMS-SRG-01",
+      "corr": 0.6692145446578724,
+      "dist_km": 1573.0,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-SM2-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-SM2-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.7306516376313932,
+      "dist_km": 634.44,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-SM2-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-SM2-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.613992516504167,
+      "dist_km": 1103.65,
+      "overlap_days": 771
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-SRG-01",
+      "location_b": "LOC-STG-01",
+      "station_a": "AQMS-SRG-01",
+      "station_b": "AQMS-STG-01",
+      "corr": 0.6858513108064597,
+      "dist_km": 2206.44,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-SRG-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-SRG-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.9597358401111759,
+      "dist_km": 2442.53,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ug/m3",
+      "location_a": "LOC-STG-01",
+      "location_b": "LOC-YKY-01",
+      "station_a": "AQMS-STG-01",
+      "station_b": "AQMS-YKY-01",
+      "corr": 0.6161861759161692,
+      "dist_km": 875.88,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ppm",
+      "location_a": "LOC-BJB-01",
+      "location_b": "LOC-MDN-01",
+      "station_a": "AQMS-BJB-01",
+      "station_b": "AQMS-MDN-01",
+      "corr": -0.23275288775343003,
+      "dist_km": 1944.42,
+      "overlap_days": 370
+    },
+    {
+      "unit": "ppm",
+      "location_a": "LOC-BJB-01",
+      "location_b": "LOC-PSW-01",
+      "station_a": "AQMS-BJB-01",
+      "station_b": "AQMS-PSW-01",
+      "corr": 0.029381215692864417,
+      "dist_km": 1089.46,
+      "overlap_days": 1018
+    },
+    {
+      "unit": "ppm",
+      "location_a": "LOC-MDN-01",
+      "location_b": "LOC-PSW-01",
+      "station_a": "AQMS-MDN-01",
+      "station_b": "AQMS-PSW-01",
+      "corr": 0.5979839835405752,
+      "dist_km": 1201.19,
+      "overlap_days": 370
+    }
+  ],
+  "redundant_locations": [
+    "LOC-BGL-01",
+    "LOC-BTM-01",
+    "LOC-JKT-01",
+    "LOC-JKT-02",
+    "LOC-JKT-03",
+    "LOC-JMB-01",
+    "LOC-KTB-01",
+    "LOC-KTG-01",
+    "LOC-KTG-02",
+    "LOC-MLG-01",
+    "LOC-MRS-01",
+    "LOC-PKN-01",
+    "LOC-PKU-01",
+    "LOC-PLB-01",
+    "LOC-PLU-01",
+    "LOC-SM2-01",
+    "LOC-SRG-01",
+    "LOC-STG-01",
+    "LOC-YKY-01"
+  ]
+}

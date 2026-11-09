@@ -1,465 +1,584 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useMemo, useState } from 'react'
-import {
-  AlertCircle,
-  BarChart3,
-  BookOpen,
-  Filter,
-  Layers,
-  MapPin,
-  Radio,
-  RotateCcw,
-  Ruler,
-  ShieldAlert,
-  Sparkles,
-  Zap,
-} from 'lucide-react'
+import { useMemo } from 'react'
+import { Activity, AlertTriangle, ArrowRight, Gauge, Radio, Ruler } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { MetricCard } from '@/components/ui/MetricCard'
 import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
+import { formatNumber } from '@/lib/formatters'
 import {
-  useNetworkSummary,
-  useStationsGeo,
-  useStationDistribution,
-  useOperationalReadiness,
-  useNearestDistance,
-  useNetworkPriority,
-  useMethodologyMetadata,
-} from '@/hooks/useNetworkAdequacy'
-import {
-  NearestDistanceChart,
-  OperationalReadinessChart,
-  PriorityEvaluationTable,
-  StationDistributionChart,
-} from './NetworkCharts'
-import { MethodologyModal } from './MethodologyModal'
+  useMonitoringNetworkSummary,
+  useStationMaster,
+  useStationCompleteness,
+  useStationNearestNeighbor,
+  useStationPollutantSummary,
+  useStationPriority,
+  useCoverageKabupatenGeoJSON,
+} from '@/hooks/useKecukupanData'
 
-// Dynamic import untuk Leaflet map (client-side only)
 const NetworkMap = dynamic(
   () => import('./NetworkMap').then((m) => m.NetworkMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[520px] w-full rounded-2xl bg-slate-100 flex flex-col items-center justify-center border border-slate-200">
-        <LoadingSpinner label="Memuat peta Leaflet & tile OpenStreetMap..." />
-      </div>
-    ),
-  }
+  { ssr: false, loading: () => <LoadingSpinner label="Memuat peta..." /> }
 )
 
-export default function KecukupanStasiunPage() {
-  // Fetch data kontrak JSON
-  const summaryHook = useNetworkSummary()
-  const geoHook = useStationsGeo()
-  const distHook = useStationDistribution()
-  const opsHook = useOperationalReadiness()
-  const distNearHook = useNearestDistance()
-  const priHook = useNetworkPriority()
-  const metaHook = useMethodologyMetadata()
+/* ─── Konstanta ────────────────────────────────────────────────────────── */
+const COMP_THRESHOLD = 85
+const FAR_KM        = 400
+const OPS_REVIEW    = 35
 
-  // State Filter & Interaksi
-  const [regionFilter, setRegionFilter] = useState('ALL')
-  const [siteTypeFilter, setSiteTypeFilter] = useState('ALL')
-  const [statusFilter, setStatusFilter] = useState('ALL')
-  const [unitFilter, setUnitFilter] = useState('ALL')
-  const [selectedStation, setSelectedStation] = useState(null)
-  const [colorMode, setColorMode] = useState('status') // 'status' | 'unit'
-  const [showAllLinks, setShowAllLinks] = useState(false)
-  const [isMethodologyOpen, setIsMethodologyOpen] = useState(false)
+const NAVY = 'var(--color-text-primary)'
+const SOFT = 'var(--color-text-secondary)'
 
-  // Status loading dan error
-  const allHooks = [
-    summaryHook,
-    geoHook,
-    distHook,
-    opsHook,
-    distNearHook,
-    priHook,
-    metaHook,
-  ]
-  const isLoading = allHooks.some((h) => h.loading)
-  const hasError = allHooks.find((h) => h.error)?.error
+const STATUS_COLOR = {
+  Active:       '#16A34A',
+  Intermittent: '#F59E0B',
+  Defective:    '#EF4444',
+}
 
-  // Filter Stasiun untuk Peta dan Analisis
-  const rawStations = useMemo(() => {
-    return geoHook.data?.features || []
-  }, [geoHook.data])
+const DIST_BINS = [
+  { label: '< 100 km',    min: 0,   max: 100      },
+  { label: '100–400 km',  min: 100, max: 400       },
+  { label: '400–800 km',  min: 400, max: 800       },
+  { label: '> 800 km',    min: 800, max: Infinity  },
+]
 
-  const filteredStations = useMemo(() => {
-    return rawStations.filter((feat) => {
-      const p = feat.properties
-      if (regionFilter !== 'ALL' && p.region_group !== regionFilter && !p.provinsi?.includes(regionFilter)) {
-        return false
-      }
-      if (siteTypeFilter !== 'ALL' && p.site_type !== siteTypeFilter) {
-        return false
-      }
-      if (statusFilter !== 'ALL' && p.status_operasional !== statusFilter) {
-        return false
-      }
-      if (unitFilter !== 'ALL' && p.pm25_unit !== unitFilter) {
-        return false
-      }
-      return true
-    })
-  }, [rawStations, regionFilter, siteTypeFilter, statusFilter, unitFilter])
+const AVAIL = [
+  { key: 'avail_distance',    label: 'jarak'          },
+  { key: 'avail_region',      label: 'wilayah'        },
+  { key: 'avail_site',        label: 'tipe lokasi'    },
+  { key: 'avail_status',      label: 'status sensor'  },
+  { key: 'avail_completeness',label: 'kelengkapan'    },
+  { key: 'avail_invalid',     label: 'data QC'        },
+]
 
-  // Filter Options
-  const regionOptions = useMemo(() => {
-    const set = new Set()
-    rawStations.forEach((f) => {
-      if (f.properties.region_group) set.add(f.properties.region_group)
-    })
-    return Array.from(set).sort()
-  }, [rawStations])
+const METHOD_ITEMS = [
+  {
+    title: 'Sumber dan cakupan data',
+    text: 'Metadata stasiun (sites.csv), sensor (sensors.csv), periode observasi (metadata_dates.csv), dan 27 file observasi AQMS. Periode evaluasi 1 Januari 2024 sampai 14 Oktober 2026. Dataset bersifat sintetis.',
+  },
+  {
+    title: 'Definisi indikator',
+    text: 'Kelengkapan: jumlah jam yang memiliki nilai valid dibagi jumlah jam yang seharusnya diamati, dibatasi maksimal 100%. Jarak: jarak geodesik ke stasiun terdekat. Status sensor: Active, Intermittent, atau Defective sesuai sensors.csv.',
+  },
+  {
+    title: 'Metode jarak Haversine',
+    text: 'Jarak dihitung dari koordinat lintang dan bujur setiap stasiun dengan rumus Haversine dan jari-jari bumi 6.371 km. Jarak ini menunjukkan keterpisahan antarlokasi, bukan luas wilayah yang tercakup.',
+  },
+  {
+    title: 'Penanganan data hilang',
+    text: 'Data hilang tidak dianggap nol. Jam tanpa observasi valid tidak dihitung sebagai valid. Stasiun tanpa data PM2.5 valid ditandai dan tidak dibandingkan.',
+  },
+  {
+    title: 'Pemisahan satuan PM2.5',
+    text: 'Stasiun dengan satuan µg/m³ dan ppm dianalisis terpisah. Nilai ppm tidak dikonversi ke µg/m³ karena tidak ada dasar konversi yang tervalidasi untuk PM2.5.',
+  },
+  {
+    title: 'Peran SHP',
+    text: 'Batas administrasi dipakai sebagai polygon visual untuk menghitung jumlah stasiun dan sensor per kabupaten/kota. Detail peatland berasal dari tipe lokasi dan karakteristik wilayah pada metadata stasiun.',
+  },
+  {
+    title: 'Batasan interpretasi',
+    text: 'Hasil ini menunjukkan kondisi jaringan yang tercatat dalam dataset, bukan kepastian cakupan wilayah. Peringkat prioritas adalah bahan untuk tinjauan lanjutan, bukan keputusan lokasi pembangunan. Rekomendasi kebijakan dibahas di halaman Insight.',
+  },
+]
 
-  const siteTypeOptions = useMemo(() => {
-    const set = new Set()
-    rawStations.forEach((f) => {
-      if (f.properties.site_type) set.add(f.properties.site_type)
-    })
-    return Array.from(set).sort()
-  }, [rawStations])
+/* ─── Helpers ──────────────────────────────────────────────────────────── */
+const pct = (v) => (v == null ? '—' : `${formatNumber(v, 1)}%`)
 
-  // Handler Reset Filter
-  const handleResetFilter = () => {
-    setRegionFilter('ALL')
-    setSiteTypeFilter('ALL')
-    setStatusFilter('ALL')
-    setUnitFilter('ALL')
-    setSelectedStation(null)
+function groupCount(items, key, valueKey) {
+  const map = new Map()
+  for (const it of items) {
+    const k = it[key] || 'Tidak diketahui'
+    map.set(k, (map.get(k) ?? 0) + (valueKey ? Number(it[valueKey] ?? 0) : 1))
+  }
+  return [...map.entries()]
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value)
+}
+
+function sensorStatusOf(s) {
+  if (s.sensor_status?.includes('Defective'))    return 'Defective'
+  if (s.sensor_status?.includes('Intermittent')) return 'Intermittent'
+  return 'Active'
+}
+
+function buildTrigger(status, comp, dist) {
+  const reasons = []
+  if (status !== 'Active')                   reasons.push(`Sensor ${status}`)
+  if (comp != null && comp < COMP_THRESHOLD) reasons.push(`Kelengkapan ${formatNumber(comp, 1)}%`)
+  if (dist != null && dist > FAR_KM)        reasons.push(`Tetangga terdekat ${formatNumber(dist, 0)} km`)
+  return reasons.length ? reasons.slice(0, 2).join('; ') : null
+}
+
+function buildModel({ summary, stationsRaw, comp, nearest, pollutant, priority, geo }) {
+  const nnBy  = new Map(nearest.map((n) => [n.location_id, n]))
+  const opsBy = new Map((priority?.operational_ranking ?? []).map((o) => [o.location_id, o]))
+
+  const compAcc = new Map()
+  for (const r of comp) {
+    if (r.completeness_pct == null) continue
+    const a = compAcc.get(r.location_id) ?? { sum: 0, n: 0 }
+    a.sum += r.completeness_pct
+    a.n   += 1
+    compAcc.set(r.location_id, a)
   }
 
-  // Ringkasan KPI
-  const kpi = summaryHook.data?.kpi
+  const stations = stationsRaw.map((s) => {
+    const status       = sensorStatusOf(s)
+    const a            = compAcc.get(s.location_id)
+    const completeness = a ? a.sum / a.n : null
+    const nn           = nnBy.get(s.location_id)
+    const dist         = nn?.nearest_distance_km ?? null
+    const ops          = opsBy.get(s.location_id)
+    return {
+      ...s,
+      status_operasional:    status,
+      completeness_pct:      completeness,
+      nearest_distance_km:   dist,
+      nearest_station_code:  nn?.nearest_station_code ?? null,
+      primary_trigger:       buildTrigger(status, completeness, dist),
+      recommendation_status: ops ? (ops.operational_score >= OPS_REVIEW ? 'Perlu ditinjau' : 'Pantau') : null,
+    }
+  })
 
-  if (hasError) {
-    return (
-      <ModuleLayout
-        eyebrow="NETWORK MONITORING ASSESSMENT"
-        title="Apakah jaringan pemantauan sudah tersebar secara merata?"
-        description="Terjadi kendala saat memuat data evaluasi jaringan pemantauan."
-      >
-        <div className="py-12">
-          <ErrorState message={hasError} onRetry={() => window.location.reload()} />
-        </div>
-      </ModuleLayout>
-    )
+  const withDist   = stations.filter((s) => s.nearest_distance_km != null)
+  const withComp   = stations.filter((s) => s.completeness_pct    != null)
+  const byDistDesc = [...withDist].sort((a, b) => b.nearest_distance_km - a.nearest_distance_km)
+
+  const dualIssue = stations.filter(
+    (s) => s.nearest_distance_km > FAR_KM && s.completeness_pct != null && s.completeness_pct < COMP_THRESHOLD
+  )
+
+  return {
+    summary,
+    geo,
+    stations,
+    statusCounts: ['Active', 'Intermittent', 'Defective'].map((k) => ({
+      label: k,
+      value: stations.filter((s) => s.status_operasional === k).length,
+    })),
+    regionStations: groupCount(stations, 'region_group'),
+    regionSensors:  groupCount(stations, 'region_group', 'sensor_count'),
+    siteTypes:      groupCount(stations, 'site_type'),
+    compSorted:     [...withComp].sort((a, b) => a.completeness_pct - b.completeness_pct),
+    avgComp: withComp.length
+      ? withComp.reduce((s, x) => s + x.completeness_pct, 0) / withComp.length
+      : null,
+    belowThreshold: withComp.filter((s) => s.completeness_pct < COMP_THRESHOLD).length,
+    distBins: DIST_BINS.map((b) => ({
+      label: b.label,
+      value: withDist.filter((s) => s.nearest_distance_km >= b.min && s.nearest_distance_km < b.max).length,
+    })),
+    farList:    byDistDesc.slice(0, 5),
+    nearList:   [...byDistDesc].reverse().slice(0, 5),
+    farCount:   withDist.filter((s) => s.nearest_distance_km > FAR_KM).length,
+    dualIssue,
+    pmUg:  pollutant.filter((r) => r.pollutant === 'pm25_ug_m3').sort((a, b) => b.mean - a.mean),
+    pmPpm: pollutant.filter((r) => r.pollutant === 'pm25_ppm'),
   }
+}
 
+/* ─── Komponen UI lokal ────────────────────────────────────────────────── */
+
+function HBar({ rows, format = (v) => formatNumber(v, 0), unit = '', colorOf }) {
+  const max = Math.max(...rows.map((r) => r.value ?? 0), 0) || 1
   return (
-    <ModuleLayout
-      eyebrow="NETWORK MONITORING ASSESSMENT"
-      title="Apakah jaringan pemantauan sudah tersebar secara merata?"
-      description="Meninjau persebaran lokasi AQMS, keterpisahan jarak antarlokasi, dan kesiapan pengamatan untuk menemukan bagian jaringan yang perlu dievaluasi lebih lanjut."
-      actions={
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setIsMethodologyOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-xs transition-colors"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-sky-600" />
-            <span>Lihat Metodologi</span>
-          </button>
-        </div>
-      }
-    >
-      {/* ── AREA 1: Quick Filter Bar ── */}
-      <div className="mb-6 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5 text-xs">
-          <span className="font-semibold text-slate-700 flex items-center gap-1">
-            <Filter className="w-3.5 h-3.5 text-slate-500" />
-            Filter Jaringan:
+    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 6 }}>
+      {rows.map((r) => (
+        <li
+          key={r.label}
+          style={{ display: 'grid', gridTemplateColumns: '9rem 1fr 5rem', alignItems: 'center', gap: 8, fontSize: '0.75rem' }}
+        >
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={r.label}>
+            {r.label}
           </span>
+          <span style={{ height: 8, background: 'rgba(24,49,79,0.08)', borderRadius: 4 }}>
+            <span style={{ display: 'block', height: '100%', width: `${((r.value ?? 0) / max) * 100}%`, background: colorOf ? colorOf(r) : '#384E77', borderRadius: 4 }} />
+          </span>
+          <strong style={{ textAlign: 'right' }}>{format(r.value)}{unit}</strong>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
-          {/* Filter Region */}
-          <select
-            value={regionFilter}
-            onChange={(e) => setRegionFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-hidden focus:border-sky-500"
-          >
-            <option value="ALL">Semua Region ({regionOptions.length})</option>
-            {regionOptions.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-
-          {/* Filter Site Type */}
-          <select
-            value={siteTypeFilter}
-            onChange={(e) => setSiteTypeFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-hidden focus:border-sky-500"
-          >
-            <option value="ALL">Semua Tipe Lokasi</option>
-            {siteTypeOptions.map((st) => (
-              <option key={st} value={st}>
-                {st}
-              </option>
-            ))}
-          </select>
-
-          {/* Filter Status Sensor */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-hidden focus:border-sky-500"
-          >
-            <option value="ALL">Semua Status Sensor</option>
-            <option value="Active">Active (23)</option>
-            <option value="Intermittent">Intermittent (3)</option>
-            <option value="Defective">Defective (1 - JMB-02)</option>
-          </select>
-
-          {/* Filter Unit PM2.5 */}
-          <select
-            value={unitFilter}
-            onChange={(e) => setUnitFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-hidden focus:border-sky-500"
-          >
-            <option value="ALL">Semua Satuan PM2.5</option>
-            <option value="ug/m3">&mu;g/m&sup3; (24 stasiun)</option>
-            <option value="ppm">ppm (3 stasiun logger)</option>
-          </select>
-        </div>
-
-        {/* Reset Filter Button */}
-        {(regionFilter !== 'ALL' || siteTypeFilter !== 'ALL' || statusFilter !== 'ALL' || unitFilter !== 'ALL' || selectedStation) && (
-          <button
-            type="button"
-            onClick={handleResetFilter}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Reset Filter ({filteredStations.length}/27)</span>
-          </button>
-        )}
+function Insight({ icon: Icon = AlertTriangle, color = '#C2410C', bg = 'rgba(251,146,60,0.08)', border = 'rgba(251,146,60,0.3)', title, children }) {
+  return (
+    <div style={{ display: 'flex', gap: 12, padding: '0.85rem 1rem', borderRadius: '0.85rem', border: `1px solid ${border}`, background: bg }}>
+      <Icon size={18} style={{ color, flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
+      <div style={{ fontSize: '0.8rem', color: NAVY, lineHeight: 1.55 }}>
+        {title && <strong style={{ display: 'block', marginBottom: 2, color }}>{title}</strong>}
+        {children}
       </div>
+    </div>
+  )
+}
 
-      {/* ── AREA 2: KPI Grid (Empat Kartu Sesuai PRD Area 2) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <MetricCard
-          label="Lokasi Pemantauan"
-          value={kpi?.total_monitoring_locations ?? 27}
-          unit="stasiun"
-          icon={<MapPin className="w-5 h-5 text-sky-600" />}
-          subtext="Titik unik pada dataset tabular panitia"
-        />
-
-        <MetricCard
-          label="Sensor Aktif"
-          value={kpi?.sensor_status?.active ?? 23}
-          unit="sensor"
-          icon={<Radio className="w-5 h-5 animate-pulse" aria-label="Sensor aktif" />}
-          badge={{
-            label: `${kpi?.sensor_status?.intermittent ?? 3} Intermittent · ${kpi?.sensor_status?.defective ?? 1} Defective`,
-            color: '#B45309',
-            bg: '#FEF3C7',
-          }}
-          subtext="Status operasional aktual instrumen"
-          variant="hero"
-        />
-
-        <MetricCard
-          label="Median Jarak Antarlokasi"
-          value={kpi?.nearest_distance_km?.median ?? 186.5}
-          unit="km"
-          icon={<Ruler className="w-5 h-5 text-amber-600" />}
-          subtext="Jarak Haversine ke stasiun terdekat"
-        />
-
-        <MetricCard
-          label="Kelengkapan Pengamatan"
-          value={kpi?.observation_completeness?.overall_completeness_pct ?? 95.9}
-          unit="%"
-          icon={<Zap className="w-5 h-5 text-indigo-600" />}
-          subtext="Rasio valid terhadap 24.432 jam expected"
-        />
-      </div>
-
-      {/* ── AREA 3: Peta Interaktif Leaflet OSM ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-8">
-        <div className="lg:col-span-7 lg:row-start-1">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-slate-800">
-                Di mana stasiun AQMS berada?
-              </h2>
-              <p className="text-xs text-slate-500">
-                Setiap titik menunjukkan lokasi pemantauan pada dataset. Klik titik untuk melihat detail.
-              </p>
-            </div>
-            <span className="text-xs text-slate-500">
-              Menampilkan <strong>{filteredStations.length}</strong> stasiun
-            </span>
-          </div>
-        </div>
-
-        <div className="lg:col-span-7 lg:row-start-2">
-          <NetworkMap
-            stations={filteredStations}
-            selectedStation={selectedStation}
-            onSelectStation={(st) => setSelectedStation(st)}
-            colorMode={colorMode}
-            onChangeColorMode={setColorMode}
-            showAllLinks={showAllLinks}
-            onToggleLinks={setShowAllLinks}
-            height="500px"
-          />
-        </div>
-
-        <div className="lg:col-span-5 lg:row-start-2 flex flex-col">
-          {/* Detail Stasiun yang Diklik tetap berada di samping peta */}
-          {selectedStation ? (
-            <div className="h-[500px] bg-sky-50/70 rounded-2xl border border-sky-200 p-4.5 shadow-xs relative animate-in fade-in">
-              <button
-                type="button"
-                onClick={() => setSelectedStation(null)}
-                className="absolute top-3.5 right-3.5 text-xs text-slate-500 hover:text-slate-800 bg-white px-2 py-0.5 rounded-md border border-slate-200"
-              >
-                Tutup Detail
-              </button>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-bold text-sky-700 tracking-wide uppercase">
-                  {selectedStation.station_code}
-                </span>
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    selectedStation.recommendation_status === 'Perlu ditinjau'
-                      ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                  }`}
-                >
-                  {selectedStation.recommendation_status || 'Pantau'}
-                </span>
+function RankTable({ title, subtitle, rows, scoreKey, rankKey, farIds, lowCompIds }) {
+  const top = [...rows].sort((a, b) => a[rankKey] - b[rankKey]).slice(0, 10)
+  return (
+    <Card>
+      <CardHeader title={title} subtitle={subtitle} />
+      <ol style={{ margin: 0, paddingLeft: '1.2rem', display: 'grid', gap: 10, fontSize: '0.8rem' }}>
+        {top.map((r) => {
+          const missing   = AVAIL.filter((a) => !r[a.key]).map((a) => a.label)
+          const isFar     = farIds?.has(r.location_id ?? r.station_code)
+          const isLowComp = lowCompIds?.has(r.location_id ?? r.station_code)
+          const tags = []
+          if (isFar)     tags.push({ label: 'Terisolasi', color: '#C2410C', bg: 'rgba(251,146,60,0.1)' })
+          if (isLowComp) tags.push({ label: 'Data tipis',  color: '#B45309', bg: 'rgba(245,158,11,0.1)' })
+          return (
+            <li key={r.location_id ?? r.station_code}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <strong>{r.station_code}</strong>
+                <span style={{ color: SOFT }}>· skor {formatNumber(r[scoreKey], 1)}</span>
+                {tags.map((t) => (
+                  <span key={t.label} style={{ fontSize: '0.68rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: 999, background: t.bg, color: t.color }}>
+                    {t.label}
+                  </span>
+                ))}
               </div>
-              <h3 className="text-base font-bold text-slate-800">
-                {selectedStation.kota_kabupaten}
-              </h3>
-              <p className="text-xs text-slate-600 mb-3">
-                {selectedStation.provinsi} &middot; {selectedStation.site_type}
-              </p>
-
-              <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                <div className="p-2.5 rounded-xl bg-white border border-sky-100">
-                  <span className="text-slate-500 block text-[11px]">Status Sensor:</span>
-                  <strong className="text-slate-800">{selectedStation.status_operasional}</strong>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-sky-100">
-                  <span className="text-slate-500 block text-[11px]">Satuan Pengukuran:</span>
-                  <strong className="text-slate-800">{selectedStation.pm25_unit || 'ug/m3'}</strong>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-sky-100">
-                  <span className="text-slate-500 block text-[11px]">Jarak ke Tetangga:</span>
-                  <strong className="text-slate-800">{selectedStation.nearest_distance_km} km</strong>
-                  <span className="text-[10px] text-slate-400 block">ke {selectedStation.nearest_station_code}</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white border border-sky-100">
-                  <span className="text-slate-500 block text-[11px]">Kelengkapan Data:</span>
-                  <strong className={selectedStation.completeness_pct < 75 ? 'text-rose-600' : 'text-emerald-700'}>
-                    {selectedStation.completeness_pct != null ? `${selectedStation.completeness_pct}%` : '—'}
-                  </strong>
-                </div>
-              </div>
-
-              {selectedStation.primary_trigger && (
-                <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200 text-xs text-slate-700">
-                  <span className="font-semibold text-slate-900">Pemicu Evaluasi:</span>{' '}
-                  {selectedStation.primary_trigger}
+              {missing.length > 0 && (
+                <div style={{ fontSize: '0.7rem', color: '#B45309', marginTop: 2 }}>
+                  Data tidak tersedia: {missing.join(', ')}
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="h-[500px] bg-slate-50/80 rounded-2xl border border-dashed border-slate-300 p-4 text-center text-xs text-slate-500 flex flex-col items-center justify-center">
-              <MapPin className="w-5 h-5 text-slate-400 mx-auto mb-1" />
-              <span>Pilih salah satu stasiun di peta atau tabel untuk melihat rincian evaluasi mendalam.</span>
-            </div>
-          )}
-        </div>
+            </li>
+          )
+        })}
+      </ol>
+    </Card>
+  )
+}
+
+function Bridge({ children }) {
+  return (
+    <p style={{ fontSize: '0.82rem', color: SOFT, lineHeight: 1.65, padding: '0.1rem 0 0.25rem' }}>
+      {children}
+    </p>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE
+═══════════════════════════════════════════════════════════════════════════ */
+export default function KecukupanStasiunPage() {
+  const summaryHook   = useMonitoringNetworkSummary()
+  const stationsHook  = useStationMaster()
+  const compHook      = useStationCompleteness()
+  const nearestHook   = useStationNearestNeighbor()
+  const pollutantHook = useStationPollutantSummary()
+  const priorityHook  = useStationPriority()
+  const geoHook       = useCoverageKabupatenGeoJSON()
+
+  const core  = [summaryHook, stationsHook, compHook, nearestHook, pollutantHook, geoHook]
+  const error = core.find((h) => h.error)?.error
+  const ready = core.every((h) => h.data) && !core.some((h) => h.loading)
+
+  const m = useMemo(
+    () =>
+      ready
+        ? buildModel({
+            summary:     summaryHook.data,
+            stationsRaw: stationsHook.data,
+            comp:        compHook.data,
+            nearest:     nearestHook.data,
+            pollutant:   pollutantHook.data,
+            priority:    priorityHook.data ?? null,
+            geo:         geoHook.data,
+          })
+        : null,
+    [ready, summaryHook.data, stationsHook.data, compHook.data, nearestHook.data, pollutantHook.data, priorityHook.data, geoHook.data]
+  )
+
+  const layout = {
+    eyebrow:     'Kecukupan jaringan',
+    title:       'Kecukupan Stasiun',
+    description: 'Apakah 27 stasiun sudah tersebar merata, dan wilayah mana yang paling butuh tambahan titik pemantauan?',
+  }
+
+  if (error) return <ModuleLayout {...layout}><ErrorState message={error} /></ModuleLayout>
+  if (!m)    return <ModuleLayout {...layout}><LoadingSpinner label="Menyiapkan data jaringan..." /></ModuleLayout>
+
+  /* ── Nilai turunan untuk narasi ── */
+  const s             = m.summary
+  const needAttention = (s.sensor_status.Intermittent ?? 0) + (s.sensor_status.Defective ?? 0)
+  const topRegion     = m.regionStations[0]
+  const bottomRegion  = m.regionStations.at(-1)
+  const topSite       = m.siteTypes[0]
+  const topPm         = m.pmUg[0]
+  const ppmCount      = s.pm25_unit_groups.ppm_stations
+
+  const farIds     = new Set(m.farList.map((s) => s.location_id))
+  const lowCompIds = new Set(m.compSorted.filter((s) => s.completeness_pct < COMP_THRESHOLD).map((s) => s.location_id))
+
+  const isUneven  = topRegion && bottomRegion && topRegion.value >= 3 * bottomRegion.value
+  const hasIsolated = m.farCount > 0
+  const hasWeakData = m.belowThreshold > 0
+
+  return (
+    <ModuleLayout {...layout}>
+
+      {/* ── Kesimpulan di awal ───────────────────────────────────────────── */}
+      <Card variant="dark">
+        <h2 className="headline">
+          Jaringan{' '}
+          {isUneven
+            ? <>terkonsentrasi di <strong>{topRegion.label}</strong> dan belum merata ke timur</>
+            : <>sudah tersebar di semua wilayah, tapi belum merata</>
+          }.{' '}
+          {hasIsolated && <><strong>{m.farCount} stasiun</strong> berdiri sendiri lebih dari {FAR_KM} km dari yang lain. </>}
+          {hasWeakData && <><strong>{m.belowThreshold} stasiun</strong> datanya di bawah {COMP_THRESHOLD}% kelengkapan.</>}
+        </h2>
+        <p className="headline-sub">
+          Dari {s.total_stations} stasiun, {s.sensor_status.Active} sensor aktif.
+          {needAttention > 0 && ` ${needAttention} sensor perlu diperiksa.`}{' '}
+          Halaman ini menelusuri sebab dan wilayah mana yang paling butuh tambahan titik pemantauan.
+        </p>
+      </Card>
+
+      {/* ── KPI ─────────────────────────────────────────────────────────── */}
+      <div className="kpi-grid">
+        <MetricCard
+          variant="hero"
+          label="Stasiun AQMS"
+          value={s.total_stations}
+          unit="lokasi"
+          subtext={`${s.total_sensors} sensor terdaftar`}
+          icon={<Radio size={18} />}
+        />
+        <MetricCard
+          label="Sensor aktif"
+          value={s.sensor_status.Active}
+          unit={`dari ${s.total_sensors}`}
+          subtext={needAttention > 0 ? `${needAttention} perlu diperiksa` : 'Semua beroperasi'}
+          accentColor={needAttention > 0 ? 'var(--ispu-tidak-sehat)' : 'var(--ispu-baik)'}
+          icon={<Activity size={18} />}
+        />
+        <MetricCard
+          label="Median jarak antarlokasi"
+          value={formatNumber(s.median_nearest_distance_km, 0)}
+          unit="km"
+          subtext={`${m.farCount} stasiun > ${FAR_KM} km dari yang lain`}
+          accentColor={m.farCount > 0 ? 'var(--ispu-sedang)' : 'var(--ispu-baik)'}
+          icon={<Ruler size={18} />}
+        />
+        <MetricCard
+          label="Rata-rata kelengkapan data"
+          value={pct(m.avgComp)}
+          subtext={m.belowThreshold > 0 ? `${m.belowThreshold} stasiun di bawah ${COMP_THRESHOLD}%` : `Semua di atas ${COMP_THRESHOLD}%`}
+          accentColor={m.belowThreshold > 0 ? 'var(--ispu-sedang)' : 'var(--ispu-baik)'}
+          icon={<Gauge size={18} />}
+        />
       </div>
 
-      {/* ── AREA 4: Insight di bawah peta ── */}
-      <div className="mb-8">
-        {/* 4 Card Temuan Kunci Sesuai Template PRD Section 15 */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs">
-          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-3">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            Insight Evaluasi Jaringan Aktual
-          </h3>
+      {/* ═══ 1. SEBARAN ═══════════════════════════════════════════════════ */}
+      <Section
+        title={`Stasiun terkonsentrasi di ${topRegion?.label ?? '—'} — wilayah timur jauh tertinggal`}
+        description="Langkah pertama: lihat di mana saja stasiun berada dan apakah sebarannya merata."
+      >
+        <Card>
+          <CardHeader
+            title="Peta persebaran stasiun"
+            subtitle="Warna titik menunjukkan status sensor. Klik titik untuk melihat detail kelengkapan data dan jarak ke stasiun terdekat."
+          />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, fontSize: '0.75rem', marginBottom: 10 }}>
+            {m.statusCounts.map((c) => (
+              <span key={c.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: STATUS_COLOR[c.label] }} />
+                {c.label}: <strong>{c.value}</strong>
+              </span>
+            ))}
+          </div>
+          <NetworkMap geo={m.geo} stations={m.stations} height="520px" />
+          <p style={{ marginTop: 10, fontSize: '0.72rem', color: SOFT }}>
+            Warna polygon menunjukkan jumlah stasiun atau sensor per kabupaten/kota. Klik polygon yang memiliki stasiun untuk melihat detail pemantauan dan peatland.
+          </p>
+        </Card>
 
-          <div className="space-y-2.5 text-xs">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-700 font-bold flex items-center justify-center shrink-0 text-[11px]">
-                  1
-                </span>
-                <p className="text-slate-700 leading-snug">
-                  Distribusi stasiun paling terkonsentrasi pada <strong>Jakarta &amp; Kalimantan Tengah</strong>, dengan <strong>3 lokasi</strong> masing-masing dalam dataset.
-                </p>
-              </div>
+        <div className="layout-main">
+          <Card>
+            <CardHeader
+              title="Tipe lokasi stasiun"
+              subtitle={`Terbanyak: ${topSite?.label ?? '—'}. Beragamnya tipe lokasi menentukan representativitas data.`}
+            />
+            <HBar rows={m.siteTypes} />
+          </Card>
+        </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-700 font-bold flex items-center justify-center shrink-0 text-[11px]">
-                  2
-                </span>
-                <p className="text-slate-700 leading-snug">
-                  Jarak ke stasiun terdekat paling besar tercatat pada <strong>AQMS-MER-01 (Merauke)</strong>, yaitu <strong>1.318,7 km</strong> ke stasiun Sorong.
-                </p>
-              </div>
+        <Bridge>
+          Sebaran tampak tidak merata. Langkah berikutnya: periksa seberapa jauh stasiun satu sama lain —
+          celah besar dalam jarak berarti ada wilayah yang tidak terpantau sama sekali.
+        </Bridge>
+      </Section>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-rose-100 text-rose-700 font-bold flex items-center justify-center shrink-0 text-[11px]">
-                  3
-                </span>
-                <p className="text-slate-700 leading-snug">
-                  Kelengkapan pengamatan terendah ditemukan pada <strong>AQMS-JMB-02 (Muaro Jambi)</strong>, sebesar <strong>0.50%</strong> akibat kerusakan sensor fatal (<code className="text-rose-700">Defective</code>).
-                </p>
-              </div>
+      {/* ═══ 2. KONDISI JARINGAN ══════════════════════════════════════════ */}
+      <Section
+        title={`${m.farCount} stasiun terisolasi dan ${m.belowThreshold} datanya tipis — dua masalah yang memperkuat satu sama lain`}
+        description="Stasiun yang jauh dari yang lain seharusnya jadi andalan datanya. Kalau datanya juga bolong, wilayah itu praktis tidak terpantau."
+      >
+        <div className="layout-3">
+          <Card>
+            <CardHeader
+              title="Distribusi jarak ke stasiun terdekat"
+              subtitle={`Dihitung dengan rumus Haversine. Di atas ${FAR_KM} km dianggap terisolasi.`}
+            />
+            <HBar
+              rows={m.distBins}
+              colorOf={(r) => (r.label.startsWith('>') || r.label.startsWith('400') ? '#EF4444' : '#384E77')}
+            />
+          </Card>
+          <Card>
+            <CardHeader
+              title="Paling terpisah dari jaringan"
+              subtitle="Lima stasiun dengan jarak terjauh ke stasiun lain — daerahnya kemungkinan paling kurang terpantau."
+            />
+            <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.8rem', display: 'grid', gap: 6 }}>
+              {m.farList.map((r) => (
+                <li key={r.location_id}>
+                  <strong>{r.station_code}</strong>
+                  <span style={{ color: SOFT }}> → {r.nearest_station_code}: {formatNumber(r.nearest_distance_km, 1)} km</span>
+                </li>
+              ))}
+            </ol>
+          </Card>
+          <Card>
+            <CardHeader
+              title="Paling berdekatan"
+              subtitle="Lima stasiun yang paling rapat — potensi tumpang tindih cakupan pemantauan."
+            />
+            <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.8rem', display: 'grid', gap: 6 }}>
+              {m.nearList.map((r) => (
+                <li key={r.location_id}>
+                  <strong>{r.station_code}</strong>
+                  <span style={{ color: SOFT }}> → {r.nearest_station_code}: {formatNumber(r.nearest_distance_km, 1)} km</span>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </div>
+      </Section>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center shrink-0 text-[11px]">
-                  4
-                </span>
-                <p className="text-slate-700 leading-snug">
-                  Sebanyak <strong>24 stasiun</strong> memiliki data PM2.5 satuan &mu;g/m&sup3;, dan <strong>3 stasiun</strong> satuan ppm (Masgar Pesawaran, Medan, Banjarbaru) yang ditampilkan terpisah tanpa konversi.
-                </p>
-              </div>
+      {/* ═══ 3. KUALITAS DATA PM2.5 ═══════════════════════════════════════ */}
+      <Section
+        title={`PM2.5 tertinggi di ${topPm?.station_code ?? '—'} (${formatNumber(topPm?.mean, 1)} µg/m³) — tapi ${ppmCount} stasiun tidak bisa dibandingkan langsung`}
+        description="Dua kelompok satuan dianalisis terpisah. Ini bukan kekurangan data, tapi batas teknis yang perlu dicatat."
+      >
+        <div className="layout-main">
+          <Card>
+            <CardHeader
+              title={`PM2.5 dalam µg/m³ — ${m.pmUg.length} stasiun`}
+              subtitle="Rata-rata seluruh periode per stasiun. Bisa dibandingkan satu sama lain."
+            />
+            <HBar
+              rows={m.pmUg.map((r) => ({ label: r.station_code, value: r.mean }))}
+              format={(v) => formatNumber(v, 1)}
+              unit=" µg/m³"
+              colorOf={(r) => r.value > 55 ? '#EF4444' : r.value > 25 ? '#F59E0B' : '#16A34A'}
+            />
+          </Card>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gap)' }}>
+            <Card>
+              <CardHeader
+                title={`PM2.5 dalam ppm — ${m.pmPpm.length} stasiun`}
+                subtitle="Hanya ditampilkan. Tidak dikonversi dan tidak dibandingkan dengan µg/m³."
+              />
+              {m.pmPpm.length === 0 ? (
+                <p style={{ fontSize: '0.8rem', color: SOFT }}>Tidak ada stasiun dengan satuan ppm.</p>
+              ) : (
+                <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.8rem', display: 'grid', gap: 4 }}>
+                  {m.pmPpm.map((r) => (
+                    <li key={r.station_code}>
+                      <strong>{r.station_code}</strong>: {formatNumber(r.mean, 4)} ppm
+                      <span style={{ color: SOFT }}> ({formatNumber(r.valid_records, 0)} observasi valid)</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+            <Insight
+              icon={ArrowRight}
+              color="#384E77"
+              bg="rgba(56,78,119,0.07)"
+              border="rgba(56,78,119,0.2)"
+              title="Analisis PM2.5 lebih lanjut ada di halaman lain"
+            >
+              Tren, pola harian, dan episode kabut asap dibahas di halaman <strong>Kualitas Udara</strong>.
+              Hubungan PM2.5 dengan kasus kesehatan ada di <strong>PM2.5 &amp; Kesehatan</strong>.
+            </Insight>
           </div>
         </div>
-      </div>
 
-      {/* ── AREA 5: Distribusi & Kesiapan Pengamatan (Grid 2 Kolom) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
-        <StationDistributionChart distributionData={distHook.data} />
-        <OperationalReadinessChart readinessData={opsHook.data} />
-      </div>
+        <Bridge>
+          Dengan mengetahui sebaran lokasi, kondisi jaringan, dan kualitas data PM2.5, kita sudah bisa
+          menentukan wilayah mana yang paling perlu tambahan titik pemantauan.
+        </Bridge>
+      </Section>
 
-      {/* ── AREA 6: Jarak Antarlokasi ── */}
-      <div className="mb-8">
-        <NearestDistanceChart
-          distanceData={distNearHook.data}
-          onSelectStation={(st) => setSelectedStation(st)}
-        />
-      </div>
+      {/* ═══ 4. PRIORITAS EVALUASI ════════════════════════════════════════ */}
+      <Section
+        title="Wilayah mana yang paling perlu ditambah titik pemantauan?"
+        description="Dua peringkat dihitung terpisah: satu berdasarkan posisi stasiun dalam jaringan, satu berdasarkan kondisi operasional. Tag 'Terisolasi' dan 'Data tipis' menandai stasiun yang muncul di kedua daftar masalah."
+      >
+        {priorityHook.error || !priorityHook.data ? (
+          <Insight title="Peringkat prioritas belum tersedia">
+            Jalankan sel prioritas di notebook preprocessing agar file <code>station_priority.json</code> terbentuk.
+          </Insight>
+        ) : (
+          <>
+            <div className="layout-main">
+              <RankTable
+                title="Prioritas berdasarkan distribusi jaringan"
+                subtitle="Stasiun yang terisolasi dan berada di wilayah dengan sedikit pemantauan."
+                rows={priorityHook.data.distribution_ranking}
+                scoreKey="distribution_score"
+                rankKey="distribution_rank"
+                farIds={farIds}
+                lowCompIds={lowCompIds}
+              />
+              <RankTable
+                title="Prioritas berdasarkan kesiapan operasional"
+                subtitle="Stasiun dengan sensor bermasalah atau data yang sering bolong."
+                rows={priorityHook.data.operational_ranking}
+                scoreKey="operational_score"
+                rankKey="operational_rank"
+                farIds={farIds}
+                lowCompIds={lowCompIds}
+              />
+            </div>
+            <Insight
+              icon={AlertTriangle}
+              color="#384E77"
+              bg="rgba(56,78,119,0.07)"
+              border="rgba(56,78,119,0.2)"
+              title="Cara membaca peringkat ini"
+            >
+              Peringkat ini adalah bahan untuk tinjauan lanjutan, bukan keputusan lokasi pembangunan.
+              Stasiun yang muncul di kedua daftar — ditandai &quot;Terisolasi&quot; dan &quot;Data tipis&quot; — adalah
+              yang paling prioritas untuk dievaluasi. Rekomendasi kebijakan konkret dibahas di halaman{' '}
+              <strong>Insight &amp; Rekomendasi</strong>.
+            </Insight>
+          </>
+        )}
+      </Section>
 
-      {/* ── AREA 7: Prioritas Evaluasi dalam baris tersendiri ── */}
-      <div className="mb-8">
-        <PriorityEvaluationTable
-          priorityData={priHook.data}
-          onSelectStation={(st) => setSelectedStation(st)}
-        />
-      </div>
+      {/* ═══ 5. METODOLOGI ════════════════════════════════════════════════ */}
+      <Section
+        title="Metodologi dan catatan interpretasi"
+        description="Sumber data, definisi indikator, dan batasan yang perlu dibaca sebelum menarik kesimpulan."
+      >
+        <div className="layout-3">
+          {METHOD_ITEMS.map((item) => (
+            <Card key={item.title}>
+              <h4 style={{ margin: 0, color: NAVY, fontSize: '0.9rem' }}>{item.title}</h4>
+              <p style={{ marginTop: 6, fontSize: '0.8rem', lineHeight: 1.6 }}>{item.text}</p>
+            </Card>
+          ))}
+        </div>
+      </Section>
 
-      {/* ── AREA 8: Modal Metodologi & Batasan Analisis ── */}
-      <MethodologyModal
-        isOpen={isMethodologyOpen}
-        onClose={() => setIsMethodologyOpen(false)}
-        metadata={metaHook.data}
-      />
     </ModuleLayout>
   )
 }

@@ -14,6 +14,57 @@ const STATUS_COLORS = {
   Defective: '#EF4444',     // Crimson red
 }
 
+const ADMIN_COLORS = {
+  station: ['#E0F2FE', '#0369A1'],
+  sensor: ['#FEF3C7', '#B45309'],
+}
+
+const normalizeRegion = (value) =>
+  String(value ?? '')
+    .toUpperCase()
+    .replace(/\b(KABUPATEN|KAB\.|KOTA ADMINISTRASI|KOTA ADM\.|KOTA)\b/g, '')
+    .replace(/[^A-Z0-9]/g, '')
+
+const isPeatland = (station) =>
+  /PEATLAND|GAMBUT/i.test(`${station.site_type ?? ''} ${station.karakteristik_wilayah ?? ''}`)
+
+function regionKey(station) {
+  return `${normalizeRegion(station.kota_kabupaten)}|${normalizeRegion(station.provinsi)}`
+}
+
+function colorScale(value, max, colors) {
+  if (!value) return '#F8FAFC'
+  const ratio = max ? Math.min(1, value / max) : 0
+  return ratio > 0.66 ? colors[1] : ratio > 0.33 ? '#7DD3FC' : colors[0]
+}
+
+function pointInRing(point, ring) {
+  let inside = false
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i]
+    const [xj, yj] = ring[j]
+    const intersects = yi > point[1] !== yj > point[1] &&
+      point[0] < ((xj - xi) * (point[1] - yi)) / (yj - yi) + xi
+    if (intersects) inside = !inside
+  }
+  return inside
+}
+
+function pointInGeometry(point, geometry) {
+  if (!geometry) return false
+  if (geometry.type === 'Polygon') {
+    return geometry.coordinates[0] && pointInRing(point, geometry.coordinates[0])
+  }
+  if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.some((polygon) => polygon[0] && pointInRing(point, polygon[0]))
+  }
+  return false
+}
+
+function isFiniteCoordinate(station) {
+  return Number.isFinite(station.longitude_dd) && Number.isFinite(station.latitude_dd)
+}
+
 const UNIT_COLORS = {
   'ug/m3': '#0284C7',       // Sky blue
   'ppm': '#EA580C',         // Vivid orange
@@ -21,6 +72,7 @@ const UNIT_COLORS = {
 
 export function NetworkMap({
   stations = [],
+  geo = null,
   selectedStation = null,
   onSelectStation,
   colorMode = 'status', // 'status' | 'unit'
@@ -32,8 +84,10 @@ export function NetworkMap({
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const markersLayerRef = useRef(null)
+  const polygonLayerRef = useRef(null)
   const linksLayerRef = useRef(null)
   const [mapReady, setMapReady] = useState(false)
+  const [polygonMetric, setPolygonMetric] = useState('stations')
 
   // Inisialisasi peta Leaflet sekali
   useEffect(() => {
@@ -80,8 +134,86 @@ export function NetworkMap({
         mapInstanceRef.current.remove()
         mapInstanceRef.current = null
       }
+      polygonLayerRef.current = null
     }
   }, [])
+
+  // Polygon administrasi menjadi visualisasi jumlah stasiun/sensor per wilayah.
+  useEffect(() => {
+    if (!mapReady || !mapInstanceRef.current || !geo) return
+
+    import('leaflet').then((L) => {
+      const map = mapInstanceRef.current
+      if (!map) return
+      polygonLayerRef.current?.remove()
+
+      const statsByFeature = new Map()
+      const featureStats = (feature) => {
+        const props = feature.properties ?? {}
+        const inside = stations.filter((station) =>
+          isFiniteCoordinate(station) &&
+          pointInGeometry([station.longitude_dd, station.latitude_dd], feature.geometry)
+        )
+        const matched = inside.length
+          ? inside
+          : stations.filter((station) => regionKey(station) === `${normalizeRegion(props.kabupaten)}|${normalizeRegion(props.provinsi)}`)
+        const stats = { stations: matched, sensorCount: matched.reduce((sum, station) => sum + Number(station.sensor_count ?? 0), 0) }
+        statsByFeature.set(feature, stats)
+        return stats
+      }
+      for (const feature of geo.features ?? []) featureStats(feature)
+
+      const maxStations = Math.max(...[...statsByFeature.values()].map((v) => v.stations.length), 1)
+      const maxSensors = Math.max(...[...statsByFeature.values()].map((v) => v.sensorCount), 1)
+      const layer = L.geoJSON(geo, {
+        style: (feature) => {
+          const props = feature.properties ?? {}
+          const stats = statsByFeature.get(feature) ?? featureStats(feature)
+          const stationCount = stats?.stations.length ?? 0
+          const sensorCount = stats?.sensorCount ?? 0
+          const color = polygonMetric === 'sensors'
+            ? colorScale(sensorCount, maxSensors, ADMIN_COLORS.sensor)
+            : colorScale(stationCount, maxStations, ADMIN_COLORS.station)
+          return {
+            color: stationCount ? '#18314F' : '#CBD5E1',
+            weight: stationCount ? 1.4 : 0.5,
+            fillColor: color,
+            fillOpacity: stationCount ? 0.72 : 0.18,
+          }
+        },
+        onEachFeature: (feature, polygon) => {
+          const props = feature.properties ?? {}
+          const stats = statsByFeature.get(feature) ?? featureStats(feature)
+          const regionStations = stats?.stations ?? []
+          if (regionStations.length === 0) return
+
+          const peatStations = regionStations.filter(isPeatland)
+          const sensorCount = stats.sensorCount
+          const stationList = regionStations
+            .map((station) => `<li><strong>${esc(station.station_code)}</strong> · ${esc(station.site_type || 'Tipe lokasi tidak tersedia')}</li>`)
+            .join('')
+          const peatlandDetail = peatStations.length
+            ? `<div style="margin-top:7px;padding-top:7px;border-top:1px solid #E2E8F0"><strong>Detail peatland:</strong> ${peatStations.length} stasiun<br/><span>${peatStations.map((station) => esc(`${station.station_code} — ${station.site_type}`)).join('<br/>')}</span></div>`
+            : '<div style="margin-top:7px;padding-top:7px;border-top:1px solid #E2E8F0;color:#64748B"><strong>Detail peatland:</strong> Tidak teridentifikasi pada metadata stasiun.</div>'
+          polygon.bindPopup(`
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;min-width:240px">
+              <strong style="font-size:14px;color:#18314F">${esc(props.kabupaten)}</strong>
+              <div style="font-size:11px;color:#64748B;margin:2px 0 8px">${esc(props.provinsi)}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px">
+                <div>Stasiun<br/><strong>${regionStations.length}</strong></div>
+                <div>Sensor<br/><strong>${sensorCount}</strong></div>
+              </div>
+              <div style="margin-top:7px;font-size:11px"><strong>Stasiun pemantauan:</strong><ul style="padding-left:16px;margin:3px 0">${stationList}</ul></div>
+              ${peatlandDetail}
+            </div>
+          `)
+        },
+      }).addTo(map)
+
+      polygonLayerRef.current = layer
+      layer.bringToBack()
+    })
+  }, [geo, stations, colorMode, polygonMetric, mapReady])
 
   // Render / Update Marker & Garis Jarak ketika stasiun, colorMode, atau selectedStation berubah
   useEffect(() => {
@@ -324,6 +456,27 @@ export function NetworkMap({
           </button>
         </div>
 
+        <div className="inline-flex rounded-lg bg-white/95 backdrop-blur-sm p-1 shadow-md border border-slate-200/80 text-xs font-medium">
+          <button
+            type="button"
+            onClick={() => setPolygonMetric('stations')}
+            className={`px-2.5 py-1 rounded-md transition-colors ${
+              polygonMetric === 'stations' ? 'bg-sky-700 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            Stasiun per wilayah
+          </button>
+          <button
+            type="button"
+            onClick={() => setPolygonMetric('sensors')}
+            className={`px-2.5 py-1 rounded-md transition-colors ${
+              polygonMetric === 'sensors' ? 'bg-amber-700 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            Sensor per wilayah
+          </button>
+        </div>
+
         {/* Toggle Garis Jarak Terdekat */}
         <button
           type="button"
@@ -351,35 +504,23 @@ export function NetworkMap({
       {/* Legenda Peta di Pojok Kiri Bawah */}
       <div className="absolute bottom-3 left-3 z-[500] bg-white/95 backdrop-blur-sm rounded-xl p-2.5 shadow-md border border-slate-200/80 text-xs">
         <div className="font-semibold text-slate-800 mb-1.5">
-          {colorMode === 'status' ? 'Status Sensor Operasional' : 'Kelompok Satuan PM2.5'}
+          {polygonMetric === 'stations' ? 'Stasiun per wilayah' : 'Sensor per wilayah'}
         </div>
-        {colorMode === 'status' ? (
-          <div className="flex flex-col gap-1 text-[11px] text-slate-600">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-emerald-500 border border-white shadow-xs" />
-              <span>Active (23 Stasiun)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-amber-500 border border-white shadow-xs" />
-              <span>Intermittent (3 Stasiun)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-rose-500 border border-white shadow-xs" />
-              <span>Defective (1 Stasiun - JMB-02)</span>
-            </div>
+        <div className="flex flex-col gap-1 text-[11px] text-slate-600">
+          <div className="flex items-center gap-2">
+            <span className={`w-3 h-3 rounded-sm ${polygonMetric === 'stations' ? 'bg-sky-200' : 'bg-amber-200'}`} />
+            <span>Rendah</span>
           </div>
-        ) : (
-          <div className="flex flex-col gap-1 text-[11px] text-slate-600">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-sky-600 border border-white shadow-xs" />
-              <span>&mu;g/m&sup3; (24 Stasiun Konsentrasi Massa)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-orange-600 border border-white shadow-xs" />
-              <span>ppm (3 Stasiun Logger Asli)</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className={`w-3 h-3 rounded-sm ${polygonMetric === 'stations' ? 'bg-sky-400' : 'bg-amber-400'}`} />
+            <span>Sedang</span>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <span className={`w-3 h-3 rounded-sm ${polygonMetric === 'stations' ? 'bg-sky-700' : 'bg-amber-700'}`} />
+            <span>Tinggi</span>
+          </div>
+          <div style={{ marginTop: 3, color: '#64748B' }}>Klik polygon untuk detail kab/kota dan peatland.</div>
+        </div>
       </div>
 
       {/* CSS internal untuk efek pulse marker terpilih & badge tooltip */}
@@ -425,4 +566,3 @@ export function NetworkMap({
     </div>
   )
 }
-

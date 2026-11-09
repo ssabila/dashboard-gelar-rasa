@@ -4,296 +4,215 @@
     "station_code": "AQMS-JKT-01",
     "nearest_location_id": "LOC-JKT-03",
     "nearest_station_code": "AQMS-JKT-03",
-    "nearest_distance_km": 10.719116955699402,
-    "nearest_2_location_id": "LOC-JKT-02",
-    "nearest_2_distance_km": 16.740322914447695,
-    "nearest_3_location_id": "LOC-BGR-02",
-    "nearest_3_distance_km": 47.50172744585325
+    "nearest_station_city": "Kota Administrasi Jakarta Barat",
+    "nearest_distance_km": 10.72
   },
   {
     "location_id": "LOC-JKT-02",
     "station_code": "AQMS-JKT-02",
     "nearest_location_id": "LOC-JKT-01",
     "nearest_station_code": "AQMS-JKT-01",
-    "nearest_distance_km": 16.740322914447695,
-    "nearest_2_location_id": "LOC-JKT-03",
-    "nearest_2_distance_km": 25.99925203311515,
-    "nearest_3_location_id": "LOC-BGR-02",
-    "nearest_3_distance_km": 57.171850283630505
+    "nearest_station_city": "Kota Administrasi Jakarta Pusat",
+    "nearest_distance_km": 16.74
   },
   {
     "location_id": "LOC-JKT-03",
     "station_code": "AQMS-JKT-03",
     "nearest_location_id": "LOC-JKT-01",
     "nearest_station_code": "AQMS-JKT-01",
-    "nearest_distance_km": 10.719116955699402,
-    "nearest_2_location_id": "LOC-JKT-02",
-    "nearest_2_distance_km": 25.99925203311515,
-    "nearest_3_location_id": "LOC-BGR-02",
-    "nearest_3_distance_km": 50.670489902171866
+    "nearest_station_city": "Kota Administrasi Jakarta Pusat",
+    "nearest_distance_km": 10.72
   },
   {
     "location_id": "LOC-KTG-01",
     "station_code": "AQMS-KTG-01",
     "nearest_location_id": "LOC-KTG-02",
     "nearest_station_code": "AQMS-KTG-02",
-    "nearest_distance_km": 112.02757575456677,
-    "nearest_2_location_id": "LOC-BJB-01",
-    "nearest_2_distance_km": 175.1910147783008,
-    "nearest_3_location_id": "LOC-PKN-01",
-    "nearest_3_distance_km": 254.18682066641247
+    "nearest_station_city": "Kabupaten Kotawaringin Timur",
+    "nearest_distance_km": 112.03
   },
   {
     "location_id": "LOC-KTG-02",
     "station_code": "AQMS-KTG-02",
     "nearest_location_id": "LOC-KTG-01",
     "nearest_station_code": "AQMS-KTG-01",
-    "nearest_distance_km": 112.02757575456677,
-    "nearest_2_location_id": "LOC-PKN-01",
-    "nearest_2_distance_km": 143.33945656283262,
-    "nearest_3_location_id": "LOC-BJB-01",
-    "nearest_3_distance_km": 235.46992515517863
+    "nearest_station_city": "Kota Palangka Raya",
+    "nearest_distance_km": 112.03
   },
   {
     "location_id": "LOC-BGR-01",
     "station_code": "AQMS-BGR-01",
     "nearest_location_id": "LOC-BGR-02",
     "nearest_station_code": "AQMS-BGR-02",
-    "nearest_distance_km": 18.154616707125744,
-    "nearest_2_location_id": "LOC-JKT-01",
-    "nearest_2_distance_km": 59.4662236765266,
-    "nearest_3_location_id": "LOC-JKT-03",
-    "nearest_3_distance_km": 64.8641051731749
+    "nearest_station_city": "Kota Bogor",
+    "nearest_distance_km": 18.15
   },
   {
     "location_id": "LOC-BGR-02",
     "station_code": "AQMS-BGR-02",
     "nearest_location_id": "LOC-BGR-01",
     "nearest_station_code": "AQMS-BGR-01",
-    "nearest_distance_km": 18.154616707125744,
-    "nearest_2_location_id": "LOC-JKT-01",
-    "nearest_2_distance_km": 47.50172744585325,
-    "nearest_3_location_id": "LOC-JKT-03",
-    "nearest_3_distance_km": 50.670489902171866
+    "nearest_station_city": "Kabupaten Bogor",
+    "nearest_distance_km": 18.15
   },
   {
     "location_id": "LOC-YKY-01",
     "station_code": "AQMS-YKY-01",
     "nearest_location_id": "LOC-MLG-01",
     "nearest_station_code": "AQMS-MLG-01",
-    "nearest_distance_km": 247.9246391286457,
-    "nearest_2_location_id": "LOC-BGR-01",
-    "nearest_2_distance_km": 393.5165684123043,
-    "nearest_3_location_id": "LOC-BGR-02",
-    "nearest_3_distance_km": 410.7571503242245
+    "nearest_station_city": "Kabupaten Malang",
+    "nearest_distance_km": 247.92
   },
   {
     "location_id": "LOC-IDP-01",
     "station_code": "AQMS-IDP-01",
     "nearest_location_id": "LOC-MDN-01",
     "nearest_station_code": "AQMS-MDN-01",
-    "nearest_distance_km": 425.02378420867535,
-    "nearest_2_location_id": "LOC-KTB-01",
-    "nearest_2_distance_km": 832.0275463367791,
-    "nearest_3_location_id": "LOC-PKU-01",
-    "nearest_3_distance_km": 862.4593749795583
+    "nearest_station_city": "Kota Medan",
+    "nearest_distance_km": 425.02
   },
   {
     "location_id": "LOC-KTB-01",
     "station_code": "AQMS-KTB-01",
     "nearest_location_id": "LOC-PKU-01",
     "nearest_station_code": "AQMS-PKU-01",
-    "nearest_distance_km": 144.61274665952268,
-    "nearest_2_location_id": "LOC-JMB-01",
-    "nearest_2_distance_km": 393.3351648069616,
-    "nearest_3_location_id": "LOC-JMB-02",
-    "nearest_3_distance_km": 394.16597530100006
+    "nearest_station_city": "Kota Pekanbaru",
+    "nearest_distance_km": 144.61
   },
   {
     "location_id": "LOC-PKU-01",
     "station_code": "AQMS-PKU-01",
     "nearest_location_id": "LOC-KTB-01",
     "nearest_station_code": "AQMS-KTB-01",
-    "nearest_distance_km": 144.61274665952268,
-    "nearest_2_location_id": "LOC-BTM-01",
-    "nearest_2_distance_km": 304.58177207262344,
-    "nearest_3_location_id": "LOC-JMB-01",
-    "nearest_3_distance_km": 335.77698488945214
+    "nearest_station_city": "Kabupaten Agam",
+    "nearest_distance_km": 144.61
   },
   {
     "location_id": "LOC-JMB-01",
     "station_code": "AQMS-JMB-01",
     "nearest_location_id": "LOC-JMB-02",
     "nearest_station_code": "AQMS-JMB-02",
-    "nearest_distance_km": 0.8682521277335224,
-    "nearest_2_location_id": "LOC-PLB-01",
-    "nearest_2_distance_km": 187.31856332179936,
-    "nearest_3_location_id": "LOC-BGL-01",
-    "nearest_3_distance_km": 288.9898584425674
+    "nearest_station_city": "Kabupaten Muaro Jambi",
+    "nearest_distance_km": 0.87
   },
   {
     "location_id": "LOC-BTM-01",
     "station_code": "AQMS-BTM-01",
     "nearest_location_id": "LOC-PKU-01",
     "nearest_station_code": "AQMS-PKU-01",
-    "nearest_distance_km": 304.58177207262344,
-    "nearest_2_location_id": "LOC-JMB-01",
-    "nearest_2_distance_km": 310.9615759514448,
-    "nearest_3_location_id": "LOC-JMB-02",
-    "nearest_3_distance_km": 311.39407913220145
+    "nearest_station_city": "Kota Pekanbaru",
+    "nearest_distance_km": 304.58
   },
   {
     "location_id": "LOC-BGL-01",
     "station_code": "AQMS-BGL-01",
     "nearest_location_id": "LOC-PLB-01",
     "nearest_station_code": "AQMS-PLB-01",
-    "nearest_distance_km": 284.31902712476625,
-    "nearest_2_location_id": "LOC-JMB-02",
-    "nearest_2_distance_km": 288.8529545908117,
-    "nearest_3_location_id": "LOC-JMB-01",
-    "nearest_3_distance_km": 288.9898584425674
+    "nearest_station_city": "Kota Palembang",
+    "nearest_distance_km": 284.32
   },
   {
     "location_id": "LOC-SRG-01",
     "station_code": "AQMS-SRG-01",
     "nearest_location_id": "LOC-PLU-01",
     "nearest_station_code": "AQMS-PLU-01",
-    "nearest_distance_km": 1238.5593598856235,
-    "nearest_2_location_id": "LOC-MER-01",
-    "nearest_2_distance_km": 1318.6551208952503,
-    "nearest_3_location_id": "LOC-MRS-01",
-    "nearest_3_distance_km": 1380.1096716093527
+    "nearest_station_city": "Kabupaten Poso",
+    "nearest_distance_km": 1238.56
   },
   {
     "location_id": "LOC-MLG-01",
     "station_code": "AQMS-MLG-01",
     "nearest_location_id": "LOC-YKY-01",
     "nearest_station_code": "AQMS-YKY-01",
-    "nearest_distance_km": 247.9246391286457,
-    "nearest_2_location_id": "LOC-BJB-01",
-    "nearest_2_distance_km": 551.9051786525486,
-    "nearest_3_location_id": "LOC-PKN-01",
-    "nearest_3_distance_km": 586.8210454998853
+    "nearest_station_city": "Kabupaten Sleman",
+    "nearest_distance_km": 247.92
   },
   {
     "location_id": "LOC-MRS-01",
     "station_code": "AQMS-MRS-01",
     "nearest_location_id": "LOC-PLU-01",
     "nearest_station_code": "AQMS-PLU-01",
-    "nearest_distance_km": 378.3374898520882,
-    "nearest_2_location_id": "LOC-BJB-01",
-    "nearest_2_distance_km": 549.4385205217187,
-    "nearest_3_location_id": "LOC-SM2-01",
-    "nearest_3_distance_km": 569.0564459428023
+    "nearest_station_city": "Kabupaten Poso",
+    "nearest_distance_km": 378.34
   },
   {
     "location_id": "LOC-PLU-01",
     "station_code": "AQMS-PLU-01",
     "nearest_location_id": "LOC-SM2-01",
     "nearest_station_code": "AQMS-SM2-01",
-    "nearest_distance_km": 360.66394539560577,
-    "nearest_2_location_id": "LOC-MRS-01",
-    "nearest_2_distance_km": 378.3374898520882,
-    "nearest_3_location_id": "LOC-BJB-01",
-    "nearest_3_distance_km": 625.5481192138012
+    "nearest_station_city": "Kota Samarinda",
+    "nearest_distance_km": 360.66
   },
   {
     "location_id": "LOC-STG-01",
     "station_code": "AQMS-STG-01",
     "nearest_location_id": "LOC-PKN-01",
     "nearest_station_code": "AQMS-PKN-01",
-    "nearest_distance_km": 308.80319221248425,
-    "nearest_2_location_id": "LOC-KTG-02",
-    "nearest_2_distance_km": 332.72447914821487,
-    "nearest_3_location_id": "LOC-KTG-01",
-    "nearest_3_distance_km": 370.74956616314427
+    "nearest_station_city": "Kabupaten Kotawaringin Barat",
+    "nearest_distance_km": 308.8
   },
   {
     "location_id": "LOC-PKN-01",
     "station_code": "AQMS-PKN-01",
     "nearest_location_id": "LOC-KTG-02",
     "nearest_station_code": "AQMS-KTG-02",
-    "nearest_distance_km": 143.33945656283262,
-    "nearest_2_location_id": "LOC-KTG-01",
-    "nearest_2_distance_km": 254.18682066641247,
-    "nearest_3_location_id": "LOC-STG-01",
-    "nearest_3_distance_km": 308.80319221248425
+    "nearest_station_city": "Kabupaten Kotawaringin Timur",
+    "nearest_distance_km": 143.34
   },
   {
     "location_id": "LOC-PLB-01",
     "station_code": "AQMS-PLB-01",
     "nearest_location_id": "LOC-JMB-02",
     "nearest_station_code": "AQMS-JMB-02",
-    "nearest_distance_km": 186.46706094331924,
-    "nearest_2_location_id": "LOC-JMB-01",
-    "nearest_2_distance_km": 187.31856332179936,
-    "nearest_3_location_id": "LOC-PSW-01",
-    "nearest_3_distance_km": 253.56862236576774
+    "nearest_station_city": "Kabupaten Muaro Jambi",
+    "nearest_distance_km": 186.47
   },
   {
     "location_id": "LOC-PSW-01",
     "station_code": "AQMS-PSW-01",
     "nearest_location_id": "LOC-JKT-03",
     "nearest_station_code": "AQMS-JKT-03",
-    "nearest_distance_km": 203.82415836914717,
-    "nearest_2_location_id": "LOC-JKT-01",
-    "nearest_2_distance_km": 213.99962676476693,
-    "nearest_3_location_id": "LOC-JKT-02",
-    "nearest_3_distance_km": 223.70300158195596
+    "nearest_station_city": "Kota Administrasi Jakarta Barat",
+    "nearest_distance_km": 203.82
   },
   {
     "location_id": "LOC-MER-01",
     "station_code": "AQMS-MER-01",
     "nearest_location_id": "LOC-SRG-01",
     "nearest_station_code": "AQMS-SRG-01",
-    "nearest_distance_km": 1318.6551208952503,
-    "nearest_2_location_id": "LOC-MRS-01",
-    "nearest_2_distance_km": 2333.468856084548,
-    "nearest_3_location_id": "LOC-PLU-01",
-    "nearest_3_distance_km": 2365.301268608132
+    "nearest_station_city": "Kota Sorong",
+    "nearest_distance_km": 1318.66
   },
   {
     "location_id": "LOC-MDN-01",
     "station_code": "AQMS-MDN-01",
     "nearest_location_id": "LOC-IDP-01",
     "nearest_station_code": "AQMS-IDP-01",
-    "nearest_distance_km": 425.02378420867535,
-    "nearest_2_location_id": "LOC-PKU-01",
-    "nearest_2_distance_km": 452.9266747775462,
-    "nearest_3_location_id": "LOC-KTB-01",
-    "nearest_3_distance_km": 459.7803616293284
+    "nearest_station_city": "Kabupaten Aceh Besar",
+    "nearest_distance_km": 425.02
   },
   {
     "location_id": "LOC-SM2-01",
     "station_code": "AQMS-SM2-01",
     "nearest_location_id": "LOC-PLU-01",
     "nearest_station_code": "AQMS-PLU-01",
-    "nearest_distance_km": 360.66394539560577,
-    "nearest_2_location_id": "LOC-KTG-01",
-    "nearest_2_distance_km": 408.9093295777936,
-    "nearest_3_location_id": "LOC-BJB-01",
-    "nearest_3_distance_km": 419.58843978426876
+    "nearest_station_city": "Kabupaten Poso",
+    "nearest_distance_km": 360.66
   },
   {
     "location_id": "LOC-BJB-01",
     "station_code": "AQMS-BJB-01",
     "nearest_location_id": "LOC-KTG-01",
     "nearest_station_code": "AQMS-KTG-01",
-    "nearest_distance_km": 175.1910147783008,
-    "nearest_2_location_id": "LOC-KTG-02",
-    "nearest_2_distance_km": 235.46992515517863,
-    "nearest_3_location_id": "LOC-PKN-01",
-    "nearest_3_distance_km": 363.3421781129592
+    "nearest_station_city": "Kota Palangka Raya",
+    "nearest_distance_km": 175.19
   },
   {
     "location_id": "LOC-JMB-02",
     "station_code": "AQMS-JMB-02",
     "nearest_location_id": "LOC-JMB-01",
     "nearest_station_code": "AQMS-JMB-01",
-    "nearest_distance_km": 0.8682521277335224,
-    "nearest_2_location_id": "LOC-PLB-01",
-    "nearest_2_distance_km": 186.46706094331924,
-    "nearest_3_location_id": "LOC-BGL-01",
-    "nearest_3_distance_km": 288.8529545908117
+    "nearest_station_city": "Kota Jambi",
+    "nearest_distance_km": 0.87
   }
 ]
