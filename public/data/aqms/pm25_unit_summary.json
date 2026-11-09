@@ -1,0 +1,59 @@
+{
+  "groups": [
+    {
+      "unit": "ug/m3",
+      "comparability_group": "mass_concentration_ug_m3",
+      "station_count": 24,
+      "analysis_status": "available",
+      "stations": [
+        "AQMS-PLB-01",
+        "AQMS-SM2-01",
+        "AQMS-JMB-02",
+        "AQMS-KTG-01",
+        "AQMS-KTG-02",
+        "AQMS-JKT-02",
+        "AQMS-JKT-03",
+        "AQMS-JKT-01",
+        "AQMS-BTM-01",
+        "AQMS-PKU-01",
+        "AQMS-PKN-01",
+        "AQMS-JMB-01",
+        "AQMS-YKY-01",
+        "AQMS-STG-01",
+        "AQMS-MRS-01",
+        "AQMS-MLG-01",
+        "AQMS-BGL-01",
+        "AQMS-BGR-02",
+        "AQMS-KTB-01",
+        "AQMS-SRG-01",
+        "AQMS-MER-01",
+        "AQMS-BGR-01",
+        "AQMS-PLU-01",
+        "AQMS-IDP-01"
+      ],
+      "description": "Kelompok pengukuran konsentrasi massa partikulat standar (ug/m3). Dapat dibandingkan antarstasiun dalam kelompok ini."
+    },
+    {
+      "unit": "ppm",
+      "comparability_group": "ppm_original",
+      "station_count": 3,
+      "analysis_status": "separate_analysis_only",
+      "stations": [
+        "AQMS-BJB-01",
+        "AQMS-MDN-01",
+        "AQMS-PSW-01"
+      ],
+      "description": "Kelompok pengukuran dalam satuan ppm (logger export). Ditampilkan secara terpisah dan tidak dikonversi ke ug/m3."
+    },
+    {
+      "unit": null,
+      "comparability_group": "unknown_unit",
+      "station_count": 0,
+      "analysis_status": "not_comparable",
+      "stations": [],
+      "description": "Data tanpa satuan teridentifikasi tidak digunakan untuk analisis komparatif."
+    }
+  ],
+  "conversion_applied": 0,
+  "scientific_rationale": "PM2.5 adalah materi partikulat aerosol dengan campuran fisik-kimia kompleks, bukan gas ideal murni. Tidak ada rumus konversi universal tervalidasi untuk mengubah ppm ke ug/m3 tanpa parameter massa jenis aerosol dan kondisi lingkungan spesifik."
+}

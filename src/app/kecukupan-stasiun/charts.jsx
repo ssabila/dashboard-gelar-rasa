@@ -25,6 +25,9 @@ const tooltipBase = {
 
 const fmt = (v, d = 0) => (Number.isFinite(v) ? Number(v).toLocaleString('id-ID', { maximumFractionDigits: d, minimumFractionDigits: d }) : '—')
 
+// Tinggi kedua grafik baris pertama disamakan agar kartunya sejajar
+const ROW_HEIGHT = 360
+
 /* ═══ 1. Kepadatan stasiun per pulau ═════════════════════════════════════ */
 export function PulauDensityChart({ rows, benchmark, selected, onSelect }) {
   const option = useMemo(() => {
@@ -38,11 +41,11 @@ export function PulauDensityChart({ rows, benchmark, selected, onSelect }) {
         formatter: (p) => {
           const r = sorted[p.dataIndex]
           return `<strong>${r.pulau}</strong><br/>${r.n_stasiun} stasiun · ${fmt(r.luas_km2)} km²<br/>` +
-            `${fmt(r.stasiun_per_100k_km2, 2)} stasiun/100.000 km²<br/>` +
-            `Kekurangan vs benchmark: ${r.gap_stasiun_vs_benchmark} stasiun`
+            `${fmt(r.stasiun_per_100k_km2, 2)} stasiun per 100.000 km²<br/>` +
+            `Kurang dari rata-rata nasional: ${r.gap_stasiun_vs_benchmark} stasiun`
         },
       },
-      xAxis: { type: 'value', splitLine: GRID_LINE, axisLabel: TXT, name: 'stasiun / 100.000 km²', nameLocation: 'end', nameTextStyle: { ...TXT, align: 'right' } },
+      xAxis: { type: 'value', splitLine: GRID_LINE, axisLabel: TXT, name: 'stasiun per 100.000 km²', nameLocation: 'end', nameTextStyle: { ...TXT, align: 'right' } },
       yAxis: { type: 'category', data: sorted.map((r) => r.pulau), axisLine: AXIS_LINE, axisTick: { show: false }, axisLabel: { ...TXT, color: NAVY } },
       series: [{
         type: 'bar',
@@ -59,7 +62,7 @@ export function PulauDensityChart({ rows, benchmark, selected, onSelect }) {
         markLine: {
           symbol: 'none',
           lineStyle: { color: '#EF6B3B', type: 'dashed', width: 1.5 },
-          label: { formatter: 'Benchmark', ...TXT, color: '#EF6B3B' },
+          label: { formatter: 'Rata-rata nasional', ...TXT, color: '#EF6B3B' },
           data: [{ xAxis: benchmark }],
         },
       }],
@@ -70,20 +73,23 @@ export function PulauDensityChart({ rows, benchmark, selected, onSelect }) {
   return (
     <EChart
       option={option}
-      height={Math.max(260, rows.length * 44 + 50)}
+      height={ROW_HEIGHT}
       onEvents={{ click: (p) => onSelect?.(option._order[p.dataIndex]) }}
     />
   )
 }
 
-/* ═══ 2. Treemap provinsi: luas × % cakupan ══════════════════════════════ */
+/* ═══ 2. Treemap provinsi: luas × % terjangkau ═══════════════════════════ */
 export function ProvinceTreemap({ rows, radius }) {
   const option = useMemo(() => {
     const groups = {}
     rows.forEach((r) => {
+      const cov = r[`cov_pct_${radius}`] ?? 0
       ;(groups[r.pulau] ??= []).push({
         name: r.provinsi,
-        value: [Math.round(r.luas_km2), r[`cov_pct_${radius}`] ?? 0, r.n_stasiun],
+        value: [Math.round(r.luas_km2), cov, r.n_stasiun],
+        // Latar terang → teks navy, latar gelap → teks putih (sebelumnya selalu putih)
+        label: { color: cov >= 70 ? '#FFFFFF' : NAVY },
       })
     })
     return {
@@ -93,7 +99,7 @@ export function ProvinceTreemap({ rows, radius }) {
         formatter: (p) => {
           const v = p.value
           if (!Array.isArray(v)) return `<strong>${p.name}</strong>`
-          return `<strong>${p.name}</strong><br/>${fmt(v[0])} km² · ${v[2]} stasiun<br/>Cakupan radius ${radius} km: ${fmt(v[1], 1)}%`
+          return `<strong>${p.name}</strong><br/>${fmt(v[0])} km² · ${v[2]} stasiun<br/>Terjangkau (radius ${radius} km): ${fmt(v[1], 1)}%`
         },
       },
       visualMap: {
@@ -108,7 +114,7 @@ export function ProvinceTreemap({ rows, radius }) {
         nodeClick: false,
         breadcrumb: { show: false },
         visualDimension: 1,
-        label: { show: true, formatter: '{b}', fontFamily: FONT, fontSize: 11, overflow: 'truncate' },
+        label: { show: true, formatter: '{b}', fontFamily: FONT, fontSize: 11, fontWeight: 600, color: NAVY, overflow: 'truncate' },
         upperLabel: { show: true, height: 20, color: NAVY, fontFamily: FONT, fontWeight: 700, fontSize: 11 },
         itemStyle: { borderColor: '#FFFFFF', borderWidth: 2, gapWidth: 2 },
         levels: [
@@ -124,7 +130,7 @@ export function ProvinceTreemap({ rows, radius }) {
     }
   }, [rows, radius])
 
-  return <EChart option={option} height={360} />
+  return <EChart option={option} height={ROW_HEIGHT} />
 }
 
 /* ═══ 3. Heatmap kelengkapan data stasiun × bulan ════════════════════════ */
@@ -179,7 +185,7 @@ export function SiteTypeChart({ mix }) {
   return <EChart option={option} height={Math.max(240, mix.length * 26 + 40)} />
 }
 
-/* ═══ 5. Peran stasiun: kritis vs redundan (leave-one-out) ═══════════════ */
+/* ═══ 5. Peran stasiun: kritis vs redundan ═══════════════════════════════ */
 export function RoleScatter({ stations }) {
   const option = useMemo(() => {
     const series = ['Kritis', 'Sedang', 'Redundan'].map((peran) => ({
@@ -198,10 +204,10 @@ export function RoleScatter({ stations }) {
       legend: { top: 0, textStyle: TXT, icon: 'circle', itemWidth: 8 },
       tooltip: {
         ...tooltipBase,
-        formatter: (p) => `<strong>${p.value[2]}</strong> · ${p.value[3]}<br/>Cakupan unik: ${fmt(p.value[0])} km²<br/>Error jika dihapus (RMSE): ${fmt(p.value[1], 2)} µg/m³`,
+        formatter: (p) => `<strong>${p.value[2]}</strong> · ${p.value[3]}<br/>Wilayah yang hanya dijangkau stasiun ini: ${fmt(p.value[0])} km²<br/>Error bila dihapus (RMSE): ${fmt(p.value[1], 2)} µg/m³`,
       },
-      xAxis: { type: 'value', name: 'Luas cakupan unik (km²)', nameLocation: 'middle', nameGap: 28, nameTextStyle: TXT, splitLine: GRID_LINE, axisLabel: TXT },
-      yAxis: { type: 'value', name: 'RMSE bila stasiun dihapus', nameTextStyle: TXT, splitLine: GRID_LINE, axisLabel: TXT },
+      xAxis: { type: 'value', name: 'Wilayah yang hanya dijangkau stasiun ini (km²)', nameLocation: 'middle', nameGap: 28, nameTextStyle: TXT, splitLine: GRID_LINE, axisLabel: TXT },
+      yAxis: { type: 'value', name: 'Error bila stasiun dihapus (RMSE)', nameTextStyle: TXT, splitLine: GRID_LINE, axisLabel: TXT },
       series,
     }
   }, [stations])
@@ -209,7 +215,7 @@ export function RoleScatter({ stations }) {
   return <EChart option={option} height={320} />
 }
 
-/* ═══ 6. Peluruhan korelasi vs jarak (radius representativitas) ══════════ */
+/* ═══ 6. Peluruhan kemiripan vs jarak ════════════════════════════════════ */
 function binCenter(label) {
   const m = /\(([\d.]+),\s*([\d.]+)\]/.exec(label)
   if (!m) return null
@@ -239,7 +245,7 @@ export function DecayChart({ corr }) {
       legend: { top: 0, textStyle: TXT, icon: 'roundRect' },
       tooltip: { ...tooltipBase, trigger: 'item' },
       xAxis: { type: 'log', min: 5, name: 'Jarak antar stasiun (km, skala log)', nameLocation: 'middle', nameGap: 28, nameTextStyle: TXT, splitLine: GRID_LINE, axisLabel: TXT },
-      yAxis: { type: 'value', name: 'Korelasi PM2.5 harian', nameTextStyle: TXT, max: 1, splitLine: GRID_LINE, axisLabel: TXT },
+      yAxis: { type: 'value', name: 'Kemiripan PM2.5 harian (korelasi)', nameTextStyle: TXT, max: 1, splitLine: GRID_LINE, axisLabel: TXT },
       series: [
         {
           name: 'Pasangan stasiun', type: 'scatter', symbolSize: 6,
@@ -254,13 +260,13 @@ export function DecayChart({ corr }) {
           markLine: {
             symbol: 'none', silent: true,
             data: [
-              { xAxis: corr.radius_used_km, lineStyle: { color: '#16A34A', type: 'dashed' }, label: { formatter: `Radius ${corr.radius_used_km} km`, ...TXT, color: '#16A34A' } },
+              { xAxis: corr.radius_used_km, lineStyle: { color: '#16A34A', type: 'dashed' }, label: { formatter: `Jangkauan ${corr.radius_used_km} km`, ...TXT, color: '#16A34A' } },
               { yAxis: corr.params?.corr_threshold ?? 0.5, lineStyle: { color: '#94A3B8', type: 'dotted' }, label: { formatter: 'Ambang', ...TXT } },
             ],
           },
         },
         ...(fitData.length
-          ? [{ name: 'Fit eksponensial', type: 'line', showSymbol: false, smooth: true, lineStyle: { width: 2, type: 'dashed', color: '#EF6B3B' }, itemStyle: { color: '#EF6B3B' }, data: fitData, silent: true }]
+          ? [{ name: 'Kurva peluruhan', type: 'line', showSymbol: false, smooth: true, lineStyle: { width: 2, type: 'dashed', color: '#EF6B3B' }, itemStyle: { color: '#EF6B3B' }, data: fitData, silent: true }]
           : []),
       ],
     }
@@ -269,7 +275,7 @@ export function DecayChart({ corr }) {
   return <EChart option={option} height={340} />
 }
 
-/* ═══ 7. Heatmap korelasi (urut dendrogram) ══════════════════════════════ */
+/* ═══ 7. Heatmap kemiripan antar stasiun ═════════════════════════════════ */
 export function CorrelationHeatmap({ corr }) {
   const option = useMemo(() => {
     const order = corr.dendrogram_order
@@ -297,7 +303,7 @@ export function CorrelationHeatmap({ corr }) {
   return <EChart option={option} height={440} />
 }
 
-/* ═══ 8. Kurva diminishing returns ═══════════════════════════════════════ */
+/* ═══ 8. Kurva tambahan stasiun vs luas terjangkau ═══════════════════════ */
 export function CoverageCurveChart({ curve, nAdd }) {
   const option = useMemo(() => {
     const x = curve.map((c) => c.n_added)
@@ -309,13 +315,13 @@ export function CoverageCurveChart({ curve, nAdd }) {
         ...tooltipBase, trigger: 'axis',
         formatter: (ps) => {
           const c = curve[ps[0].dataIndex]
-          return `<strong>${c.n_added === 0 ? 'Kondisi saat ini' : `+${c.n_added} stasiun`}</strong><br/>Cakupan: ${fmt(c.cov_pct, 1)}%` +
+          return `<strong>${c.n_added === 0 ? 'Kondisi sekarang' : `+${c.n_added} stasiun`}</strong><br/>Terjangkau: ${fmt(c.cov_pct, 1)}%` +
             (c.n_added > 0 ? `<br/>Tambahan: +${fmt(c.marginal_pct, 2)} poin<br/>Lokasi: ${c.kabupaten} (${c.provinsi})` : '')
         },
       },
       xAxis: { type: 'category', data: x, name: 'Stasiun tambahan', nameLocation: 'middle', nameGap: 28, nameTextStyle: TXT, axisLabel: TXT, axisLine: AXIS_LINE, axisTick: { show: false } },
       yAxis: [
-        { type: 'value', name: '% luas tercakup', nameTextStyle: TXT, splitLine: GRID_LINE, axisLabel: TXT, scale: true },
+        { type: 'value', name: '% luas terjangkau', nameTextStyle: TXT, splitLine: GRID_LINE, axisLabel: TXT, scale: true },
         { type: 'value', name: 'Tambahan (poin)', nameTextStyle: TXT, splitLine: { show: false }, axisLabel: TXT },
       ],
       series: [
@@ -324,7 +330,7 @@ export function CoverageCurveChart({ curve, nAdd }) {
           data: curve.map((c, i) => ({ value: i === 0 ? 0 : c.marginal_pct, itemStyle: { color: TEAL, opacity: i <= nAdd ? 1 : 0.3, borderRadius: [4, 4, 0, 0] } })),
         },
         {
-          name: 'Cakupan kumulatif', type: 'line', symbol: 'circle', symbolSize: 7, lineStyle: { width: 2.5, color: DUSK }, itemStyle: { color: DUSK },
+          name: 'Total terjangkau', type: 'line', symbol: 'circle', symbolSize: 7, lineStyle: { width: 2.5, color: DUSK }, itemStyle: { color: DUSK },
           data: curve.map((c) => c.cov_pct),
           markPoint: {
             symbol: 'pin', symbolSize: 52, itemStyle: { color: '#E6F9AF', borderColor: NAVY, borderWidth: 1.5 },
@@ -339,7 +345,7 @@ export function CoverageCurveChart({ curve, nAdd }) {
   return <EChart option={option} height={320} />
 }
 
-/* ═══ 9. Kontribusi komponen gap score (stacked) ═════════════════════════ */
+/* ═══ 9. Sumbangan komponen skor kebutuhan (stacked) ═════════════════════ */
 export function GapContributionChart({ rows, weights }) {
   const option = useMemo(() => {
     const sum = GAP_COMPONENTS.reduce((s, c) => s + (weights[c.key] ?? 0), 0) || 1

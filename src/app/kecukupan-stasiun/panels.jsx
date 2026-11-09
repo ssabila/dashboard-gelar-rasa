@@ -190,7 +190,7 @@ export function MapLegend({ metric, ctx }) {
 
       <span className="inline-flex items-center gap-1.5" style={{ fontSize: '0.7rem', color: SOFT }}>
         <span style={{ width: 12, height: 12, border: '2px solid #18314F', borderRadius: 3 }} />
-        kabupaten ber-stasiun
+        kabupaten yang punya stasiun
       </span>
     </div>
   )
@@ -227,8 +227,8 @@ export function DetailPanel({ selected, kab, station, stationsByKode, radius, ga
         <MapPin size={22} style={{ color: 'var(--color-elevated)' }} aria-hidden="true" />
         <h4 style={{ margin: 0, color: NAVY }}>Pilih wilayah di peta</h4>
         <p style={{ margin: 0, fontSize: '0.8rem' }}>
-          Klik kabupaten untuk melihat jarak ke stasiun terdekat, estimasi PM2.5, dan skor prioritasnya.
-          Klik marker stasiun untuk melihat keandalan datanya.
+          Klik kabupaten untuk melihat jarak ke stasiun terdekat, perkiraan PM2.5, dan skor kebutuhannya.
+          Klik penanda stasiun untuk melihat seberapa bisa diandalkan datanya.
         </p>
       </Card>
     )
@@ -247,12 +247,12 @@ export function DetailPanel({ selected, kab, station, stationsByKode, radius, ga
         <div className="flex flex-col gap-1.5">
           <Stat label="Tipe lokasi">{SITE_TYPE_LABELS[s.site_type] ?? s.site_type}</Stat>
           <Stat label="PM2.5 rata-rata">{formatPm25(s.avg_pm25)}</Stat>
-          <Stat label="Data lengkap">{formatPct(s.completeness_pct, 1)}</Stat>
+          <Stat label="Kelengkapan data">{formatPct(s.completeness_pct, 1)}</Stat>
           <Stat label="Umur stasiun">{formatNumber(s.umur_tahun, 1)} tahun</Stat>
-          <Stat label="Jeda data terpanjang">{formatNumber(s.longest_gap_h)} jam</Stat>
-          <Stat label="Cakupan unik">{formatNumber(s.unique_coverage_km2)} km²</Stat>
-          <Stat label="Error bila dihapus">{formatNumber(s.loo_rmse_daily, 2)} µg/m³</Stat>
-          <Stat label="Klaster korelasi">#{s.cluster}{s.redundant_pair ? ' · punya pasangan redundan' : ''}</Stat>
+          <Stat label="Data bolong terlama">{formatNumber(s.longest_gap_h)} jam</Stat>
+          <Stat label="Hanya dijangkau stasiun ini">{formatNumber(s.unique_coverage_km2)} km²</Stat>
+          <Stat label="Error bila stasiun dihapus">{formatNumber(s.loo_rmse_daily, 2)} µg/m³</Stat>
+          <Stat label="Kelompok kemiripan">#{s.cluster}{s.redundant_pair ? ' · punya stasiun kembar' : ''}</Stat>
         </div>
         {s.karakteristik_wilayah && (
           <p style={{ margin: 0, fontSize: '0.72rem', maxWidth: 'none' }}>{s.karakteristik_wilayah}</p>
@@ -272,18 +272,18 @@ export function DetailPanel({ selected, kab, station, stationsByKode, radius, ga
       <div className="flex flex-col gap-1.5">
         <Stat label="Luas wilayah">{formatNumber(kab.area_km2)} km²</Stat>
         <Stat label="Stasiun terdekat">{kab.stasiun_terdekat} · {formatNumber(kab.jarak_km)} km</Stat>
-        <Stat label="Estimasi PM2.5">±{formatNumber(kab.pm25_idw, 1)} µg/m³</Stat>
-        <Stat label={`Tercakup (${radius} km)`}>{formatPct(kab[`cov_pct_${radius}`], 0)}</Stat>
-        <Stat label="Luas tak terlayani">{formatNumber(kab.luas_tak_terlayani_km2)} km²</Stat>
-        {gapScore != null && <Stat label="Gap score">{formatNumber(gapScore, 2)}{gapRank ? ` · peringkat ${gapRank}` : ''}</Stat>}
+        <Stat label="Perkiraan PM2.5">±{formatNumber(kab.pm25_idw, 1)} µg/m³</Stat>
+        <Stat label={`Terjangkau (${radius} km)`}>{formatPct(kab[`cov_pct_${radius}`], 0)}</Stat>
+        <Stat label="Wilayah belum terlayani">{formatNumber(kab.luas_tak_terlayani_km2)} km²</Stat>
+        {gapScore != null && <Stat label="Skor kebutuhan">{formatNumber(gapScore, 2)}{gapRank ? ` · peringkat ${gapRank}` : ''}</Stat>}
       </div>
       <div className="flex flex-col gap-1.5">
         {GAP_COMPONENTS.map((c) => <Meter key={c.key} label={c.label} value={kab[c.norm]} color={c.color} />)}
       </div>
       <p style={{ margin: 0, fontSize: '0.7rem', maxWidth: 'none' }}>
-        PM2.5 adalah estimasi IDW dari {kab.pm25_idw_sd != null ? `stasiun sekitar (sebaran ±${formatNumber(kab.pm25_idw_sd, 1)})` : 'stasiun sekitar'};
-        ketidakpastian naik seiring jarak.
-        {near && <> Karakter di sekitar {near.kode}: {SITE_TYPE_LABELS[near.site_type] ?? near.site_type}.</>}
+        PM2.5 di sini adalah perkiraan dari stasiun sekitar{kab.pm25_idw_sd != null ? ` (selisih antarstasiun ±${formatNumber(kab.pm25_idw_sd, 1)})` : ''}.
+        Makin jauh dari stasiun, makin kurang pasti.
+        {near && <> Karakter lokasi di sekitar {near.kode}: {SITE_TYPE_LABELS[near.site_type] ?? near.site_type}.</>}
       </p>
     </Card>
   )
@@ -333,7 +333,7 @@ export function RecommendationCard({ rec, onFocus }) {
       </div>
       <div className="mt-auto flex items-center justify-between gap-2">
         <span style={{ fontSize: '0.68rem', color: SOFT }}>
-          {rec.freq_top_gap != null ? `Masuk 10 teratas di ${Math.round(rec.freq_top_gap * 100)}% simulasi bobot` : ""}
+          {rec.freq_top_gap != null ? `Tetap masuk 10 besar di ${Math.round(rec.freq_top_gap * 100)}% simulasi bobot` : ''}
         </span>
         <button
           type="button"
@@ -395,10 +395,10 @@ export function ProvinceTable({ rows, radius, onFocusPulau }) {
             <Th sortKey="provinsi" sort={sort} onSort={onSort} align="left">Provinsi</Th>
             <Th sortKey="n_stasiun" sort={sort} onSort={onSort}>Stasiun</Th>
             <Th sortKey="luas_km2" sort={sort} onSort={onSort}>Luas (km²)</Th>
-            <Th sortKey="stasiun_per_100k_km2" sort={sort} onSort={onSort}>/100rb km²</Th>
-            <Th sortKey={covKey} sort={sort} onSort={onSort}>Tercakup {radius} km</Th>
-            <Th sortKey="median_jarak_km" sort={sort} onSort={onSort}>Median jarak</Th>
-            <Th sortKey="gap_stasiun_vs_benchmark" sort={sort} onSort={onSort}>Kurang vs benchmark</Th>
+            <Th sortKey="stasiun_per_100k_km2" sort={sort} onSort={onSort}>Per 100 rb km²</Th>
+            <Th sortKey={covKey} sort={sort} onSort={onSort}>Terjangkau {radius} km</Th>
+            <Th sortKey="median_jarak_km" sort={sort} onSort={onSort}>Jarak median</Th>
+            <Th sortKey="gap_stasiun_vs_benchmark" sort={sort} onSort={onSort}>Kurang dari rata-rata</Th>
           </tr>
         </thead>
         <tbody>
@@ -409,11 +409,11 @@ export function ProvinceTable({ rows, radius, onFocusPulau }) {
                   type="button"
                   onClick={() => onFocusPulau?.(r.pulau)}
                   style={{ border: 0, background: 'transparent', padding: 0, cursor: 'pointer', font: 'inherit', color: 'inherit', textAlign: 'left' }}
-                  title={`Filter pulau ${r.pulau}`}
+                  title={`Fokus ke pulau ${r.pulau}`}
                 >
                   {r.provinsi}
                 </button>
-                {r.blank_spot && <span style={{ marginLeft: 6 }}><Badge label="Blank spot" color="#C2410C" bg="rgba(251,146,60,0.12)" size="xs" /></span>}
+                {r.blank_spot && <span style={{ marginLeft: 6 }}><Badge label="Tanpa stasiun" color="#C2410C" bg="rgba(251,146,60,0.12)" size="xs" /></span>}
               </td>
               <td style={td}>{r.n_stasiun}</td>
               <td style={td}>{formatNumber(r.luas_km2)}</td>
@@ -438,9 +438,9 @@ export function GapRankTable({ rows, onFocus, weightsChanged }) {
             <Th align="left">#</Th>
             <Th align="left">Kabupaten</Th>
             <Th>Jarak</Th>
-            <Th>PM2.5 est.</Th>
-            <Th>Gap</Th>
-            <Th>Stabilitas*</Th>
+            <Th>PM2.5 perkiraan</Th>
+            <Th>Skor</Th>
+            <Th>Kestabilan*</Th>
             <Th>{' '}</Th>
           </tr>
         </thead>
@@ -465,7 +465,7 @@ export function GapRankTable({ rows, onFocus, weightsChanged }) {
         </tbody>
       </table>
       <p style={{ margin: '0.5rem 0 0', fontSize: '0.66rem', maxWidth: 'none' }}>
-        *Persentase dari 1.000 simulasi bobot (±20%) yang menempatkan kabupaten ini di jajaran teratas. Hanya berlaku untuk bobot bawaan.
+        *Dari 1.000 simulasi dengan bobot yang digeser ±20%, seberapa sering kabupaten ini tetap masuk jajaran teratas. Hanya berlaku untuk bobot bawaan.
       </p>
     </div>
   )

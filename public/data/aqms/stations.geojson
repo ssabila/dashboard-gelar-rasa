@@ -1,0 +1,977 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8272,
+          -6.1754
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-JKT-01",
+        "station_code": "AQMS-JKT-01",
+        "nama_sensor": "AQMS Gambir Medan Merdeka",
+        "provinsi": "DKI Jakarta",
+        "kota_kabupaten": "Kota Administrasi Jakarta Pusat",
+        "kecamatan": "Gambir",
+        "region_group": "Jakarta",
+        "site_type": "Urban Background",
+        "karakteristik_wilayah": "Pusat Pemerintahan & Komersial Padat",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 37.5,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-JKT-03",
+        "nearest_station_code": "AQMS-JKT-03",
+        "nearest_distance_km": 10.72,
+        "completeness_pct": 96.0,
+        "priority_distribution_score": 0.37,
+        "priority_distribution_rank": 27,
+        "priority_operational_score": 2.2,
+        "priority_operational_rank": 8,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.9644,
+          -6.1118
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-JKT-02",
+        "station_code": "AQMS-JKT-02",
+        "nama_sensor": "AQMS Marunda Industrial Port",
+        "provinsi": "DKI Jakarta",
+        "kota_kabupaten": "Kota Administrasi Jakarta Utara",
+        "kecamatan": "Cilincing (Marunda)",
+        "region_group": "Jakarta",
+        "site_type": "Industrial Perimeter",
+        "karakteristik_wilayah": "Kawasan Industri Berat, Pelabuhan & Pesisir",
+        "status_operasional": "Active",
+        "model_sensor": "Horiba APDA-372 Continuous Aerosol Monitor",
+        "baseline_pm25": 55.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-JKT-01",
+        "nearest_station_code": "AQMS-JKT-01",
+        "nearest_distance_km": 16.74,
+        "completeness_pct": 96.1,
+        "priority_distribution_score": 20.6,
+        "priority_distribution_rank": 22,
+        "priority_operational_score": 2.15,
+        "priority_operational_rank": 10,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7329,
+          -6.1528
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-JKT-03",
+        "station_code": "AQMS-JKT-03",
+        "nama_sensor": "AQMS Cengkareng Daan Mogot Artery",
+        "provinsi": "DKI Jakarta",
+        "kota_kabupaten": "Kota Administrasi Jakarta Barat",
+        "kecamatan": "Cengkareng",
+        "region_group": "Jakarta",
+        "site_type": "Traffic / Roadside",
+        "karakteristik_wilayah": "Jalur Arteri Bandara & Permukiman Padat Penduduk",
+        "status_operasional": "Active",
+        "model_sensor": "Ecotech Serinus 60 Air Quality Station",
+        "baseline_pm25": 39.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-JKT-01",
+        "nearest_station_code": "AQMS-JKT-01",
+        "nearest_distance_km": 10.72,
+        "completeness_pct": 96.06,
+        "priority_distribution_score": 7.04,
+        "priority_distribution_rank": 25,
+        "priority_operational_score": 2.17,
+        "priority_operational_rank": 9,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          113.9108,
+          -2.2136
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-KTG-01",
+        "station_code": "AQMS-KTG-01",
+        "nama_sensor": "AQMS Palangka Raya Jekan Raya",
+        "provinsi": "Kalimantan Tengah",
+        "kota_kabupaten": "Kota Palangka Raya",
+        "kecamatan": "Jekan Raya",
+        "region_group": "Kalimantan Tengah",
+        "site_type": "Urban Background",
+        "karakteristik_wilayah": "Pusat Permukiman Kota, Koridor Hutan Tropis & Gambut",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 22.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-KTG-02",
+        "nearest_station_code": "AQMS-KTG-02",
+        "nearest_distance_km": 112.03,
+        "completeness_pct": 96.21,
+        "priority_distribution_score": 4.22,
+        "priority_distribution_rank": 26,
+        "priority_operational_score": 2.08,
+        "priority_operational_rank": 11,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.9554,
+          -2.5358
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-KTG-02",
+        "station_code": "AQMS-KTG-02",
+        "nama_sensor": "AQMS Sampit Mentawa Baru",
+        "provinsi": "Kalimantan Tengah",
+        "kota_kabupaten": "Kabupaten Kotawaringin Timur",
+        "kecamatan": "Mentawa Baru Ketapang (Sampit)",
+        "region_group": "Kalimantan Tengah",
+        "site_type": "Peatland Boundary",
+        "karakteristik_wilayah": "Sentra Logistik Kelapa Sawit & Lahan Gambut",
+        "status_operasional": "Active",
+        "model_sensor": "Met One BAM-1020 PM Monitor",
+        "baseline_pm25": 35.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-KTG-01",
+        "nearest_station_code": "AQMS-KTG-01",
+        "nearest_distance_km": 112.03,
+        "completeness_pct": 96.28,
+        "priority_distribution_score": 24.22,
+        "priority_distribution_rank": 21,
+        "priority_operational_score": 2.05,
+        "priority_operational_rank": 12,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.9421,
+          -6.6978
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-BGR-01",
+        "station_code": "AQMS-BGR-01",
+        "nama_sensor": "AQMS Cisarua Puncak Reference Station",
+        "provinsi": "Jawa Barat",
+        "kota_kabupaten": "Kabupaten Bogor",
+        "kecamatan": "Cisarua",
+        "region_group": "Bogor",
+        "site_type": "Regional / Clean Background",
+        "karakteristik_wilayah": "Dataran Tinggi Pegunungan Puncak, Agrowisata & Background Baseline",
+        "status_operasional": "Active",
+        "model_sensor": "Ecotech Serinus 60 Air Quality Station",
+        "baseline_pm25": 13.5,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-BGR-02",
+        "nearest_station_code": "AQMS-BGR-02",
+        "nearest_distance_km": 18.15,
+        "completeness_pct": 96.95,
+        "priority_distribution_score": 8.16,
+        "priority_distribution_rank": 24,
+        "priority_operational_score": 1.68,
+        "priority_operational_rank": 13,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8089,
+          -6.6022
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-BGR-02",
+        "station_code": "AQMS-BGR-02",
+        "nama_sensor": "AQMS Bogor Baranangsiang Urban",
+        "provinsi": "Jawa Barat",
+        "kota_kabupaten": "Kota Bogor",
+        "kecamatan": "Bogor Tengah (Baranangsiang)",
+        "region_group": "Bogor",
+        "site_type": "Traffic / Roadside",
+        "karakteristik_wilayah": "Lembah Perkotaan Padat, Terminal Bus & Koridor Hujan",
+        "status_operasional": "Active",
+        "model_sensor": "Aeroqual AQS 1 Ambient Monitor",
+        "baseline_pm25": 26.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-BGR-01",
+        "nearest_station_code": "AQMS-BGR-01",
+        "nearest_distance_km": 18.15,
+        "completeness_pct": 96.98,
+        "priority_distribution_score": 14.82,
+        "priority_distribution_rank": 23,
+        "priority_operational_score": 1.66,
+        "priority_operational_rank": 14,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.354,
+          -7.731
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-YKY-01",
+        "station_code": "AQMS-YKY-01",
+        "nama_sensor": "AQMS BMKG Sleman Mlati",
+        "provinsi": "D.I. Yogyakarta",
+        "kota_kabupaten": "Kabupaten Sleman",
+        "kecamatan": "Mlati",
+        "region_group": "Yogyakarta",
+        "site_type": "Urban Background",
+        "karakteristik_wilayah": "Pusat Pendidikan, Komersial & Aglomerasi Urban Yogyakarta",
+        "status_operasional": "Active",
+        "model_sensor": "Met One BAM-1020 PM Monitor",
+        "baseline_pm25": 38.6,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-MLG-01",
+        "nearest_station_code": "AQMS-MLG-01",
+        "nearest_distance_km": 247.92,
+        "completeness_pct": 99.42,
+        "priority_distribution_score": 39.37,
+        "priority_distribution_rank": 17,
+        "priority_operational_score": 0.32,
+        "priority_operational_rank": 20,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          95.475,
+          5.404
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-IDP-01",
+        "station_code": "AQMS-IDP-01",
+        "nama_sensor": "AQMS BMKG Indrapuri Aceh",
+        "provinsi": "Aceh",
+        "kota_kabupaten": "Kabupaten Aceh Besar",
+        "kecamatan": "Indrapuri",
+        "region_group": "Aceh",
+        "site_type": "Regional / Clean Background",
+        "karakteristik_wilayah": "Kawasan Lembah Seulawah, Agrikultur & Clean Background",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 9.7,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-MDN-01",
+        "nearest_station_code": "AQMS-MDN-01",
+        "nearest_distance_km": 425.02,
+        "completeness_pct": 99.55,
+        "priority_distribution_score": 46.09,
+        "priority_distribution_rank": 13,
+        "priority_operational_score": 0.25,
+        "priority_operational_rank": 27,
+        "primary_trigger": "Keterpisahan spasial jauh (425 km)",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          100.382,
+          -0.251
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-KTB-01",
+        "station_code": "AQMS-KTB-01",
+        "nama_sensor": "AQMS BMKG Kabupaten Agam",
+        "provinsi": "Sumatera Barat",
+        "kota_kabupaten": "Kabupaten Agam",
+        "kecamatan": "Palembayan",
+        "region_group": "Sumatera Barat",
+        "site_type": "Regional / Clean Background",
+        "karakteristik_wilayah": "Dataran Tinggi Bukit Barisan, Hutan Lindung & Global Baseline",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 12.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-PKU-01",
+        "nearest_station_code": "AQMS-PKU-01",
+        "nearest_distance_km": 144.61,
+        "completeness_pct": 99.48,
+        "priority_distribution_score": 35.45,
+        "priority_distribution_rank": 19,
+        "priority_operational_score": 0.29,
+        "priority_operational_rank": 25,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          101.4666,
+          0.4667
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-PKU-01",
+        "station_code": "AQMS-PKU-01",
+        "nama_sensor": "AQMS BMKG Kota Pekanbaru",
+        "provinsi": "Riau",
+        "kota_kabupaten": "Kota Pekanbaru",
+        "kecamatan": "Marpoyan Damai",
+        "region_group": "Riau",
+        "site_type": "Peatland Buffer / Urban",
+        "karakteristik_wilayah": "Kawasan Penyangga Gambut, Koridor Urban & Lalu Lintas Udara",
+        "status_operasional": "Active",
+        "model_sensor": "Met One BAM-1020 PM Monitor",
+        "baseline_pm25": 35.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-KTB-01",
+        "nearest_station_code": "AQMS-KTB-01",
+        "nearest_distance_km": 144.61,
+        "completeness_pct": 99.46,
+        "priority_distribution_score": 42.12,
+        "priority_distribution_rank": 16,
+        "priority_operational_score": 0.3,
+        "priority_operational_rank": 23,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.64,
+          -1.63
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-JMB-01",
+        "station_code": "AQMS-JMB-01",
+        "nama_sensor": "AQMS BMKG Kota Jambi",
+        "provinsi": "Jambi",
+        "kota_kabupaten": "Kota Jambi",
+        "kecamatan": "Jambi Selatan",
+        "region_group": "Jambi",
+        "site_type": "Peatland Buffer / Urban",
+        "karakteristik_wilayah": "Kawasan Aglomerasi Perkotaan & Daerah Aliran Sungai Batanghari",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 32.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-JMB-02",
+        "nearest_station_code": "AQMS-JMB-02",
+        "nearest_distance_km": 0.87,
+        "completeness_pct": 99.31,
+        "priority_distribution_score": 36.67,
+        "priority_distribution_rank": 18,
+        "priority_operational_score": 0.38,
+        "priority_operational_rank": 15,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.126,
+          1.124
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-BTM-01",
+        "station_code": "AQMS-BTM-01",
+        "nama_sensor": "AQMS BMKG Kota Batam",
+        "provinsi": "Kepulauan Riau",
+        "kota_kabupaten": "Kota Batam",
+        "kecamatan": "Batu Besar",
+        "region_group": "Kepulauan Riau",
+        "site_type": "Industrial Perimeter / Maritime",
+        "karakteristik_wilayah": "Kawasan Industri Manufaktur, Pelabuhan & Maritim Selat Malaka",
+        "status_operasional": "Active",
+        "model_sensor": "Horiba APDA-372",
+        "baseline_pm25": 38.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-PKU-01",
+        "nearest_station_code": "AQMS-PKU-01",
+        "nearest_distance_km": 304.58,
+        "completeness_pct": 99.37,
+        "priority_distribution_score": 61.52,
+        "priority_distribution_rank": 6,
+        "priority_operational_score": 0.35,
+        "priority_operational_rank": 17,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          102.312,
+          -3.865
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-BGL-01",
+        "station_code": "AQMS-BGL-01",
+        "nama_sensor": "AQMS BMKG Kota Bengkulu",
+        "provinsi": "Bengkulu",
+        "kota_kabupaten": "Kota Bengkulu",
+        "kecamatan": "Selebar",
+        "region_group": "Bengkulu",
+        "site_type": "Urban Coastal Background",
+        "karakteristik_wilayah": "Kawasan Pesisir Pantai Barat Sumatra & Permukiman Urban",
+        "status_operasional": "Active",
+        "model_sensor": "Ecotech Serinus 60",
+        "baseline_pm25": 25.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-PLB-01",
+        "nearest_station_code": "AQMS-PLB-01",
+        "nearest_distance_km": 284.32,
+        "completeness_pct": 99.49,
+        "priority_distribution_score": 60.75,
+        "priority_distribution_rank": 7,
+        "priority_operational_score": 0.28,
+        "priority_operational_rank": 26,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          131.298,
+          -0.883
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-SRG-01",
+        "station_code": "AQMS-SRG-01",
+        "nama_sensor": "AQMS BMKG Kota Sorong",
+        "provinsi": "Papua Barat Daya",
+        "kota_kabupaten": "Kota Sorong",
+        "kecamatan": "Sorong Timur",
+        "region_group": "Papua Barat Daya",
+        "site_type": "Coastal / Regional Background",
+        "karakteristik_wilayah": "Pesisir Kepulauan Tropis, Pelabuhan & Coastal Background",
+        "status_operasional": "Active",
+        "model_sensor": "Aeroqual AQS 1",
+        "baseline_pm25": 18.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-PLU-01",
+        "nearest_station_code": "AQMS-PLU-01",
+        "nearest_distance_km": 1238.56,
+        "completeness_pct": 99.37,
+        "priority_distribution_score": 96.96,
+        "priority_distribution_rank": 2,
+        "priority_operational_score": 0.35,
+        "priority_operational_rank": 17,
+        "primary_trigger": "Keterpisahan ekstrem (1239 km)",
+        "recommendation_status": "Perlu ditinjau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          112.598,
+          -7.901
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-MLG-01",
+        "station_code": "AQMS-MLG-01",
+        "nama_sensor": "AQMS BMKG Kabupaten Malang",
+        "provinsi": "Jawa Timur",
+        "kota_kabupaten": "Kabupaten Malang",
+        "kecamatan": "Karangploso",
+        "region_group": "Jawa Timur",
+        "site_type": "Urban Background / Valley",
+        "karakteristik_wilayah": "Lembah Cekungan Dataran Tinggi, Pertanian & Agrowisata",
+        "status_operasional": "Active",
+        "model_sensor": "Met One BAM-1020 PM Monitor",
+        "baseline_pm25": 30.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-YKY-01",
+        "nearest_station_code": "AQMS-YKY-01",
+        "nearest_distance_km": 247.92,
+        "completeness_pct": 99.42,
+        "priority_distribution_score": 59.37,
+        "priority_distribution_rank": 8,
+        "priority_operational_score": 0.32,
+        "priority_operational_rank": 20,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.57,
+          -4.997
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-MRS-01",
+        "station_code": "AQMS-MRS-01",
+        "nama_sensor": "AQMS BMKG Kabupaten Maros",
+        "provinsi": "Sulawesi Selatan",
+        "kota_kabupaten": "Kabupaten Maros",
+        "kecamatan": "Mandai",
+        "region_group": "Sulawesi Selatan",
+        "site_type": "Industrial / Karst Perimeter",
+        "karakteristik_wilayah": "Kawasan Karst Maros-Pangkep, Industri Semen & Hinterland Urban",
+        "status_operasional": "Active",
+        "model_sensor": "Horiba APDA-372",
+        "baseline_pm25": 36.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-PLU-01",
+        "nearest_station_code": "AQMS-PLU-01",
+        "nearest_distance_km": 378.34,
+        "completeness_pct": 99.32,
+        "priority_distribution_score": 64.32,
+        "priority_distribution_rank": 3,
+        "priority_operational_score": 0.37,
+        "priority_operational_rank": 16,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          120.183,
+          -1.65
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-PLU-01",
+        "station_code": "AQMS-PLU-01",
+        "nama_sensor": "AQMS BMKG Kabupaten Poso",
+        "provinsi": "Sulawesi Tengah",
+        "kota_kabupaten": "Kabupaten Poso",
+        "kecamatan": "Lore Utara",
+        "region_group": "Sulawesi Tengah",
+        "site_type": "Regional / Clean Background",
+        "karakteristik_wilayah": "Hutan Hujan Tropis Pegunungan Primer (Pristine Control Group)",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 11.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-SM2-01",
+        "nearest_station_code": "AQMS-SM2-01",
+        "nearest_distance_km": 360.66,
+        "completeness_pct": 99.42,
+        "priority_distribution_score": 43.65,
+        "priority_distribution_rank": 15,
+        "priority_operational_score": 0.32,
+        "priority_operational_rank": 20,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.477,
+          0.066
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-STG-01",
+        "station_code": "AQMS-STG-01",
+        "nama_sensor": "AQMS BMKG Kabupaten Sintang",
+        "provinsi": "Kalimantan Barat",
+        "kota_kabupaten": "Kabupaten Sintang",
+        "kecamatan": "Sungai Tebelian",
+        "region_group": "Kalimantan Barat",
+        "site_type": "Peatland Boundary / Inland",
+        "karakteristik_wilayah": "Pedalaman Lembah Sungai Kapuas & Lahan Gambut Inland",
+        "status_operasional": "Active",
+        "model_sensor": "Met One BAM-1020 PM Monitor",
+        "baseline_pm25": 22.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-PKN-01",
+        "nearest_station_code": "AQMS-PKN-01",
+        "nearest_distance_km": 308.8,
+        "completeness_pct": 99.46,
+        "priority_distribution_score": 61.68,
+        "priority_distribution_rank": 5,
+        "priority_operational_score": 0.3,
+        "priority_operational_rank": 23,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          111.676,
+          -2.704
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-PKN-01",
+        "station_code": "AQMS-PKN-01",
+        "nama_sensor": "AQMS BMKG Kabupaten Kotawaringin Barat",
+        "provinsi": "Kalimantan Tengah",
+        "kota_kabupaten": "Kabupaten Kotawaringin Barat",
+        "kecamatan": "Arut Selatan",
+        "region_group": "Kalimantan Tengah",
+        "site_type": "Peatland Boundary / Airport",
+        "karakteristik_wilayah": "Kawasan Hutan Rawa Gambut Pesisir & Sentra Perkebunan Sawit",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 24.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-KTG-02",
+        "nearest_station_code": "AQMS-KTG-02",
+        "nearest_distance_km": 143.34,
+        "completeness_pct": 99.4,
+        "priority_distribution_score": 25.41,
+        "priority_distribution_rank": 20,
+        "priority_operational_score": 0.33,
+        "priority_operational_rank": 19,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.7,
+          -2.94
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-PLB-01",
+        "station_code": "AQMS-PLB-01",
+        "nama_sensor": "AQMS BMKG Talang Betutu Palembang",
+        "provinsi": "Sumatera Selatan",
+        "kota_kabupaten": "Kota Palembang",
+        "kecamatan": "Sukarami (Talang Betutu)",
+        "region_group": "Sumatera Selatan",
+        "site_type": "Peatland Buffer / Urban Artery",
+        "karakteristik_wilayah": "Kawasan Sentra Logistik, Pesisir Rawa Gambut & Koridor Sungai Musi",
+        "status_operasional": "Intermittent",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 42.0,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-JMB-02",
+        "nearest_station_code": "AQMS-JMB-02",
+        "nearest_distance_km": 186.47,
+        "completeness_pct": 112.34,
+        "priority_distribution_score": 57.04,
+        "priority_distribution_rank": 10,
+        "priority_operational_score": 25.91,
+        "priority_operational_rank": 4,
+        "primary_trigger": "Sensor Intermittent",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.178,
+          -5.17
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-PSW-01",
+        "station_code": "AQMS-PSW-01",
+        "nama_sensor": "AQMS BMKG Masgar Pesawaran",
+        "provinsi": "Lampung",
+        "kota_kabupaten": "Kabupaten Pesawaran",
+        "kecamatan": "Tegineneng (Masgar)",
+        "region_group": "Lampung",
+        "site_type": "Urban Background / Highway Corridor",
+        "karakteristik_wilayah": "Koridor Agroklimat, Perkebunan & Jalur Arteri Lintas Sumatra",
+        "status_operasional": "Active",
+        "model_sensor": "Met One BAM-1020 PM Monitor",
+        "baseline_pm25": 54.3,
+        "pm25_unit": "ppm",
+        "comparability_group": "ppm_original",
+        "nearest_station_id": "LOC-JKT-03",
+        "nearest_station_code": "AQMS-JKT-03",
+        "nearest_distance_km": 203.82,
+        "completeness_pct": 99.44,
+        "priority_distribution_score": 57.7,
+        "priority_distribution_rank": 9,
+        "priority_operational_score": 10.31,
+        "priority_operational_rank": 5,
+        "primary_trigger": "Unit logger ppm (perlu sinkronisasi)",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.4072,
+          -8.5211
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-MER-01",
+        "station_code": "AQMS-MER-01",
+        "nama_sensor": "AQMS BMKG Mopah Merauke",
+        "provinsi": "Papua Selatan",
+        "kota_kabupaten": "Kabupaten Merauke",
+        "kecamatan": "Merauke",
+        "region_group": "Papua",
+        "site_type": "Coastal / Remote Savanna",
+        "karakteristik_wilayah": "Kawasan Pesisir Selatan Papua, Sabana Tropis & Perbatasan Terluar",
+        "status_operasional": "Intermittent",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 16.5,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-SRG-01",
+        "nearest_station_code": "AQMS-SRG-01",
+        "nearest_distance_km": 1318.66,
+        "completeness_pct": 20.02,
+        "priority_distribution_score": 100.0,
+        "priority_distribution_rank": 1,
+        "priority_operational_score": 64.99,
+        "priority_operational_rank": 2,
+        "primary_trigger": "Sensor Intermittent; Kelengkapan kritis (20.0%)",
+        "recommendation_status": "Perlu ditinjau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          98.85,
+          3.59
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-MDN-01",
+        "station_code": "AQMS-MDN-01",
+        "nama_sensor": "AQMS BMKG Stasiun Klimatologi Medan",
+        "provinsi": "Sumatera Utara",
+        "kota_kabupaten": "Kota Medan",
+        "kecamatan": "Medan Tuntungan",
+        "region_group": "Sumatera Utara",
+        "site_type": "Urban Background",
+        "karakteristik_wilayah": "Kawasan Metropolitan Sumatra Utara, Pusat Bisnis & Arteri Komersial",
+        "status_operasional": "Intermittent",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 42.8,
+        "pm25_unit": "ppm",
+        "comparability_group": "ppm_original",
+        "nearest_station_id": "LOC-IDP-01",
+        "nearest_station_code": "AQMS-IDP-01",
+        "nearest_distance_km": 425.02,
+        "completeness_pct": 68.11,
+        "priority_distribution_score": 46.09,
+        "priority_distribution_rank": 13,
+        "priority_operational_score": 46.16,
+        "priority_operational_rank": 3,
+        "primary_trigger": "Sensor Intermittent; Kelengkapan suboptimal (68.1%)",
+        "recommendation_status": "Perlu ditinjau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          117.1563,
+          -0.4825
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-SM2-01",
+        "station_code": "AQMS-SM2-01",
+        "nama_sensor": "AQMS BMKG Samarinda APT Pranoto",
+        "provinsi": "Kalimantan Timur",
+        "kota_kabupaten": "Kota Samarinda",
+        "kecamatan": "Sungai Pinang",
+        "region_group": "Kalimantan Timur",
+        "site_type": "Industrial & Deforestation Buffer",
+        "karakteristik_wilayah": "Lembah Sungai Mahakam, Koridor Hutan Tropis-Tambang Batubara & Penyangga IKN",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 32.5,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-PLU-01",
+        "nearest_station_code": "AQMS-PLU-01",
+        "nearest_distance_km": 360.66,
+        "completeness_pct": 85.0,
+        "priority_distribution_score": 63.65,
+        "priority_distribution_rank": 4,
+        "priority_operational_score": 8.25,
+        "priority_operational_rank": 7,
+        "primary_trigger": "Operasional stabil dan sebaran moderat",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.856,
+          -3.475
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-BJB-01",
+        "station_code": "AQMS-BJB-01",
+        "nama_sensor": "AQMS BMKG Stasiun Klimatologi Banjarbaru",
+        "provinsi": "Kalimantan Selatan",
+        "kota_kabupaten": "Kota Banjarbaru",
+        "kecamatan": "Landasan Ulin",
+        "region_group": "Kalimantan Selatan",
+        "site_type": "Airport & Peatland Buffer",
+        "karakteristik_wilayah": "Dataran Rendah Rawa Gambut, Sentra Agroklimat & Koridor Bandara Syamsudin Noor",
+        "status_operasional": "Active",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 35.0,
+        "pm25_unit": "ppm",
+        "comparability_group": "ppm_original",
+        "nearest_station_id": "LOC-KTG-01",
+        "nearest_station_code": "AQMS-KTG-01",
+        "nearest_distance_km": 175.19,
+        "completeness_pct": 100.0,
+        "priority_distribution_score": 56.61,
+        "priority_distribution_rank": 11,
+        "priority_operational_score": 10.0,
+        "priority_operational_rank": 6,
+        "primary_trigger": "Unit logger ppm (perlu sinkronisasi)",
+        "recommendation_status": "Pantau"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.646,
+          -1.635
+        ]
+      },
+      "properties": {
+        "location_id": "LOC-JMB-02",
+        "station_code": "AQMS-JMB-02",
+        "nama_sensor": "AQMS BMKG Muaro Jambi",
+        "provinsi": "Jambi",
+        "kota_kabupaten": "Kabupaten Muaro Jambi",
+        "kecamatan": "Mestong",
+        "region_group": "Sumatera",
+        "site_type": "Peatland & Plantation Hinterland",
+        "karakteristik_wilayah": "Kawasan Hinterland Rawa Gambut & Perkebunan Kelapa Sawit Pedalaman",
+        "status_operasional": "Defective",
+        "model_sensor": "Thermo Scientific 5014i BAM",
+        "baseline_pm25": 68.9,
+        "pm25_unit": "ug/m3",
+        "comparability_group": "mass_concentration_ug_m3",
+        "nearest_station_id": "LOC-JMB-01",
+        "nearest_station_code": "AQMS-JMB-01",
+        "nearest_distance_km": 0.87,
+        "completeness_pct": 0.5,
+        "priority_distribution_score": 50.0,
+        "priority_distribution_rank": 12,
+        "priority_operational_score": 89.72,
+        "priority_operational_rank": 1,
+        "primary_trigger": "Sensor Defective; Kelengkapan kritis (0.5%)",
+        "recommendation_status": "Perlu ditinjau"
+      }
+    }
+  ]
+}
