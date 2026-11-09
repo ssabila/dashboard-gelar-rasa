@@ -1,8 +1,0 @@
-[
-{"faktor":"Arah angin","polutan":"PM2.5","n_stasiun":22,"min":0.0,"q1":0.0,"median":0.0,"q3":8.196512074719029e-05,"maks":0.11795523352250915,"rata_rata":0.005958985808813391,"kekuatan":"sangat kecil"},
-{"faktor":"Arah angin","polutan":"PM10","n_stasiun":22,"min":0.0,"q1":0.0,"median":0.0,"q3":0.00010740016220772605,"maks":0.11560486160325398,"rata_rata":0.0058488557742140375,"kekuatan":"sangat kecil"},
-{"faktor":"Arah angin","polutan":"SO2","n_stasiun":22,"min":0.0,"q1":0.0,"median":0.0,"q3":0.00010744920444663176,"maks":0.1006649623133967,"rata_rata":0.004640786929371541,"kekuatan":"sangat kecil"},
-{"faktor":"Arah angin","polutan":"CO","n_stasiun":22,"min":0.0,"q1":0.0,"median":3.9079834743304186e-05,"q3":0.00016823075286605493,"maks":0.08188259639218713,"rata_rata":0.004438748379046831,"kekuatan":"sangat kecil"},
-{"faktor":"Arah angin","polutan":"O3","n_stasiun":22,"min":0.0,"q1":0.0,"median":0.0,"q3":0.00011421458926346383,"maks":0.31807150920124794,"rata_rata":0.02160902973023351,"kekuatan":"sangat kecil"},
-{"faktor":"Arah angin","polutan":"NO2","n_stasiun":22,"min":0.0,"q1":0.0,"median":0.0,"q3":6.207643649265908e-05,"maks":0.01247446984734373,"rata_rata":0.0008420859374588201,"kekuatan":"sangat kecil"}
-]

@@ -53,16 +53,6 @@ export function useMonitoringNetworkSummary() {
   return useJson('monitoring_network_summary')
 }
 
-/** Kandidat prioritas per stasiun dengan skor D/P/R dan peringkat stabilitas. */
-export function useMonitoringGapCandidates() {
-  return useJson('monitoring_gap_candidates')
-}
-
-/** Korelasi harian antarstasiun, fit peluruhan, dan radius (bila teridentifikasi). */
-export function useStationCorrelation() {
-  return useJson('station_correlation')
-}
-
 /** Metadata stasiun lengkap (satu baris per location_id). */
 export function useStationMaster() {
   return useJson('station_master')
@@ -83,10 +73,6 @@ export function useStationNearestNeighbor() {
   return useJson('station_nearest_neighbor')
 }
 
-/** Agregasi stasiun menurut region, provinsi, tipe lokasi, dan karakteristik. */
-export function useStationRepresentation() {
-  return useJson('station_representation')
-}
 /** Dua peringkat prioritas terpisah: distribusi dan operasional. */
 export function useStationPriority() {
   return useJson('station_priority')

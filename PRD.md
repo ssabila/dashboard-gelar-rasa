@@ -224,7 +224,7 @@ Teks pada badge otomatis digelapkan agar terbaca di latar putih. Lihat keputusan
 | Bahasa | **JavaScript** (bukan TypeScript; PRD awal keliru menyebut `.ts`) |
 | Styling | **Tailwind CSS v4** + CSS kustom. Wajib ada `postcss.config.mjs` berisi plugin `@tailwindcss/postcss`; token dan radius dideklarasikan di `globals.css` (`@theme`), **tidak** memakai `tailwind.config` |
 | Visualisasi | Apache ECharts |
-| Peta | Leaflet + tile Carto Light (tanpa API key) |
+| Peta | Leaflet + tile OpenStreetMap resmi (tanpa API key) |
 | Ikon | Lucide React |
 | Data | JSON statis di `public/data/` hasil preprocessing Python; diambil lewat hook dengan cache modul |
 | Preprocessing | Python ≥ 3.10 (pandas, pyarrow, dsb.) |
@@ -235,7 +235,7 @@ Teks pada badge otomatis digelapkan agar terbaca di latar putih. Lihat keputusan
 ```
 gelar-rasa-2026/
 ├── public/data/
-│   ├── aqms/                      # by_station, summary, hourly_pattern, timeseries/, coverage_*, station_*, recommendations, ...
+│   ├── aqms/                      # dataset ringkas Overview dan Kecukupan Stasiun
 │   └── health/                    # summary, by_hospital
 ├── scripts/preprocess.py          # + notebook preprocessing kecukupan stasiun
 ├── src/
@@ -253,7 +253,7 @@ gelar-rasa-2026/
 │   │   ├── shared/                # FilterBar, IspuLegend
 │   │   └── charts/                # EChart
 │   ├── map/                       # StationMap, CoverageMap
-│   ├── hooks/                     # useFilter, useAqmsData, useHealthData, useCoverageData
+│   ├── hooks/                     # useFilter, useAqmsData, useHealthData, useKecukupanData
 │   └── lib/                       # constants, formatters, coverage
 ├── postcss.config.mjs
 ├── next.config.mjs, jsconfig.json, .eslintrc.json, .prettierrc
@@ -287,7 +287,7 @@ Jumlah baris final dan jumlah yang dibuang **dicatat dari log preprocessing** (P
 
 ### Kontrak JSON (jangan ubah struktur tanpa memperbarui hook)
 
-`aqms/summary.json`, `aqms/by_station.json`, `aqms/timeseries/{kode}.json`, `aqms/hourly_pattern.json`, `health/summary.json`, `health/by_hospital.json`, dan berkas kecukupan stasiun (`coverage_summary.json`, `coverage_kabupaten.geojson/.json`, `coverage_region.json`, `station_quality.json`, `station_correlation.json`, `recommendations.json`, `coverage_curve.json`).
+Overview memakai `aqms/station_master.json`, `station_pollutant_summary.json`, `overview_summary.json`, `network_summary.json`, `station_distribution.json`, `operational_readiness.json`, `nearest_station_distance.json`, agregat periode/wilayah, serta `T4_data_gabungan_harian.json` dan `T4_bridge_stasiun_rs.json`. Kecukupan Stasiun memakai `monitoring_network_summary.json`, `station_master.json`, `station_completeness.json`, `station_nearest_neighbor.json`, `station_pollutant_summary.json`, `station_priority.json`, dan `coverage_kabupaten.geojson`.
 
 **Direncanakan:** `aqms/monthly_by_station.json` (stasiun × bulan, tiap polutan) dan agregat kesehatan bulanan, agar filter periode global benar-benar memengaruhi KPI, peta, dan grafik.
 
@@ -320,4 +320,3 @@ Jumlah baris final dan jumlah yang dibuang **dicatat dari log preprocessing** (P
 - [ ] Laporan PDF mengikuti template, penamaan berkas benar, angka konsisten dengan dashboard
 - [ ] Pengumpulan dilakukan oleh ketua tim **sebelum 14 November 2026 pukul 23.59 WIB**
 - [ ] (Bila lolos) PPT final dipersiapkan
-

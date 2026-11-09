@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 /**
  * Hook generik untuk fetch JSON dari /public/data/.
@@ -60,7 +60,69 @@ export function useAqmsSummary() {
  * Dipakai: Overview (peta), Kecukupan Stasiun, tabel peringkat.
  */
 export function useStations() {
-  return useFetch('/data/aqms/by_station.json')
+  const master = useFetch('/data/aqms/station_master.json')
+  const pollutant = useFetch('/data/aqms/station_pollutant_summary.json')
+
+  const data = useMemo(() => {
+    if (!master.data || !pollutant.data) return null
+    const pm25ByLocation = new Map(
+      pollutant.data
+        .filter((row) => row.pollutant === 'pm25_ug_m3')
+        .map((row) => [row.location_id, row])
+    )
+    return master.data.map((station) => {
+      const pm25 = pm25ByLocation.get(station.location_id)
+      return {
+        ...station,
+        avg_pm25: pm25?.mean ?? null,
+        median_pm25: pm25?.median ?? null,
+        p90_pm25: pm25?.p90 ?? null,
+        valid_pm25_records: pm25?.valid_records ?? 0,
+        status_operasional: station.sensor_status,
+      }
+    })
+  }, [master.data, pollutant.data])
+
+  return {
+    data,
+    loading: master.loading || pollutant.loading,
+    error: master.error || pollutant.error,
+  }
+}
+
+/** Ringkasan lintas T3, T4, dan kecukupan jaringan untuk halaman Overview. */
+export function useOverviewSummary() {
+  return useFetch('/data/aqms/overview_summary.json')
+}
+
+export function useOverviewAnalytics() {
+  const network = useFetch('/data/aqms/network_summary.json')
+  const distribution = useFetch('/data/aqms/station_distribution.json')
+  const readiness = useFetch('/data/aqms/operational_readiness.json')
+  const nearest = useFetch('/data/aqms/nearest_station_distance.json')
+  const regional = useFetch('/data/aqms/aqms_per_pulau.json')
+  const annual = useFetch('/data/aqms/aqms_tahunan.json')
+  const seasonal = useFetch('/data/aqms/aqms_musim.json')
+  const workday = useFetch('/data/aqms/aqms_hari_kerja.json')
+  const monthly = useFetch('/data/aqms/aqms_bulanan.json')
+  const healthDaily = useFetch('/data/T4_data_gabungan_harian.json')
+  const healthBridge = useFetch('/data/T4_bridge_stasiun_rs.json')
+  const results = [network, distribution, readiness, nearest, regional, annual, seasonal, workday, monthly, healthDaily, healthBridge]
+  return {
+    network,
+    distribution,
+    readiness,
+    nearest,
+    regional,
+    annual,
+    seasonal,
+    workday,
+    monthly,
+    healthDaily,
+    healthBridge,
+    loading: results.some((result) => result.loading),
+    error: results.find((result) => result.error)?.error ?? null,
+  }
 }
 
 /**

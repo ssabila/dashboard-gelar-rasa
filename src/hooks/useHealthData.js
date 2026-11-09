@@ -44,7 +44,11 @@ function useFetch(path) {
  * File: public/data/health/summary.json
  */
 export function useHealthSummary() {
-  return useFetch('/data/health/summary.json')
+  const result = useFetch('/data/aqms/overview_summary.json')
+  return {
+    ...result,
+    data: result.data?.health ?? null,
+  }
 }
 
 /**
