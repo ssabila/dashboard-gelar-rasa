@@ -25,11 +25,11 @@
   --color-border:          rgba(24, 49, 79, 0.08);
   --color-border-strong:   rgba(24, 49, 79, 0.18);
 
-  --ispu-baik:        #4ADE80;
-  --ispu-sedang:      #FACC15;
-  --ispu-tidak-sehat: #FB923C;
-  --ispu-sangat-tidak:#F87171;
-  --ispu-berbahaya:   #C026D3;
+  --ispu-baik:             #22C55E; /* Hijau */
+  --ispu-sedang:           #3B82F6; /* Biru */
+  --ispu-tidak-sehat:      #FACC15; /* Kuning */
+  --ispu-sangat-tidak:     #EF4444; /* Merah */
+  --ispu-berbahaya:        #111827; /* Hitam */
 
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
@@ -296,6 +296,14 @@ body:has(.app-sidebar.is-collapsed) .app-main { margin-left: calc(var(--sidebar-
 .map-foot { margin-top: 0.9rem; }
 
 .rank-list { display: flex; flex-direction: column; gap: 0.95rem; margin: 0; padding: 0; list-style: none; }
+.rank-list--wide {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.95rem 2.5rem;
+}
+@media (max-width: 700px) {
+  .rank-list--wide { grid-template-columns: 1fr; }
+}
 .rank-row { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) auto; align-items: center; gap: 0.3rem 0.7rem; }
 .rank-no { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: rgba(56, 78, 119, 0.09); color: var(--color-elevated); font-size: 0.7rem; font-weight: 700; }
 .rank-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.82rem; font-weight: 600; }
@@ -499,46 +507,100 @@ body:has(.app-sidebar.is-collapsed) .app-main { margin-left: calc(var(--sidebar-
 }
 .card--dark .overview-data-chip svg { opacity: 0.6; }
 
-/* ── Grid navigasi per pertanyaan ── */
+/* ── Navigasi pertanyaan ── */
 .overview-nav-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--gap);
+}
+
+/* Kartu terakhir melebar bila jumlah item ganjil di baris terakhir */
+.overview-nav-grid > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .overview-nav-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 0.9rem;
-  border-radius: var(--radius-btn);
+  gap: 0.85rem;
+  min-height: 4.5rem;
+  padding: 1rem 1.1rem 1rem 1.25rem;
+  overflow: hidden;
+  border-radius: var(--radius-card);
   border: 1px solid var(--color-border);
   background: #fff;
+  box-shadow: var(--shadow-card);
   color: var(--color-text-primary);
-  font-size: 0.8rem;
-  font-weight: 600;
   text-decoration: none;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+/* Garis aksen di tepi kiri, warna sesuai topik */
+.overview-nav-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--nav-c, var(--color-elevated));
 }
 
 .overview-nav-card:hover {
-  border-color: var(--color-elevated);
-  box-shadow: 0 2px 10px rgba(24, 49, 79, 0.08);
+  border-color: color-mix(in srgb, var(--nav-c) 50%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--nav-c) 22%, transparent);
+  transform: translateY(-2px);
 }
 
+.overview-nav-card:focus-visible {
+  outline: 2px solid var(--nav-c);
+  outline-offset: 3px;
+}
+
+/* Nomor urut kecil di pojok kanan atas */
+.overview-nav-index {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.85rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-text-disabled);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ikon dengan latar solid lembut, lebih kontras dari versi sebelumnya */
 .overview-nav-icon {
   display: grid;
   place-items: center;
   flex: none;
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 0.45rem;
-  background: color-mix(in srgb, var(--nav-c, var(--color-elevated)) 16%, #fff);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--nav-c) 28%, #fff);
+  color: var(--color-surface);
+  transition: background var(--transition-fast);
+}
+
+.overview-nav-card:hover .overview-nav-icon {
+  background: var(--nav-c);
+  color: var(--color-surface);
+}
+
+.overview-nav-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
   color: var(--color-text-primary);
 }
 
 .overview-nav-arrow {
-  margin-left: auto;
   flex: none;
   color: var(--color-text-disabled);
   transition: transform var(--transition-fast), color var(--transition-fast);
@@ -546,11 +608,16 @@ body:has(.app-sidebar.is-collapsed) .app-main { margin-left: calc(var(--sidebar-
 
 .overview-nav-card:hover .overview-nav-arrow {
   transform: translateX(3px);
-  color: var(--color-elevated);
+  color: var(--color-surface);
 }
 
 @media (max-width: 640px) {
-  .overview-nav-grid { grid-template-columns: 1fr; }
+  .overview-nav-grid {
+    grid-template-columns: 1fr;
+  }
+  .overview-nav-grid > :last-child:nth-child(odd) {
+    grid-column: auto;
+  }
 }
 
 /* ── KPI Hierarkis ─────────────────────────────────────────────────────
@@ -666,20 +733,62 @@ body:has(.app-sidebar.is-collapsed) .app-main { margin-left: calc(var(--sidebar-
  * ─────────────────────────────────────────────────────────────────────── */
 .ov-map-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
   gap: var(--gap);
-  align-items: start; /* panel kanan tidak memanjang melebihi peta */
+  align-items: stretch;
 }
-.ov-map-card {
-  padding: 0.75rem;
-}
-.ov-map-side {
+.ov-map-card { display: flex; flex-direction: column; padding: 0.75rem; }
+.ov-map-card .map-frame { flex: 1; min-height: 300px; }
+.ov-map-side .ov-ispu-card,
+.ov-ispu-card {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
 }
+
 @media (max-width: 1100px) {
   .ov-map-layout { grid-template-columns: 1fr; }
+}
+
+
+.ov-ispu-donut {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+}
+
+.ispu-legend-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+  margin: 0.75rem 0 0;
+  padding: 0.85rem 0 0;
+  list-style: none;
+  border-top: 1px dashed var(--color-border-strong);
+}
+
+.ispu-legend-row li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.ispu-legend-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ispu-legend-row li strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.ispu-legend-row li.is-zero {
+  opacity: 0.45;
 }
 
  

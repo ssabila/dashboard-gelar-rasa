@@ -223,19 +223,16 @@ function MapSection({ scoped, onSelect }) {
         {/* Peta — kolom kiri */}
         <Card className="ov-map-card">
           <div className="map-frame">
-            <StationMap stations={scoped} onSelect={onSelect} height="420px" />
+            <StationMap stations={scoped} onSelect={onSelect} height="400px" />
           </div>
           <div className="map-foot" style={{ marginTop: '0.75rem' }}>
             <IspuLegend note="ISPU PM2.5 · Permen LHK No. 14/2020" />
           </div>
         </Card>
 
-        {/* Panel kanan — peringkat + donut, tinggi alami */}
-        <div className="ov-map-side">
-          <StationRanking stations={scoped} />
           <IspuDonut stations={scoped} />
         </div>
-      </div>
+         <StationRanking stations={scoped} />
     </Section>
   )
 }
@@ -306,13 +303,19 @@ function FindingsSection({ scoped, avgPm25, summary, analytics }) {
       </div>
 
       <div className="overview-nav-grid">
-        {NAV_LINKS.map(({ question, href, icon: Icon, color }) => (
-          <a key={href} href={href} className="overview-nav-card">
-            <span className="overview-nav-icon" style={{ '--nav-c': color }} aria-hidden="true">
-              <Icon size={15} />
+        {NAV_LINKS.map(({ question, href, icon: Icon, color }, i) => (
+          <a
+            key={href}
+            href={href}
+            className="overview-nav-card"
+            style={{ '--nav-c': color }}
+          >
+            <span className="overview-nav-index">{String(i + 1).padStart(2, '0')}</span>
+            <span className="overview-nav-icon" aria-hidden="true">
+              <Icon size={18} strokeWidth={2} />
             </span>
-            <span>{question}</span>
-            <ArrowRight size={14} className="overview-nav-arrow" aria-hidden="true" />
+            <span className="overview-nav-text">{question}</span>
+            <ArrowRight size={16} className="overview-nav-arrow" aria-hidden="true" />
           </a>
         ))}
       </div>
