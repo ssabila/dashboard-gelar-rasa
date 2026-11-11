@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { Activity, AlertTriangle, ArrowRight, Gauge, Radio, Ruler } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
 import { Card, CardHeader } from '@/components/ui/Card'
@@ -16,8 +16,8 @@ import {
   useStationPollutantSummary,
   useStationPriority,
   useCoverageKabupatenGeoJSON,
+  useStationRepresentation,
 } from '@/hooks/useKecukupanData'
-
 const NetworkMap = dynamic(
   () => import('./NetworkMap').then((m) => m.NetworkMap),
   { ssr: false, loading: () => <LoadingSpinner label="Memuat peta..." /> }
@@ -112,7 +112,7 @@ function buildTrigger(status, comp, dist) {
   return reasons.length ? reasons.slice(0, 2).join('; ') : null
 }
 
-function buildModel({ summary, stationsRaw, comp, nearest, pollutant, priority, geo }) {
+function buildModel({ summary, stationsRaw, comp, nearest, pollutant, priority, geo, repr }) {
   const nnBy  = new Map(nearest.map((n) => [n.location_id, n]))
   const opsBy = new Map((priority?.operational_ranking ?? []).map((o) => [o.location_id, o]))
 
@@ -140,6 +140,7 @@ function buildModel({ summary, stationsRaw, comp, nearest, pollutant, priority, 
       nearest_station_code:  nn?.nearest_station_code ?? null,
       primary_trigger:       buildTrigger(status, completeness, dist),
       recommendation_status: ops ? (ops.operational_score >= OPS_REVIEW ? 'Perlu ditinjau' : 'Pantau') : null,
+      islandStations: (repr?.by_island ?? []).sort((a, b) => b.station_count - a.station_count),
     }
   })
 
@@ -265,6 +266,17 @@ function Bridge({ children }) {
    PAGE
 ═══════════════════════════════════════════════════════════════════════════ */
 export default function KecukupanStasiunPage() {
+  const [provincesGeo, setProvincesGeo] = useState(null)
+  useEffect(() => {
+    fetch('/data/geo/indonesia_provinces.geojson')
+      .then((res) => {
+        if (!res.ok) throw new Error('Gagal memuat GeoJSON provinsi')
+        return res.json()
+      })
+      .then((data) => setProvincesGeo(data))
+      .catch((err) => console.error(err))
+  }, [])
+
   const summaryHook   = useMonitoringNetworkSummary()
   const stationsHook  = useStationMaster()
   const compHook      = useStationCompleteness()
@@ -272,8 +284,9 @@ export default function KecukupanStasiunPage() {
   const pollutantHook = useStationPollutantSummary()
   const priorityHook  = useStationPriority()
   const geoHook       = useCoverageKabupatenGeoJSON()
+  const reprHook = useStationRepresentation()
 
-  const core  = [summaryHook, stationsHook, compHook, nearestHook, pollutantHook, geoHook]
+  const core = [summaryHook, stationsHook, compHook, nearestHook, pollutantHook, reprHook]
   const error = core.find((h) => h.error)?.error
   const ready = core.every((h) => h.data) && !core.some((h) => h.loading)
 
@@ -288,9 +301,10 @@ export default function KecukupanStasiunPage() {
             pollutant:   pollutantHook.data,
             priority:    priorityHook.data ?? null,
             geo:         geoHook.data,
+            repr: reprHook.data ?? null,
           })
         : null,
-    [ready, summaryHook.data, stationsHook.data, compHook.data, nearestHook.data, pollutantHook.data, priorityHook.data, geoHook.data]
+    [ready, summaryHook.data, stationsHook.data, compHook.data, nearestHook.data, pollutantHook.data, priorityHook.data, geoHook.data, reprHook.data]
   )
 
   const layout = {
@@ -392,7 +406,7 @@ export default function KecukupanStasiunPage() {
               </span>
             ))}
           </div>
-          <NetworkMap geo={m.geo} stations={m.stations} height="520px" />
+          <NetworkMap geo={m.geo} provincesGeo={provincesGeo} stations={m.stations} height="520px" />
           <p style={{ marginTop: 10, fontSize: '0.72rem', color: SOFT }}>
             Warna polygon menunjukkan jumlah stasiun atau sensor per kabupaten/kota. Klik polygon yang memiliki stasiun untuk melihat detail pemantauan dan peatland.
           </p>
@@ -405,6 +419,14 @@ export default function KecukupanStasiunPage() {
               subtitle={`Terbanyak: ${topSite?.label ?? '—'}. Beragamnya tipe lokasi menentukan representativitas data.`}
             />
             <HBar rows={m.siteTypes} />
+          </Card>
+
+          <Card>
+            <CardHeader title="Stasiun per pulau" subtitle="Pengelompokan berdasarkan pulau besar." />
+            <HBar rows={m.islandStations.map((r) => ({
+              label: r.pulau ?? r.island ?? r.category ?? r[Object.keys(r)[0]],
+              value: r.station_count,
+            }))} />
           </Card>
         </div>
 

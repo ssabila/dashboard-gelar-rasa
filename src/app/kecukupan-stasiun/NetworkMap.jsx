@@ -35,7 +35,8 @@ function regionKey(station) {
 function colorScale(value, max, colors) {
   if (!value) return '#F8FAFC'
   const ratio = max ? Math.min(1, value / max) : 0
-  return ratio > 0.66 ? colors[1] : ratio > 0.33 ? '#7DD3FC' : colors[0]
+  const middleColor = colors === ADMIN_COLORS.sensor ? '#FCD34D' : '#7DD3FC'
+  return ratio > 0.66 ? colors[1] : ratio > 0.33 ? middleColor : colors[0]
 }
 
 function pointInRing(point, ring) {
@@ -114,6 +115,18 @@ export function NetworkMap({
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
       }).addTo(map)
 
+      if (provincesGeo) {
+      L.geoJSON(provincesGeo, {
+        style: {
+          fillColor: 'transparent',
+          color: '#94A3B8',
+          weight: 0.6,
+          opacity: 0.5,
+        },
+        interactive: false,
+      }).addTo(map)
+    }
+
       // Zoom control di pojok kanan bawah agar tidak menabrak overlay filter
       L.control.zoom({ position: 'bottomright' }).addTo(map)
 
@@ -135,6 +148,8 @@ export function NetworkMap({
         mapInstanceRef.current = null
       }
       polygonLayerRef.current = null
+      markersLayerRef.current = null
+      linksLayerRef.current = null
     }
   }, [])
 
@@ -154,9 +169,16 @@ export function NetworkMap({
           isFiniteCoordinate(station) &&
           pointInGeometry([station.longitude_dd, station.latitude_dd], feature.geometry)
         )
+        // Atribut GeoJSON mengikuti nama kolom SHP: nmkab dan nmprov.
+        // Fallback kabupaten/provinsi tetap dipertahankan untuk GeoJSON lama.
+        const featureKabupaten = props.nmkab ?? props.kabupaten ?? props.KABKOTNAME ?? props.NAMOBJ
+        const featureProvinsi = props.nmprov ?? props.provinsi ?? props.PROVNAME ?? props.WADMPR
         const matched = inside.length
           ? inside
-          : stations.filter((station) => regionKey(station) === `${normalizeRegion(props.kabupaten)}|${normalizeRegion(props.provinsi)}`)
+          : stations.filter((station) =>
+              regionKey(station) ===
+              `${normalizeRegion(featureKabupaten)}|${normalizeRegion(featureProvinsi)}`
+            )
         const stats = { stations: matched, sensorCount: matched.reduce((sum, station) => sum + Number(station.sensor_count ?? 0), 0) }
         statsByFeature.set(feature, stats)
         return stats
@@ -185,6 +207,8 @@ export function NetworkMap({
           const props = feature.properties ?? {}
           const stats = statsByFeature.get(feature) ?? featureStats(feature)
           const regionStations = stats?.stations ?? []
+          const namaKabupaten = props.nmkab ?? props.kabupaten ?? props.KABKOTNAME ?? props.NAMOBJ ?? 'Kabupaten/kota tidak diketahui'
+          const namaProvinsi = props.nmprov ?? props.provinsi ?? props.PROVNAME ?? props.WADMPR ?? 'Provinsi tidak diketahui'
           if (regionStations.length === 0) return
 
           const peatStations = regionStations.filter(isPeatland)
@@ -197,8 +221,8 @@ export function NetworkMap({
             : '<div style="margin-top:7px;padding-top:7px;border-top:1px solid #E2E8F0;color:#64748B"><strong>Detail peatland:</strong> Tidak teridentifikasi pada metadata stasiun.</div>'
           polygon.bindPopup(`
             <div style="font-family:'Plus Jakarta Sans',sans-serif;min-width:240px">
-              <strong style="font-size:14px;color:#18314F">${esc(props.kabupaten)}</strong>
-              <div style="font-size:11px;color:#64748B;margin:2px 0 8px">${esc(props.provinsi)}</div>
+              <strong style="font-size:14px;color:#18314F">${esc(namaKabupaten)}</strong>
+              <div style="font-size:11px;color:#64748B;margin:2px 0 8px">${esc(namaProvinsi)}</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px">
                 <div>Stasiun<br/><strong>${regionStations.length}</strong></div>
                 <div>Sensor<br/><strong>${sensorCount}</strong></div>
@@ -247,8 +271,9 @@ export function NetworkMap({
         const lon = st.geometry?.coordinates ? st.geometry.coordinates[0] : st.longitude_dd
         const nearestCode = props.nearest_station_code || props.nearest_station_id
         const isSelected = selectedStation && (selectedStation.location_id === props.location_id || selectedStation.station_code === props.station_code)
+        const hasValidCoordinates = Number.isFinite(lat) && Number.isFinite(lon)
 
-        if ((showAllLinks || isSelected) && coordByStation[nearestCode]) {
+        if (hasValidCoordinates && (showAllLinks || isSelected) && coordByStation[nearestCode]) {
           const targetCoord = coordByStation[nearestCode]
           const lineColor = isSelected ? '#EF4444' : '#64748B'
           const lineWeight = isSelected ? 3 : 1.5
@@ -416,6 +441,17 @@ export function NetworkMap({
     })
   }, [stations, selectedStation, colorMode, showAllLinks, mapReady, onSelectStation])
 
+  useEffect(() => {
+    if (!mapReady || !mapInstanceRef.current || !provincesGeo) return
+    import('leaflet').then((L) => {
+      L.geoJSON(provincesGeo, {
+        style: { fillColor: 'transparent', color: '#94A3B8', weight: 0.6, opacity: 0.5 },
+        interactive: false,
+        pane: 'tilePane',
+      }).addTo(mapInstanceRef.current)
+    })
+  }, [mapReady, provincesGeo])
+
   // Reset View Handler
   const handleResetView = () => {
     if (mapInstanceRef.current) {
@@ -438,7 +474,7 @@ export function NetworkMap({
             className={`px-2.5 py-1 rounded-md transition-colors ${
               colorMode === 'status'
                 ? 'bg-slate-800 text-white shadow-xs'
-                : 'text-slate-640 hover:text-slate-900 hover:bg-slate-100'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             Status Sensor
@@ -454,6 +490,41 @@ export function NetworkMap({
           >
             Satuan PM2.5
           </button>
+        </div>
+
+        {/* Legenda mode pewarnaan marker */}
+        <div className="rounded-lg bg-white/95 backdrop-blur-sm px-3 py-2 shadow-md border border-slate-200/80">
+          {colorMode === 'status' ? (
+            <div className="flex flex-col gap-1 text-[11px] text-slate-600">
+              {Object.entries(STATUS_COLORS).map(([status, color]) => {
+                const count = stations.filter(
+                  (f) => (f.properties?.status_operasional ?? f.status_operasional) === status
+                ).length
+                if (count === 0) return null
+                return (
+                  <div key={status} className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full border border-white shadow-xs" style={{ background: color }} />
+                    <span>{status} ({count} Stasiun)</span>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1 text-[11px] text-slate-600">
+              {Object.entries(UNIT_COLORS).map(([unit, color]) => {
+                const count = stations.filter(
+                  (f) => (f.properties?.pm25_unit ?? f.pm25_unit) === unit
+                ).length
+                if (count === 0) return null
+                return (
+                  <div key={unit} className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full border border-white shadow-xs" style={{ background: color }} />
+                    <span>{unit === 'ug/m3' ? 'µg/m³' : unit} ({count} Stasiun)</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
         <div className="inline-flex rounded-lg bg-white/95 backdrop-blur-sm p-1 shadow-md border border-slate-200/80 text-xs font-medium">
