@@ -36,15 +36,18 @@ function DatePill({ id, label, start, end, presets, onChange, openId, setOpenId 
   const close = () => setOpenId(null)
   useDismiss(ref, open, close)
 
-  // Sinkronkan draf dengan nilai terbaru (mis. setelah Reset) setiap popover dibuka
-  useEffect(() => { if (open) { setS(start); setE(end) } }, [open, start, end])
-
   const matched = presets.find((p) => p.start === s && p.end === e)?.label
 
   return (
     <div ref={ref} className="fpill-wrap">
       <button type="button" className={`fpill${open ? ' active' : ''}`} aria-expanded={open} aria-haspopup="dialog"
-        onClick={() => setOpenId(open ? null : id)}>
+        onClick={() => {
+          if (!open) {
+            setS(start)
+            setE(end)
+          }
+          setOpenId(open ? null : id)
+        }}>
         <CalendarDays size={14} aria-hidden="true" />
         <span>{fmtDate(start)} – {fmtDate(end)}</span>
         <ChevronDown size={12} aria-hidden="true" />

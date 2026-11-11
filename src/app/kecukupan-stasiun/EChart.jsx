@@ -16,8 +16,11 @@ export function EChart({ option, height = 320, onEvents }) {
   const chartRef = useRef(null)
   const optRef = useRef(option)
   const evRef = useRef(onEvents)
-  optRef.current = option
-  evRef.current = onEvents
+
+  useEffect(() => {
+    optRef.current = option
+    evRef.current = onEvents
+  }, [option, onEvents])
 
   useEffect(() => {
     let disposed = false

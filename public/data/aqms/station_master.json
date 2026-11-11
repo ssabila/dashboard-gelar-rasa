@@ -32,7 +32,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Jawa"
   },
   {
     "location_id": "LOC-JKT-02",
@@ -67,7 +68,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Jawa"
   },
   {
     "location_id": "LOC-JKT-03",
@@ -102,7 +104,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Jawa"
   },
   {
     "location_id": "LOC-KTG-01",
@@ -137,7 +140,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Kalimantan"
   },
   {
     "location_id": "LOC-KTG-02",
@@ -172,7 +176,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Kalimantan"
   },
   {
     "location_id": "LOC-BGR-01",
@@ -207,7 +212,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Jawa"
   },
   {
     "location_id": "LOC-BGR-02",
@@ -242,7 +248,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Jawa"
   },
   {
     "location_id": "LOC-YKY-01",
@@ -277,7 +284,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Lainnya"
   },
   {
     "location_id": "LOC-IDP-01",
@@ -312,7 +320,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-KTB-01",
@@ -347,7 +356,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-PKU-01",
@@ -382,7 +392,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-JMB-01",
@@ -417,7 +428,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-BTM-01",
@@ -452,7 +464,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-BGL-01",
@@ -487,7 +500,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-SRG-01",
@@ -522,7 +536,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Papua"
   },
   {
     "location_id": "LOC-MLG-01",
@@ -557,7 +572,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Jawa"
   },
   {
     "location_id": "LOC-MRS-01",
@@ -592,7 +608,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sulawesi"
   },
   {
     "location_id": "LOC-PLU-01",
@@ -627,7 +644,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sulawesi"
   },
   {
     "location_id": "LOC-STG-01",
@@ -662,7 +680,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Kalimantan"
   },
   {
     "location_id": "LOC-PKN-01",
@@ -697,7 +716,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Kalimantan"
   },
   {
     "location_id": "LOC-PLB-01",
@@ -732,7 +752,8 @@
     "sensor_status": "Intermittent",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-PSW-01",
@@ -767,7 +788,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-MER-01",
@@ -802,7 +824,8 @@
     "sensor_status": "Intermittent",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Papua"
   },
   {
     "location_id": "LOC-MDN-01",
@@ -837,7 +860,8 @@
     "sensor_status": "Intermittent",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   },
   {
     "location_id": "LOC-SM2-01",
@@ -872,7 +896,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Kalimantan"
   },
   {
     "location_id": "LOC-BJB-01",
@@ -907,7 +932,8 @@
     "sensor_status": "Active",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Kalimantan"
   },
   {
     "location_id": "LOC-JMB-02",
@@ -942,6 +968,7 @@
     "sensor_status": "Defective",
     "date_start": "2024-01-01T00:00:00",
     "date_end": "2026-10-14T23:00:00",
-    "nominal_resolution": "1 hour (nominal)"
+    "nominal_resolution": "1 hour (nominal)",
+    "pulau": "Sumatera"
   }
 ]

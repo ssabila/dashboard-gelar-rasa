@@ -253,12 +253,15 @@ body:has(.app-sidebar.is-collapsed) .app-main { margin-left: calc(var(--sidebar-
 .priority-table-scroll { height: 18rem; }
 
 /* ── Layout ── */
-.layout-main { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+.layout-main { display: grid; grid-template-columns: minmax(0, 2.35fr) minmax(17rem, 0.9fr); gap: var(--gap); align-items: stretch; }
+.station-detail-card { height: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
+.station-detail-card > div:last-child { flex: 1; align-content: start; }
 .layout-side { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
 .layout-map { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(18rem, 1fr); gap: var(--gap); align-items: stretch; }
 .layout-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
 @media (max-width: 1100px) {
   .layout-main, .layout-map, .layout-3 { grid-template-columns: minmax(0, 1fr); }
+  .station-detail-card { height: auto; }
 }
 
 /* ═══ Controls ════════════════════════════════════════════════════════════ */
@@ -473,6 +476,142 @@ body:has(.app-sidebar.is-collapsed) .app-main { margin-left: calc(var(--sidebar-
 }
 .link-more { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: auto; padding-top: 0.25rem; font-size: 0.78rem; font-weight: 700; color: var(--color-elevated); text-decoration: none; }
 .link-more:hover { text-decoration: underline; }
+
+/* ═══ Overview — tambahan untuk revisi ══════════════════════════════════
+ * Tambahkan blok ini ke src/app/globals.css, di bagian "Overview panels"
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Baris chip cakupan data di dalam card dark ── */
+.overview-data-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Override warna chip agar cocok di latar gelap */
+.card--dark .overview-data-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(240, 244, 255, 0.1);
+  border: 1px solid rgba(240, 244, 255, 0.18);
+  color: rgba(240, 244, 255, 0.78);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.card--dark .overview-data-chip svg {
+  opacity: 0.65;
+}
+
+/* ── Grid navigasi per pertanyaan ── */
+.overview-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+  gap: 0.5rem;
+}
+
+.overview-nav-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--transition-fast), background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.overview-nav-card:hover {
+  border-color: var(--color-elevated);
+  background: rgba(56, 78, 119, 0.04);
+  box-shadow: 0 2px 10px rgba(24, 49, 79, 0.08);
+}
+
+.overview-nav-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--nav-c, var(--color-elevated)) 18%, #fff);
+}
+
+.overview-nav-arrow {
+  margin-left: auto;
+  flex: none;
+  color: var(--color-text-disabled);
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.overview-nav-card:hover .overview-nav-arrow {
+  transform: translateX(3px);
+  color: var(--color-elevated);
+}
+
+/* ── Catatan metodologi ── */
+.overview-method {
+  padding: 1.1rem 1.35rem;
+}
+
+.overview-method h4 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+}
+
+.overview-method ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.overview-method li {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.overview-method li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--color-text-disabled);
+}
+
+.overview-method code {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.75em;
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+  background: rgba(24, 49, 79, 0.07);
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 640px) {
+  .overview-nav-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ═══ Leaflet ═════════════════════════════════════════════════════════════ */
 .leaflet-container { background: #e8edf3; font-family: var(--font-body); }
