@@ -1,14 +1,17 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import {
   Activity,
   AlertTriangle,
+  ArrowRight,
   CalendarRange,
   CheckCircle2,
   Database,
-  Gauge,
+  GitCompareArrows,
+  HeartPulse,
+  Lightbulb,
   MapPin,
   Network,
   Ruler,
@@ -16,7 +19,6 @@ import {
 } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
 import { Card, CardHeader } from '@/components/ui/Card'
-import { MetricCard } from '@/components/ui/MetricCard'
 import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
 import { FilterBar } from '@/components/shared/FilterBar'
 import { IspuLegend } from '@/components/shared/IspuLegend'
@@ -24,7 +26,7 @@ import { useOverviewAnalytics, useOverviewSummary, useStations } from '@/hooks/u
 import { useFilter } from '@/hooks/useFilter'
 import { POLLUTANTS } from '@/lib/constants'
 import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
-import { IspuDonut, KeyInsights, StationRanking, shortName } from './panels'
+import { IspuDonut, StationRanking, shortName } from './panels'
 
 const StationMap = dynamic(
   () => import('@/map/StationMap').then((m) => m.StationMap),
@@ -32,391 +34,412 @@ const StationMap = dynamic(
 )
 
 const EMPTY = []
+const NAAQS_ANNUAL = 15 // PP No. 22/2021 tahunan
 
+/* ─── Helpers ──────────────────────────────────────────────────────────── */
 function isMassConcentration(row) {
   return row && !String(row.satuan ?? row.unit ?? '').toLowerCase().includes('ppm')
 }
-
 function isInPeriod(value, start, end) {
-  const date = String(value ?? '')
-  return date >= start.slice(0, 7) && date <= end.slice(0, 7)
+  const d = String(value ?? '')
+  return d >= start.slice(0, 7) && d <= end.slice(0, 7)
+}
+function stationId(s) {
+  return String(s?.station_code ?? '').replace(/^AQMS-/, '')
+}
+function korelasiLabel(rho) {
+  if (rho == null) return '—'
+  return rho >= 0.5 ? 'kuat' : rho >= 0.3 ? 'sedang' : 'lemah'
 }
 
-function stationId(station) {
-  return String(station?.station_code ?? '').replace(/^AQMS-/, '')
-}
+/* ─── Bagian 1: Header gelap ───────────────────────────────────────────── */
+function OverviewHeader({ k, filters, avgCompleteness, validObs }) {
+  const exceedAnnual = k.scoped.filter(
+    (s) => Number.isFinite(s.avg_pm25) && s.avg_pm25 > NAAQS_ANNUAL
+  ).length
+  const avgDisplay = k.avg != null ? formatNumber(k.avg, 1) : '—'
 
-function BarList({ rows, labelKey, valueKey, digits = 1, color = 'var(--color-elevated)', suffix = '' }) {
-  const valid = rows.filter((row) => Number.isFinite(Number(row[valueKey])))
-  const max = Math.max(...valid.map((row) => Number(row[valueKey])), 1)
-
-  if (!valid.length) return <p className="empty">Belum ada data untuk ditampilkan.</p>
   return (
-    <div className="overview-bar-list">
-      {valid.map((row) => (
-        <div className="overview-bar-row" key={String(row[labelKey])}>
-          <span className="overview-bar-label" title={row[labelKey]}>{row[labelKey]}</span>
-          <span className="overview-bar-track">
-            <span className="overview-bar-fill" style={{ width: `${Math.max(2, (Number(row[valueKey]) / max) * 100)}%`, background: color }} />
+    <Card variant="dark">
+      <p className="headline">
+        {exceedAnnual > 0 ? (
+          <>
+            Dari {k.total} stasiun,{' '}
+            <strong>{exceedAnnual} melampaui baku mutu tahunan PM2.5</strong>{' '}
+            ({NAAQS_ANNUAL} µg/m³).{' '}
+          </>
+        ) : (
+          <>Seluruh {k.total} stasiun berada di bawah baku mutu tahunan ({NAAQS_ANNUAL} µg/m³). </>
+        )}
+        Rata-rata nasional <strong>{avgDisplay} µg/m³</strong> pada periode{' '}
+        {filters.dateStart.slice(0, 7).replace('-', '/')} –{' '}
+        {filters.dateEnd.slice(0, 7).replace('-', '/')}.
+      </p>
+      <div className="overview-data-row">
+        <span className="overview-data-chip">
+          <CalendarRange size={12} aria-hidden="true" />
+          Jan 2024 – Okt 2026
+        </span>
+        {validObs != null && (
+          <span className="overview-data-chip">
+            <Database size={12} aria-hidden="true" />
+            {formatNumber(validObs)} observasi valid
           </span>
-          <strong className="overview-bar-value">{formatNumber(row[valueKey], digits)}{suffix}</strong>
+        )}
+        {avgCompleteness != null && (
+          <span className="overview-data-chip">
+            <CheckCircle2 size={12} aria-hidden="true" />
+            Kelengkapan rata-rata {formatNumber(avgCompleteness, 1)}%
+          </span>
+        )}
+      </div>
+    </Card>
+  )
+}
+
+/* ─── Bagian 2: KPI — satu baris dengan hierarki lebar kolom ───────────── */
+/*
+ * Referensi desain (gambar hijau):
+ *   1 card HERO besar (PM2.5) di kiri → lebar ~2.2×
+ *   4 card pendukung di kanan, berjajar dalam 1 baris
+ * Semua satu baris, tidak ada baris kedua yang kelihatan "kosong".
+ */
+function KpiSection({ k, medianDistance, health }) {
+  const { who } = POLLUTANTS.pm25
+  const valid = k.scoped.filter((s) => Number.isFinite(s.avg_pm25))
+  const exceedAnnual = valid.filter((s) => s.avg_pm25 > NAAQS_ANNUAL).length
+  const cat = k.avg != null ? getIspuFromPm25(k.avg) : null
+
+  return (
+    <div className="ov-kpi-row">
+
+      {/* ── Hero: PM2.5 nasional ── */}
+      <div className="card kpi kpi--hero ov-kpi-hero">
+        <div className="kpi-top">
+          <p className="kpi-label">Rata-rata PM2.5 nasional</p>
+          <span className="kpi-icon" aria-hidden="true"><Wind size={18} /></span>
         </div>
-      ))}
+        <div className="kpi-value-row">
+          <span className="kpi-value ov-kpi-hero-num">
+            {k.avg != null ? formatNumber(k.avg, 1) : '—'}
+          </span>
+          <span className="kpi-unit">µg/m³</span>
+        </div>
+        <div className="kpi-foot">
+          {cat && (
+            <span className="badge" style={{
+              fontSize: '0.7rem',
+              color: `color-mix(in srgb, ${cat.color} 55%, #18314F)`,
+              background: cat.bg,
+              border: `1px solid ${cat.color}40`,
+            }}>{cat.label}</span>
+          )}
+          {k.avg != null && (
+            <span>{formatNumber(k.avg / who, 1)}× pedoman WHO ({who} µg/m³)</span>
+          )}
+        </div>
+      </div>
+
+      {/* ── 4 card pendukung ── */}
+      <div className="ov-kpi-siblings">
+
+        {/* Baku mutu — satu-satunya yang punya aksen warna berbeda */}
+        <div
+          className="card kpi ov-kpi-cell"
+          style={{ '--ov-alert': exceedAnnual > 0 ? 'var(--ispu-tidak-sehat)' : 'var(--ispu-baik)' }}
+        >
+          <div className="kpi-top">
+            <p className="kpi-label">Di atas baku mutu tahunan</p>
+            <span className="kpi-icon" style={{ background: `color-mix(in srgb, var(--ov-alert) 16%, #fff)`, color: 'var(--color-text-primary)' }} aria-hidden="true">
+              <AlertTriangle size={16} />
+            </span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-value">{exceedAnnual}</span>
+            <span className="kpi-unit">stasiun</span>
+          </div>
+          <div className="kpi-foot">
+            <span>dari {valid.length} · {NAAQS_ANNUAL} µg/m³/tahun</span>
+          </div>
+        </div>
+
+        <div className="card kpi ov-kpi-cell">
+          <div className="kpi-top">
+            <p className="kpi-label">Stasiun AQMS</p>
+            <span className="kpi-icon" aria-hidden="true"><Network size={16} /></span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-value">{k.total}</span>
+            <span className="kpi-unit">stasiun</span>
+          </div>
+          <div className="kpi-foot">
+            <span>{k.active} sensor aktif</span>
+          </div>
+        </div>
+
+        <div className="card kpi ov-kpi-cell">
+          <div className="kpi-top">
+            <p className="kpi-label">Rawat inap pernapasan</p>
+            <span className="kpi-icon" style={{ background: 'rgba(251,146,60,0.14)', color: 'var(--color-text-primary)' }} aria-hidden="true">
+              <Activity size={16} />
+            </span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-value">{health ? formatNumber(health.total_resp) : '—'}</span>
+            <span className="kpi-unit">kasus</span>
+          </div>
+          <div className="kpi-foot">
+            <span>semua RS, periode penuh</span>
+          </div>
+        </div>
+
+        <div className="card kpi ov-kpi-cell">
+          <div className="kpi-top">
+            <p className="kpi-label">Median jarak antarstasiun</p>
+            <span className="kpi-icon" aria-hidden="true"><Ruler size={16} /></span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-value">{formatNumber(medianDistance, 0)}</span>
+            <span className="kpi-unit">km</span>
+          </div>
+          <div className="kpi-foot">
+            <span>Haversine terdekat</span>
+          </div>
+        </div>
+
+      </div>
     </div>
   )
 }
 
-function AirQualityOverview({ analytics, filters, stationIds }) {
-  const [tab, setTab] = useState('regional')
-  const periodRows = useMemo(
-    () => (analytics.monthly.data ?? []).filter((row) =>
-      isMassConcentration(row)
-      && isInPeriod(row.periode_bulan, filters.dateStart, filters.dateEnd)
-      && stationIds.has(row.station_id)
-    ),
-    [analytics.monthly.data, filters.dateEnd, filters.dateStart, stationIds]
-  )
-  const regional = useMemo(() => {
-    const grouped = new Map()
-    periodRows.forEach((row) => {
-      const current = grouped.get(row.pulau) ?? { pulau: row.pulau, total: 0, count: 0 }
-      current.total += Number(row.pm25) || 0
-      current.count += 1
-      grouped.set(row.pulau, current)
-    })
-    return [...grouped.values()]
-      .map((row) => ({ ...row, pm25: row.count ? row.total / row.count : null }))
-      .sort((a, b) => b.pm25 - a.pm25)
-  }, [periodRows])
-
-  const annual = useMemo(() => {
-    const grouped = new Map()
-    periodRows.forEach((row) => {
-      const tahun = Number(String(row.periode_bulan).slice(0, 4))
-      const current = grouped.get(tahun) ?? { tahun, total: 0, count: 0 }
-      current.total += Number(row.pm25) || 0
-      current.count += 1
-      grouped.set(tahun, current)
-    })
-    return [...grouped.values()]
-      .map((row) => ({ ...row, pm25: row.count ? row.total / row.count : null }))
-      .sort((a, b) => a.tahun - b.tahun)
-  }, [periodRows])
-
-  const seasonal = (analytics.seasonal.data ?? []).filter(isMassConcentration)
-  const workday = (analytics.workday.data ?? []).filter(isMassConcentration)
-  const tabs = [
-    ['regional', 'Regional'],
-    ['annual', 'Tren tahunan'],
-    ['seasonal', 'Musiman'],
-    ['workday', 'Hari kerja'],
-  ]
-
+/* ─── Bagian 3: Peta + Panel Samping ───────────────────────────────────── */
+function MapSection({ scoped, onSelect }) {
   return (
     <Section
-      title="Gambaran kualitas udara"
-      description="Pola kualitas udara berdasarkan wilayah, waktu, dan musim. Detail tren harian dan ISPU tersedia di tab Kualitas Udara."
+      title="Lokasi dan kondisi rata-rata PM2.5"
+      description="Warna titik mencerminkan kategori ISPU dari rata-rata PM2.5 seluruh periode. Klik titik untuk detail stasiun."
     >
-      <Card className="overview-tabs-card">
-        <div className="overview-tabs" role="tablist" aria-label="Ringkasan kualitas udara">
-          {tabs.map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              role="tab"
-              aria-selected={tab === id}
-              className={tab === id ? 'is-active' : ''}
-              onClick={() => setTab(id)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+      <div className="ov-map-layout">
+        {/* Peta — kolom kiri */}
+        <Card className="ov-map-card">
+          <div className="map-frame">
+            <StationMap stations={scoped} onSelect={onSelect} height="400px" />
+          </div>
+          <div className="map-foot" style={{ marginTop: '0.75rem' }}>
+            <IspuLegend note="ISPU PM2.5 · Permen LHK No. 14/2020" />
+          </div>
+        </Card>
 
-        {tab === 'regional' && (
-          <div className="overview-tab-grid">
-            <div>
-              <h4 className="overview-mini-title">Rata-rata PM2.5 per pulau (µg/m³)</h4>
-              <BarList rows={regional} labelKey="pulau" valueKey="pm25" color="var(--ispu-tidak-sehat)" />
-              <p className="overview-note">Dihitung ulang dari bulan yang dipilih; jumlah stasiun dan satuan observasi dapat berbeda antarwilayah.</p>
-            </div>
-            <div>
-              <h4 className="overview-mini-title">Parameter yang terpantau</h4>
-              <div className="overview-chip-list">
-                {['PM2.5', 'PM10', 'SO₂', 'CO', 'O₃', 'NO₂', 'Suhu', 'Kelembapan', 'Angin'].map((item) => (
-                  <span key={item} className="overview-data-chip">{item}</span>
-                ))}
-              </div>
-              <p className="overview-note">PM2.5 dalam µg/m³ dan ppm diproses terpisah tanpa konversi.</p>
-            </div>
-          </div>
-        )}
-        {tab === 'annual' && (
-          <div className="overview-tab-grid">
-            <div>
-              <h4 className="overview-mini-title">Rata-rata PM2.5 per tahun (µg/m³)</h4>
-              <BarList rows={annual} labelKey="tahun" valueKey="pm25" color="var(--color-elevated)" />
-            </div>
-            <div className="overview-callout">
-              <Gauge size={20} />
-              <div>
-                <strong>Gunakan tren sebagai konteks</strong>
-                <p>Perubahan tahunan membantu membaca arah umum, bukan menggantikan analisis episode pencemaran.</p>
-              </div>
-            </div>
-          </div>
-        )}
-        {tab === 'seasonal' && (
-          <div>
-            <h4 className="overview-mini-title">Rata-rata PM2.5 per musim (µg/m³)</h4>
-            <BarList rows={seasonal} labelKey="musim" valueKey="pm25" color="var(--ispu-sedang)" />
-            <p className="overview-note">Definisi musim mengikuti preprocessing data.</p>
-          </div>
-        )}
-        {tab === 'workday' && (
-          <div>
-            <h4 className="overview-mini-title">Rata-rata PM2.5 berdasarkan tipe hari (µg/m³)</h4>
-            <BarList rows={workday} labelKey="tipe_hari" valueKey="pm25" color="var(--color-muted)" />
-            <p className="overview-note">Perbedaan antar tipe hari tidak langsung menyimpulkan hubungan kausal.</p>
-          </div>
-        )}
-      </Card>
+          <IspuDonut stations={scoped} />
+        </div>
+         <StationRanking stations={scoped} />
     </Section>
   )
 }
 
-function NetworkOverview({ analytics, stations }) {
-  const activeCount = stations.filter((station) => station.status_operasional === 'Active').length
-  const distribution = useMemo(() => {
-    const counts = new Map()
-    stations.forEach((station) => {
-      const key = station.region_group ?? 'Tidak diketahui'
-      counts.set(key, (counts.get(key) ?? 0) + 1)
-    })
-    return [...counts].map(([category, count]) => ({ category, count }))
-  }, [stations])
-  const readiness = analytics.readiness.data?.stations ?? []
-  const stationCodes = useMemo(() => new Set(stations.map((station) => station.station_code)), [stations])
-  const nearest = useMemo(
-    () => (analytics.nearest.data?.stations ?? []).filter((row) => stationCodes.has(row.station_code)),
-    [analytics.nearest.data, stationCodes]
-  )
-  const furthest = nearest.slice().sort((a, b) => b.nearest_distance_km - a.nearest_distance_km)[0]
-  const medianDistance = useMemo(() => {
-    const values = nearest.map((row) => Number(row.nearest_distance_km)).filter(Number.isFinite).sort((a, b) => a - b)
-    if (!values.length) return null
-    const middle = Math.floor(values.length / 2)
-    return values.length % 2 ? values[middle] : (values[middle - 1] + values[middle]) / 2
-  }, [nearest])
-  const completeness = readiness
-    .filter((row) => stationCodes.has(row.station_code))
-    .map((row) => ({ ...row, completeness: Number(row.completeness_pct ?? row.completeness_mean_pct) }))
-    .filter((row) => Number.isFinite(row.completeness))
-    .sort((a, b) => a.completeness - b.completeness)
-    .slice(0, 5)
-  const regionRows = distribution
-    .slice()
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 6)
-  const furthestRows = nearest
-    .slice()
-    .sort((a, b) => b.nearest_distance_km - a.nearest_distance_km)
-    .slice(0, 5)
+/* ─── Bagian 4: Temuan + Navigasi ──────────────────────────────────────── */
+const NAV_LINKS = [
+  { question: 'Kapan udara paling buruk?',                 href: '/kualitas-udara',    icon: Wind,            color: '#8BBEB2' },
+  { question: 'Apa yang memengaruhi PM2.5?',               href: '/korelasi',          icon: GitCompareArrows, color: '#384E77' },
+  { question: 'Bagaimana dampaknya bagi balita & lansia?', href: '/pm25-kesehatan',    icon: HeartPulse,      color: '#FB923C' },
+  { question: 'Cukupkah 27 stasiun?',                      href: '/kecukupan-stasiun', icon: MapPin,          color: '#FACC15' },
+  { question: 'Apa rekomendasinya?',                       href: '/insight',           icon: Lightbulb,       color: '#E6F9AF' },
+]
+
+function FindingsSection({ scoped, avgPm25, summary, analytics }) {
+  const { who } = POLLUTANTS.pm25
+  const valid = scoped.filter((s) => Number.isFinite(s.avg_pm25))
+  const exceed = valid.filter((s) => s.avg_pm25 > NAAQS_ANNUAL).length
+  const sorted = [...valid].sort((a, b) => b.avg_pm25 - a.avg_pm25)
+  const top = sorted[0]
+  const bot = sorted[sorted.length - 1]
+  const trafficRho = summary?.factors?.traffic?.rho
+  const maxDistKm = analytics.nearest.data?.overall?.max_km
+
+  const findings = [
+    {
+      icon: Wind, color: '#FB923C', href: '/kualitas-udara', cta: 'Lihat pola waktu & wilayah',
+      title: top
+        ? `${shortName(top)} mencatat PM2.5 tertinggi (${formatNumber(top.avg_pm25, 1)} µg/m³)`
+        : 'Pelajari kondisi kualitas udara per wilayah',
+      text: avgPm25 != null
+        ? `Rata-rata nasional ${formatNumber(avgPm25, 1)} µg/m³ — ${formatNumber(avgPm25 / who, 1)}× di atas pedoman WHO (${who} µg/m³). Ambang baku mutu tahunan: ${NAAQS_ANNUAL} µg/m³ (PP No. 22/2021).`
+        : '—',
+    },
+    {
+      icon: GitCompareArrows, color: '#384E77', href: '/korelasi', cta: 'Telusuri faktor penyebab',
+      title: trafficRho != null
+        ? `Intensitas lalu lintas berkorelasi ${korelasiLabel(trafficRho)} dengan PM2.5`
+        : 'Pelajari faktor yang memengaruhi polutan',
+      text: trafficRho != null
+        ? `Korelasi kendaraan–PM2.5: r = ${formatNumber(trafficRho, 2)}. Faktor meteorologi dan tipe lokasi juga dianalisis di halaman Korelasi Polutan.`
+        : 'Hubungan polutan dengan suhu, kelembapan, angin, dan lalu lintas ada di halaman Korelasi.',
+    },
+    {
+      icon: MapPin, color: '#60A5FA', href: '/kecukupan-stasiun', cta: 'Lihat kecukupan jaringan',
+      title: maxDistKm != null
+        ? `Jarak antarlokasi terjauh ${formatNumber(maxDistKm, 0)} km — ada wilayah belum terpantau`
+        : 'Periksa kecukupan jaringan 27 stasiun',
+      text: `Dari ${valid.length} stasiun, ${exceed} melampaui baku mutu tahunan ${NAAQS_ANNUAL} µg/m³.${bot ? ` Stasiun terbersih: ${shortName(bot)} (${formatNumber(bot.avg_pm25, 1)} µg/m³).` : ''}`,
+    },
+  ]
 
   return (
     <Section
-      title="Informasi jaringan stasiun"
-      description="Distribusi, kelengkapan data, jarak antarlokasi, dan indikasi kesenjangan pemantauan."
+      title="Temuan utama"
+      description="Tiga sinyal paling penting, masing-masing menaut ke analisis lebih dalam."
     >
-      <div className="overview-network-grid">
-        <Card>
-          <CardHeader title="Distribusi stasiun per wilayah" subtitle="Jumlah lokasi unik berdasarkan region dalam dataset." />
-          <BarList rows={regionRows} labelKey="category" valueKey="count" digits={0} color="var(--color-elevated)" suffix="" />
-          <p className="overview-note">Subset {stations.length} stasiun sesuai wilayah yang dipilih.</p>
-        </Card>
-        <Card>
-          <CardHeader title="Kelengkapan observasi terendah" subtitle="Rasio data valid terhadap ekspektasi nominal." />
-          <div className="overview-completeness-list">
-            {completeness.map((row) => (
-              <div className="overview-completeness-row" key={row.station_code ?? row.location_id}>
-                <span>{(row.station_code ?? row.location_id).replace('AQMS-', '')}</span>
-                <span className="overview-completeness-track">
-                  <span style={{ width: `${Math.min(100, Math.max(0, row.completeness))}%` }} />
-                </span>
-                <strong>{formatNumber(row.completeness, 1)}%</strong>
-              </div>
-            ))}
-          </div>
-          <p className="overview-note">Stasiun dengan kelengkapan rendah perlu dibaca bersama status operasionalnya.</p>
-        </Card>
-        <Card>
-          <CardHeader title="Jarak ke stasiun terdekat" subtitle="Lima keterpisahan lokasi terbesar (km)." />
-          <BarList rows={furthestRows} labelKey="station_code" valueKey="nearest_distance_km" color="var(--ispu-tidak-sehat)" digits={0} />
-          {furthest && <p className="overview-note">Terjauh: {furthest.station_code} ({formatNumber(furthest.nearest_distance_km, 0)} km).</p>}
-        </Card>
-        <Card>
-          <CardHeader title="Sinyal kesiapan jaringan" subtitle="Ringkasan operasional yang perlu dipantau." />
-          <div className="overview-network-callouts">
-            <div><CheckCircle2 size={17} /><span><strong>{activeCount}</strong> sensor aktif</span></div>
-            <div><AlertTriangle size={17} /><span><strong>{stations.length - activeCount}</strong> sensor tidak aktif</span></div>
-            <div><Ruler size={17} /><span>Median jarak terdekat <strong>{formatNumber(medianDistance, 1)} km</strong></span></div>
-          </div>
-          <p className="overview-note">Buka Kecukupan Stasiun untuk rekomendasi dan metodologi lengkap.</p>
-        </Card>
+      <div className="layout-3">
+        {findings.map(({ icon: Icon, color, href, cta, title, text }) => (
+          <Card key={title} className="insight" style={{ '--ins': color }}>
+            <span className="insight-icon" aria-hidden="true"><Icon size={18} /></span>
+            <h4>{title}</h4>
+            <p>{text}</p>
+            <a href={href} className="link-more">
+              {cta} <ArrowRight size={14} aria-hidden="true" />
+            </a>
+          </Card>
+        ))}
+      </div>
+
+      <div className="overview-nav-grid">
+        {NAV_LINKS.map(({ question, href, icon: Icon, color }, i) => (
+          <a
+            key={href}
+            href={href}
+            className="overview-nav-card"
+            style={{ '--nav-c': color }}
+          >
+            <span className="overview-nav-index">{String(i + 1).padStart(2, '0')}</span>
+            <span className="overview-nav-icon" aria-hidden="true">
+              <Icon size={18} strokeWidth={2} />
+            </span>
+            <span className="overview-nav-text">{question}</span>
+            <ArrowRight size={16} className="overview-nav-arrow" aria-hidden="true" />
+          </a>
+        ))}
       </div>
     </Section>
   )
 }
 
+/* ─── Bagian 5: Catatan Metodologi ─────────────────────────────────────── */
+function MethodologyNote() {
+  return (
+    <Card variant="tint" className="overview-method">
+      <h4>Catatan metodologi</h4>
+      <ul>
+        <li>Overview adalah ringkasan. Detail tersedia di setiap halaman analisis.</li>
+        <li>Baku mutu: <strong>PP No. 22/2021</strong> (tahunan 15 µg/m³) dan <strong>WHO AQG 2021</strong> (tahunan 5 µg/m³).</li>
+        <li>Hanya observasi dengan <code>qc_flag = VALID</code> yang digunakan.</li>
+        <li>PM2.5 dalam ppm dan µg/m³ tidak dicampur dan tidak dikonversi.</li>
+        <li>Data kesehatan bersifat sintetis dan belum dipisah per stasiun.</li>
+      </ul>
+    </Card>
+  )
+}
+
+/* ═══ PAGE ══════════════════════════════════════════════════════════════════ */
 export default function OverviewPage() {
   const { data: stations, loading: stationLoading, error: stationError } = useStations()
   const { data: summary } = useOverviewSummary()
   const analytics = useOverviewAnalytics()
   const { filters, setDateRange, setStation, setRegion, resetFilters } = useFilter()
-  const { who, naaqs } = POLLUTANTS.pm25
 
   const all = stations ?? EMPTY
+
   const regions = useMemo(
-    () => [...new Set(all.map((station) => station.region_group).filter(Boolean))].sort(),
+    () => [...new Set(all.map((s) => s.region_group).filter(Boolean))].sort(),
     [all]
   )
-  const scoped = useMemo(
-    () => {
-      const stationRows = analytics.monthly.data ?? []
-      const rowsByStation = new Map()
-      stationRows
-        .filter((row) => isMassConcentration(row) && isInPeriod(row.periode_bulan, filters.dateStart, filters.dateEnd))
-        .forEach((row) => {
-          const rows = rowsByStation.get(row.station_id) ?? []
-          rows.push(row)
-          rowsByStation.set(row.station_id, rows)
-        })
 
-      return (filters.regionGroup ? all.filter((station) => station.region_group === filters.regionGroup) : all)
-        .map((station) => {
-          const rows = rowsByStation.get(stationId(station)) ?? []
-          const avg = rows.length
-            ? rows.reduce((total, row) => total + (Number(row.pm25) || 0), 0) / rows.length
-            : null
-          return { ...station, avg_pm25: avg }
-        })
-    },
-    [all, analytics.monthly.data, filters.dateEnd, filters.dateStart, filters.regionGroup]
-  )
+  const scoped = useMemo(() => {
+    const stationRows = analytics.monthly.data ?? []
+    const rowsByStation = new Map()
+    stationRows
+      .filter((row) =>
+        isMassConcentration(row) &&
+        isInPeriod(row.periode_bulan, filters.dateStart, filters.dateEnd)
+      )
+      .forEach((row) => {
+        const rows = rowsByStation.get(row.station_id) ?? []
+        rows.push(row)
+        rowsByStation.set(row.station_id, rows)
+      })
+
+    return (filters.regionGroup
+      ? all.filter((s) => s.region_group === filters.regionGroup)
+      : all
+    ).map((station) => {
+      const rows = rowsByStation.get(stationId(station)) ?? []
+      const avg = rows.length
+        ? rows.reduce((t, r) => t + (Number(r.pm25) || 0), 0) / rows.length
+        : station.avg_pm25 ?? null
+      return { ...station, avg_pm25: avg }
+    })
+  }, [all, analytics.monthly.data, filters.dateEnd, filters.dateStart, filters.regionGroup])
+
   const k = useMemo(() => {
-    const valid = scoped.filter((station) => Number.isFinite(station.avg_pm25))
-    const avg = valid.length ? valid.reduce((total, station) => total + station.avg_pm25, 0) / valid.length : null
-    const top = valid.reduce((current, station) => (!current || station.avg_pm25 > current.avg_pm25 ? station : current), null)
-    return {
-      total: scoped.length,
-      active: scoped.filter((station) => station.status_operasional === 'Active').length,
-      avg,
-      exceed: valid.filter((station) => station.avg_pm25 > naaqs).length,
-      top,
-    }
-  }, [naaqs, scoped])
-  const healthRows = useMemo(() => {
-    const bridge = new Map(
-      (analytics.healthBridge.data ?? [])
-        .filter((row) => !filters.regionGroup || all.find((station) => station.station_code === row.station_code)?.region_group === filters.regionGroup)
-        .map((row) => [row.hospital_id, row])
-    )
-    return (analytics.healthDaily.data ?? []).filter((row) =>
-      row.date >= filters.dateStart
-      && row.date <= filters.dateEnd
-      && bridge.has(row.hospital_id)
-    )
-  }, [all, analytics.healthBridge.data, analytics.healthDaily.data, filters.dateEnd, filters.dateStart, filters.regionGroup])
-  const filteredHealth = useMemo(
-    () => ({
-      total_resp: healthRows.reduce((total, row) => total + (Number(row.resp) || 0), 0),
-      total_death: healthRows.reduce((total, row) => total + (Number(row.death) || 0), 0),
-    }),
-    [healthRows]
-  )
-  const filteredMedianDistance = useMemo(() => {
-    const codes = new Set(scoped.map((station) => station.station_code))
+    const valid = scoped.filter((s) => Number.isFinite(s.avg_pm25))
+    const avg = valid.length
+      ? valid.reduce((t, s) => t + s.avg_pm25, 0) / valid.length
+      : null
+    return { total: scoped.length, active: scoped.filter((s) => s.status_operasional === 'Active').length, avg, scoped }
+  }, [scoped])
+
+  const medianDistance = useMemo(() => {
+    const codes = new Set(scoped.map((s) => s.station_code))
     const values = (analytics.nearest.data?.stations ?? [])
-      .filter((row) => codes.has(row.station_code))
-      .map((row) => Number(row.nearest_distance_km))
+      .filter((r) => codes.has(r.station_code))
+      .map((r) => Number(r.nearest_distance_km))
       .filter(Number.isFinite)
       .sort((a, b) => a - b)
     if (!values.length) return null
-    const middle = Math.floor(values.length / 2)
-    return values.length % 2 ? values[middle] : (values[middle - 1] + values[middle]) / 2
+    const mid = Math.floor(values.length / 2)
+    return values.length % 2 ? values[mid] : (values[mid - 1] + values[mid]) / 2
   }, [analytics.nearest.data, scoped])
-  const filteredCompleteness = useMemo(() => {
-    const codes = new Set(scoped.map((station) => station.station_code))
+
+  const avgCompleteness = useMemo(() => {
+    const codes = new Set(scoped.map((s) => s.station_code))
     const values = (analytics.readiness.data?.stations ?? [])
-      .filter((row) => codes.has(row.station_code))
-      .map((row) => Number(row.completeness_pct))
+      .filter((r) => codes.has(r.station_code))
+      .map((r) => Number(r.completeness_pct))
       .filter(Number.isFinite)
-    return values.length ? values.reduce((total, value) => total + value, 0) / values.length : null
+    return values.length ? values.reduce((t, v) => t + v, 0) / values.length : null
   }, [analytics.readiness.data, scoped])
-  const handleSelect = useCallback((station) => setStation(station.location_id), [setStation])
+
+  const health = useMemo(() => summary?.health ?? null, [summary])
+  const handleSelect = useCallback((s) => setStation(s.location_id), [setStation])
 
   return (
     <ModuleLayout
       eyebrow="Gambaran besar"
-      actions={<span className="coverage-chip"><CalendarRange size={13} aria-hidden="true" />Data Jan 2024 – Okt 2026</span>}
       title="Overview"
-      description="Di mana dan seberapa buruk kondisi udara Indonesia? Ringkasan jaringan 27 stasiun AQMS dan snapshot dampak kesehatan."
+      description="Di mana dan seberapa buruk kondisi udara Indonesia? Ringkasan jaringan 27 stasiun AQMS dan dampak kesehatan."
     >
-      <FilterBar filters={filters} onDateChange={setDateRange} onReset={resetFilters} regions={regions} onRegionChange={setRegion} />
+      <FilterBar
+        filters={filters}
+        onDateChange={setDateRange}
+        onReset={resetFilters}
+        regions={regions}
+        onRegionChange={setRegion}
+      />
 
       {stationError && <ErrorState message={stationError} />}
       {stationLoading && <Card><LoadingSpinner /></Card>}
 
       {!stationLoading && !stationError && (
         <>
-          <Section title="Indikator nasional">
-            <div className="kpi-grid">
-              <MetricCard variant="hero" label="Total stasiun AQMS" value={k.total} unit="stasiun" subtext={`${k.total} sensor terdaftar`} icon={<Network size={18} />} />
-              <MetricCard label="Sensor beroperasi" value={k.active} unit="aktif" subtext={`${k.total - k.active} tidak aktif`} accentColor="var(--ispu-baik)" icon={<CheckCircle2 size={18} />} />
-              <MetricCard label="Rata-rata PM2.5" value={k.avg != null ? formatNumber(k.avg, 1) : '—'} unit="µg/m³" badge={k.avg != null ? getIspuFromPm25(k.avg) : null} subtext={k.avg != null ? `${formatNumber(k.avg / who, 1)}× pedoman WHO` : null} accentColor="var(--ispu-tidak-sehat)" icon={<Wind size={18} />} />
-              <MetricCard label="Kelengkapan data" value={formatNumber(filteredCompleteness, 1)} unit="%" subtext="subset wilayah terpilih" accentColor="var(--color-muted)" icon={<Database size={18} />} />
-              <MetricCard label="Median jarak terdekat" value={formatNumber(filteredMedianDistance, 1)} unit="km" subtext="subset wilayah terpilih" accentColor="var(--color-elevated)" icon={<Ruler size={18} />} />
-              <MetricCard label="Rawat inap pernapasan" value={formatNumber(filteredHealth.total_resp)} unit="kasus" subtext="sesuai periode & wilayah" accentColor="var(--ispu-tidak-sehat)" icon={<Activity size={18} />} />
-            </div>
-          </Section>
-
-          <Section title={`Sebaran ${k.total} stasiun AQMS di Indonesia`} description="Warna titik mencerminkan kategori ISPU dari rata-rata PM2.5. Klik titik untuk melihat detail stasiun.">
-            <div className="layout-main">
-              <Card>
-                <CardHeader title="Peta pemantauan" subtitle="Sebaran spasial stasiun AQMS pada periode analisis." action={<span className="count-pill">{filters.regionGroup ?? 'Seluruh Indonesia'}</span>} />
-                <div className="map-frame"><StationMap stations={scoped} onSelect={handleSelect} height="500px" /></div>
-                <div className="map-foot"><IspuLegend note="ISPU PM2.5 · Permen LHK No. 14/2020" /></div>
-              </Card>
-              <div className="layout-side">
-                <StationRanking stations={scoped} />
-                <IspuDonut stations={scoped} />
-              </div>
-            </div>
-          </Section>
-
-          <Section title="Temuan singkat" description="Ringkasan yang mengarahkan pembaca ke tab analisis terkait.">
-            <KeyInsights stations={scoped} avgPm25={k.avg} />
-          </Section>
-
-          <AirQualityOverview analytics={analytics} filters={filters} stationIds={new Set(scoped.map(stationId))} />
-          <NetworkOverview analytics={analytics} stations={scoped} />
-
-          <Section title="Konteks lintas analisis" description="Sinyal utama dari faktor penentu, dampak kesehatan, dan kecukupan jaringan.">
-            <div className="overview-pulse-grid">
-              <Card className="overview-pulse overview-pulse--factor">
-                <div className="overview-pulse-icon"><Wind size={18} /></div>
-                <div><span className="overview-pulse-label">Faktor paling membedakan</span><h3>Lalu lintas berkaitan kuat dengan PM2.5</h3><p>Korelasi antarstasiun <strong>r = {formatNumber(summary?.factors?.traffic?.rho, 2)}</strong>; variasi yang dijelaskan sekitar {formatNumber(summary?.factors?.traffic?.variation_pct, 0)}%.</p></div>
-              </Card>
-              <Card className="overview-pulse overview-pulse--health">
-                <div className="overview-pulse-icon"><Activity size={18} /></div>
-                <div><span className="overview-pulse-label">Sinyal kesehatan</span><h3>Hubungan PM2.5–ISPA terlihat hingga lag 3 hari</h3><p>Estimasi kenaikan risiko ISPA balita sekitar {formatNumber(summary?.health?.lag_balita?.[3]?.percent, 1)}% pada lag 3.</p></div>
-              </Card>
-              <Card className="overview-pulse overview-pulse--network">
-                <div className="overview-pulse-icon"><MapPin size={18} /></div>
-                <div><span className="overview-pulse-label">Kesenjangan pemantauan</span><h3>Jarak antarlokasi masih lebar</h3><p>Jarak terjauh mencapai {formatNumber(analytics.nearest.data?.overall?.max_km, 0)} km; buka tab Kecukupan Stasiun untuk prioritas.</p></div>
-              </Card>
-            </div>
-          </Section>
+          <OverviewHeader
+            k={k}
+            filters={filters}
+            avgCompleteness={avgCompleteness}
+            validObs={summary?.total_valid_records ?? null}
+          />
+          <KpiSection k={k} medianDistance={medianDistance} health={health} />
+          <MapSection scoped={scoped} onSelect={handleSelect} />
+          <FindingsSection scoped={scoped} avgPm25={k.avg} summary={summary} analytics={analytics} />
+          <MethodologyNote />
         </>
       )}
     </ModuleLayout>

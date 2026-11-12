@@ -1,0 +1,26 @@
+﻿station_id,provinsi,satuan,pm25_unit,pm10_unit,so2_unit,co_unit,o3_unit,no2_unit,kategori_satuan
+BGL-01,Bengkulu,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+BGR-01,Jawa Barat,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+BGR-02,Jawa Barat,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+BJB-01,Kalimantan Selatan,ppm,ppm,ppm,ppm,ppm,ppm,ppm,ppm
+BTM-01,Kepulauan Riau,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+IDP-01,Aceh,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+JKT-01,DKI Jakarta,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+JKT-02,DKI Jakarta,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+JKT-03,DKI Jakarta,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+JMB-01,Jambi,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+KTB-01,Sumatera Barat,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+KTG-01,Kalimantan Tengah,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+KTG-02,Kalimantan Tengah,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+MDN-01,Sumatera Utara,ppm,ppm,ppm,ppm,ppm,ppm,ppm,ppm
+MLG-01,Jawa Timur,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+MRS-01,Sulawesi Selatan,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+PKN-01,Kalimantan Tengah,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+PKU-01,Riau,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+PLB-01,Sumatera Selatan,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+PLU-01,Sulawesi Tengah,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+PSW-01,Lampung,ppm,ppm,ppm,ppm,ppm,ppm,ppm,ppm
+SM2-01,Kalimantan Timur,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+SRG-01,Papua Barat Daya,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+STG-01,Kalimantan Barat,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3
+YKY-01,D.I. Yogyakarta,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3,ug/m3

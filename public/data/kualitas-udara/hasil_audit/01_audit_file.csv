@@ -1,0 +1,12 @@
+﻿file,jumlah_baris,jumlah_kolom,kolom
+aqms_bulanan.json,846,13,"station_id, periode_bulan, satuan, pm25, pm10, so2, co, o3, no2, jumlah_hari, pulau, provinsi, kota_kabupaten"
+aqms_hari_kerja.json,1687,14,"tahun, bulan, pulau, provinsi, station_id, tipe_hari, satuan, pm25, pm10, so2, co, o3, no2, jumlah_data"
+aqms_ispu_harian.json,14816,17,"station_id, tanggal, provinsi, kota_kabupaten, pulau, latitude, longitude, pm25, pm10, so2, co, o3, no2, ispu, parameter_kritis, kategori_ispu, status_konsentrasi"
+aqms_musim.json,4,9,"musim, satuan, pm25, pm10, so2, co, o3, no2, jumlah_data"
+aqms_per_provinsi.json,20,11,"pulau, provinsi, satuan, pm25, pm10, so2, co, o3, no2, jumlah_stasiun, jumlah_hari"
+aqms_per_pulau.json,7,10,"pulau, satuan, pm25, pm10, so2, co, o3, no2, jumlah_stasiun, jumlah_hari"
+aqms_periode_kritis.json,7985,19,"station_id, parameter_key, parameter, value, timestamp, date, hour, year, province, city, island, site_type, area_characteristic, wind_speed, wind_direction, temperature, humidity, threshold, increase_pct"
+aqms_pola_jam.json,20189,14,"tahun, bulan, pulau, provinsi, station_id, jam, satuan, pm25, pm10, so2, co, o3, no2, jumlah_data"
+aqms_stasiun_map.json,25,39,"station_id, nama_sensor, provinsi, kota_kabupaten, kecamatan, latitude, longitude, status_operasional, satuan, pulau, tanggal, ispu, parameter_kritis, kategori_ispu, status_konsentrasi, location_id, karakteristik_wilayah, site_type, baseline_pm25, region_group, distance_to_road_m, traffic_intensity_per_h, pm25_equipment, pm25_unit, pm10_equipment, pm10_unit, so2_equipment, so2_unit, co_equipment, co_unit, o3_equipment, o3_unit, no2_equipment, no2_unit, meteo_equipment, notes, model_sensor, tipe_pemasangan, tanggal_instalasi"
+aqms_tahunan.json,80,14,"station_id, tahun, satuan, pm25, pm10, so2, co, o3, no2, jumlah_hari, jumlah_bulan, pulau, provinsi, kota_kabupaten"
+aqms_tren_harian.json,25126,12,"station_id, tanggal, satuan, pulau, provinsi, pm25, pm10, so2, co, o3, no2, jumlah_pengukuran_jam"

@@ -11,7 +11,7 @@ const esc = (s) =>
  * Props: stations (array), height (CSS), onSelect (station) => void
  * Berikan `stations` yang identitasnya stabil (useMemo) agar peta tidak dibuat ulang.
  */
-export function StationMap({ stations = [], height = '420px', onSelect }) {
+export function StationMap({ stations = [], height = '300px', onSelect }) {
   const mapRef = useRef(null)
   const instanceRef = useRef(null)
 
@@ -23,7 +23,12 @@ export function StationMap({ stations = [], height = '420px', onSelect }) {
       if (disposed || !mapRef.current) return
       const L = mod.default ?? mod
 
-      const map = L.map(mapRef.current, { center: [-2.5, 118], zoom: 5, minZoom: 4, zoomControl: true })
+      const map = L.map(mapRef.current, {
+        center: [-2.5, 118],
+        zoom: 5,
+        minZoom: 4,
+        zoomControl: true,
+      })
 
       // Scroll halaman tidak "tersangkut" di peta: wheel-zoom aktif setelah peta diklik
       map.scrollWheelZoom.disable()
@@ -68,7 +73,13 @@ export function StationMap({ stations = [], height = '420px', onSelect }) {
         if (onSelect) marker.on('click', () => onSelect(station))
       })
 
-      if (points.length > 1) map.fitBounds(points, { padding: [36, 36], maxZoom: 7 })
+      // Padding lebih longgar dan maxZoom lebih kecil agar Indonesia tidak terlalu besar di kotak pendek
+      if (points.length > 1) {
+        map.fitBounds(points, { padding: [24, 24], maxZoom: 5 })
+      }
+
+      // Leaflet perlu menghitung ulang ukuran setelah layout CSS selesai
+      setTimeout(() => map.invalidateSize(), 0)
 
       instanceRef.current = map
     })

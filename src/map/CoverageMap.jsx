@@ -55,7 +55,9 @@ export function CoverageMap({
 
   // Nilai terbaru untuk handler Leaflet (hindari closure basi)
   const live = useRef({})
-  live.current = { metric, ctx, pulau, selected, kabById, onSelect }
+  useEffect(() => {
+    live.current = { metric, ctx, pulau, selected, kabById, onSelect }
+  }, [metric, ctx, pulau, selected, kabById, onSelect])
 
   /* ── Inisialisasi peta (sekali) ── */
   useEffect(() => {
@@ -146,14 +148,12 @@ export function CoverageMap({
 
     geoLayerRef.current = layer
     layer.bringToBack()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, geo])
 
   /* ── Restyle saat metrik, radius, bobot, filter, atau seleksi berubah ── */
   useEffect(() => {
     if (!ready || !geoLayerRef.current) return
     geoLayerRef.current.eachLayer((l) => l.setStyle(featureStyle(l.feature)))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, geo, metric, ctx, pulau, selected])
 
   /* ── Zoom ke pulau terpilih ── */

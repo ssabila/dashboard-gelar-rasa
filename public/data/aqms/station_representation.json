@@ -1,0 +1,392 @@
+{
+  "by_region": [
+    {
+      "region_group": "Aceh",
+      "station_count": 1
+    },
+    {
+      "region_group": "Bengkulu",
+      "station_count": 1
+    },
+    {
+      "region_group": "Bogor",
+      "station_count": 2
+    },
+    {
+      "region_group": "Jakarta",
+      "station_count": 3
+    },
+    {
+      "region_group": "Jambi",
+      "station_count": 1
+    },
+    {
+      "region_group": "Jawa Timur",
+      "station_count": 1
+    },
+    {
+      "region_group": "Kalimantan Barat",
+      "station_count": 1
+    },
+    {
+      "region_group": "Kalimantan Selatan",
+      "station_count": 1
+    },
+    {
+      "region_group": "Kalimantan Tengah",
+      "station_count": 3
+    },
+    {
+      "region_group": "Kalimantan Timur",
+      "station_count": 1
+    },
+    {
+      "region_group": "Kepulauan Riau",
+      "station_count": 1
+    },
+    {
+      "region_group": "Lampung",
+      "station_count": 1
+    },
+    {
+      "region_group": "Papua",
+      "station_count": 1
+    },
+    {
+      "region_group": "Papua Barat Daya",
+      "station_count": 1
+    },
+    {
+      "region_group": "Riau",
+      "station_count": 1
+    },
+    {
+      "region_group": "Sulawesi Selatan",
+      "station_count": 1
+    },
+    {
+      "region_group": "Sulawesi Tengah",
+      "station_count": 1
+    },
+    {
+      "region_group": "Sumatera",
+      "station_count": 1
+    },
+    {
+      "region_group": "Sumatera Barat",
+      "station_count": 1
+    },
+    {
+      "region_group": "Sumatera Selatan",
+      "station_count": 1
+    },
+    {
+      "region_group": "Sumatera Utara",
+      "station_count": 1
+    },
+    {
+      "region_group": "Yogyakarta",
+      "station_count": 1
+    }
+  ],
+  "by_province": [
+    {
+      "provinsi": "Aceh",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Bengkulu",
+      "station_count": 1
+    },
+    {
+      "provinsi": "D.I. Yogyakarta",
+      "station_count": 1
+    },
+    {
+      "provinsi": "DKI Jakarta",
+      "station_count": 3
+    },
+    {
+      "provinsi": "Jambi",
+      "station_count": 2
+    },
+    {
+      "provinsi": "Jawa Barat",
+      "station_count": 2
+    },
+    {
+      "provinsi": "Jawa Timur",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Kalimantan Barat",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Kalimantan Selatan",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Kalimantan Tengah",
+      "station_count": 3
+    },
+    {
+      "provinsi": "Kalimantan Timur",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Kepulauan Riau",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Lampung",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Papua Barat Daya",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Papua Selatan",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Riau",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Sulawesi Selatan",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Sulawesi Tengah",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Sumatera Barat",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Sumatera Selatan",
+      "station_count": 1
+    },
+    {
+      "provinsi": "Sumatera Utara",
+      "station_count": 1
+    }
+  ],
+  "by_island": [
+    {
+      "pulau": "Jawa",
+      "station_count": 6
+    },
+    {
+      "pulau": "Kalimantan",
+      "station_count": 6
+    },
+    {
+      "pulau": "Lainnya",
+      "station_count": 1
+    },
+    {
+      "pulau": "Papua",
+      "station_count": 2
+    },
+    {
+      "pulau": "Sulawesi",
+      "station_count": 2
+    },
+    {
+      "pulau": "Sumatera",
+      "station_count": 10
+    }
+  ],
+  "by_site_type": [
+    {
+      "site_type": "Airport & Peatland Buffer",
+      "station_count": 1
+    },
+    {
+      "site_type": "Coastal / Regional Background",
+      "station_count": 1
+    },
+    {
+      "site_type": "Coastal / Remote Savanna",
+      "station_count": 1
+    },
+    {
+      "site_type": "Industrial & Deforestation Buffer",
+      "station_count": 1
+    },
+    {
+      "site_type": "Industrial / Karst Perimeter",
+      "station_count": 1
+    },
+    {
+      "site_type": "Industrial Perimeter",
+      "station_count": 1
+    },
+    {
+      "site_type": "Industrial Perimeter / Maritime",
+      "station_count": 1
+    },
+    {
+      "site_type": "Peatland & Plantation Hinterland",
+      "station_count": 1
+    },
+    {
+      "site_type": "Peatland Boundary",
+      "station_count": 1
+    },
+    {
+      "site_type": "Peatland Boundary / Airport",
+      "station_count": 1
+    },
+    {
+      "site_type": "Peatland Boundary / Inland",
+      "station_count": 1
+    },
+    {
+      "site_type": "Peatland Buffer / Urban",
+      "station_count": 2
+    },
+    {
+      "site_type": "Peatland Buffer / Urban Artery",
+      "station_count": 1
+    },
+    {
+      "site_type": "Regional / Clean Background",
+      "station_count": 4
+    },
+    {
+      "site_type": "Traffic / Roadside",
+      "station_count": 2
+    },
+    {
+      "site_type": "Urban Background",
+      "station_count": 4
+    },
+    {
+      "site_type": "Urban Background / Highway Corridor",
+      "station_count": 1
+    },
+    {
+      "site_type": "Urban Background / Valley",
+      "station_count": 1
+    },
+    {
+      "site_type": "Urban Coastal Background",
+      "station_count": 1
+    }
+  ],
+  "by_characteristic": [
+    {
+      "karakteristik_wilayah": "Dataran Rendah Rawa Gambut, Sentra Agroklimat & Koridor Bandara Syamsudin Noor",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Dataran Tinggi Bukit Barisan, Hutan Lindung & Global Baseline",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Dataran Tinggi Pegunungan Puncak, Agrowisata & Background Baseline",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Hutan Hujan Tropis Pegunungan Primer (Pristine Control Group)",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Jalur Arteri Bandara & Permukiman Padat Penduduk",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Aglomerasi Perkotaan & Daerah Aliran Sungai Batanghari",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Hinterland Rawa Gambut & Perkebunan Kelapa Sawit Pedalaman",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Hutan Rawa Gambut Pesisir & Sentra Perkebunan Sawit",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Industri Berat, Pelabuhan & Pesisir",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Industri Manufaktur, Pelabuhan & Maritim Selat Malaka",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Karst Maros-Pangkep, Industri Semen & Hinterland Urban",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Lembah Seulawah, Agrikultur & Clean Background",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Metropolitan Sumatra Utara, Pusat Bisnis & Arteri Komersial",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Penyangga Gambut, Koridor Urban & Lalu Lintas Udara",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Pesisir Pantai Barat Sumatra & Permukiman Urban",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Pesisir Selatan Papua, Sabana Tropis & Perbatasan Terluar",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Kawasan Sentra Logistik, Pesisir Rawa Gambut & Koridor Sungai Musi",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Koridor Agroklimat, Perkebunan & Jalur Arteri Lintas Sumatra",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Lembah Cekungan Dataran Tinggi, Pertanian & Agrowisata",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Lembah Perkotaan Padat, Terminal Bus & Koridor Hujan",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Lembah Sungai Mahakam, Koridor Hutan Tropis-Tambang Batubara & Penyangga IKN",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Pedalaman Lembah Sungai Kapuas & Lahan Gambut Inland",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Pesisir Kepulauan Tropis, Pelabuhan & Coastal Background",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Pusat Pemerintahan & Komersial Padat",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Pusat Pendidikan, Komersial & Aglomerasi Urban Yogyakarta",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Pusat Permukiman Kota, Koridor Hutan Tropis & Gambut",
+      "station_count": 1
+    },
+    {
+      "karakteristik_wilayah": "Sentra Logistik Kelapa Sawit & Lahan Gambut",
+      "station_count": 1
+    }
+  ]
+}

@@ -88,38 +88,44 @@ export function IspuDonut({ stations }) {
       },
       series: [{
         type: 'pie',
-        radius: ['64%', '88%'],
+        radius: ['60%', '86%'],
+        center: ['50%', '50%'],
         itemStyle: { borderColor: '#fff', borderWidth: 3, borderRadius: 6 },
         label: {
           show: true, position: 'center',
           formatter: `{a|${total}}\n{b|stasiun}`,
           rich: {
-            a: { fontSize: 26, fontWeight: 800, color: NAVY, fontFamily: FONT, lineHeight: 30 },
-            b: { fontSize: 11, color: '#55706E', fontFamily: FONT },
+            a: { fontSize: 36, fontWeight: 800, color: NAVY, fontFamily: FONT, lineHeight: 40 },
+            b: { fontSize: 12, color: '#55706E', fontFamily: FONT },
           },
         },
         emphasis: { scale: true, scaleSize: 4, label: { show: true } },
         labelLine: { show: false },
-        data: counts.filter((c) => c.count > 0).map((c) => ({ name: c.label, value: c.count, itemStyle: { color: c.color } })),
+        data: counts
+          .filter((c) => c.count > 0)
+          .map((c) => ({ name: c.label, value: c.count, itemStyle: { color: c.color } })),
       }],
     }),
     [counts, total]
   )
 
   return (
-    <Card>
+    <Card className="ov-ispu-card">
       <CardHeader title="Sebaran kategori ISPU" subtitle="Jumlah stasiun per kategori, dari rata-rata PM2.5." />
-      <div className="donut-wrap">
-        <EChart option={option} height={152} />
-        <ul className="donut-list">
-          {counts.map((c) => (
-            <li key={c.id} className={c.count === 0 ? 'is-zero' : ''}>
-              <span><i className="legend-dot" style={{ background: c.color }} />{c.label}</span>
-              <strong>{c.count}</strong>
-            </li>
-          ))}
-        </ul>
+      <div className="ov-ispu-donut">
+        <EChart option={option} height={240} />
       </div>
+      <ul className="ispu-legend-row">
+        {counts.map((c) => (
+          <li key={c.id} className={c.count === 0 ? 'is-zero' : ''}>
+            <span className="ispu-legend-label">
+              <i className="legend-dot" style={{ background: c.color }} />
+              {c.label}
+            </span>
+            <strong>{c.count}</strong>
+          </li>
+        ))}
+      </ul>
     </Card>
   )
 }
