@@ -1,7 +1,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useCallback, useMemo } from 'react'
+import Link from 'next/link'
+import { useCallback, useMemo, useState } from 'react'
 import {
   Activity,
   AlertTriangle,
@@ -15,6 +16,7 @@ import {
   MapPin,
   Network,
   Ruler,
+  Timer,
   Wind,
 } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
@@ -23,8 +25,11 @@ import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
 import { FilterBar } from '@/components/shared/FilterBar'
 import { IspuLegend } from '@/components/shared/IspuLegend'
 import { useOverviewAnalytics, useOverviewSummary, useStations } from '@/hooks/useAqmsData'
+import { useT4Data } from '@/hooks/usePm25KesehatanData'
+import { useT3Tables } from '@/hooks/useKorelasiData'
+import { useMonitoringNetworkSummary, useStationCompleteness, useStationNearestNeighbor } from '@/hooks/useKecukupanData'
 import { useFilter } from '@/hooks/useFilter'
-import { POLLUTANTS } from '@/lib/constants'
+import { ISPU_CATEGORIES, POLLUTANTS } from '@/lib/constants'
 import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
 import { IspuDonut, StationRanking, shortName } from './panels'
 
@@ -35,6 +40,7 @@ const StationMap = dynamic(
 
 const EMPTY = []
 const NAAQS_ANNUAL = 15 // PP No. 22/2021 tahunan
+const WHO_ANNUAL = 5   // WHO AQG 2021
 
 /* ─── Helpers ──────────────────────────────────────────────────────────── */
 function isMassConcentration(row) {
@@ -52,12 +58,14 @@ function korelasiLabel(rho) {
   return rho >= 0.5 ? 'kuat' : rho >= 0.3 ? 'sedang' : 'lemah'
 }
 
-/* ─── Bagian 1: Header gelap ───────────────────────────────────────────── */
+/* ─── Bagian 1: Header gelap dengan meter PM2.5 ─────────────────────── */
 function OverviewHeader({ k, filters, avgCompleteness, validObs }) {
   const exceedAnnual = k.scoped.filter(
     (s) => Number.isFinite(s.avg_pm25) && s.avg_pm25 > NAAQS_ANNUAL
   ).length
   const avgDisplay = k.avg != null ? formatNumber(k.avg, 1) : '—'
+  const whoPct = k.avg != null ? Math.min(100, (k.avg / WHO_ANNUAL) * 100) : 0
+  const naaqsPct = k.avg != null ? Math.min(100, (k.avg / NAAQS_ANNUAL) * 100) : 0
 
   return (
     <Card variant="dark">
@@ -75,6 +83,35 @@ function OverviewHeader({ k, filters, avgCompleteness, validObs }) {
         {filters.dateStart.slice(0, 7).replace('-', '/')} –{' '}
         {filters.dateEnd.slice(0, 7).replace('-', '/')}.
       </p>
+
+      {/* PM2.5 Meter visual */}
+      {k.avg != null && (
+        <div style={{ marginTop: '1.1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(240,244,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              PM2.5 Nasional vs Standar
+            </span>
+            <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-accent)' }}>{avgDisplay} µg/m³</span>
+          </div>
+          {/* WHO Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ width: '5rem', fontSize: '0.68rem', color: 'rgba(240,244,255,0.5)', fontWeight: 600, flexShrink: 0 }}>WHO ({WHO_ANNUAL})</span>
+            <div style={{ flex: 1, height: '0.45rem', borderRadius: '999px', background: 'rgba(255,255,255,0.12)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(whoPct, 100)}%`, background: '#E6F9AF', borderRadius: 'inherit', opacity: 0.9 }} />
+            </div>
+            <span style={{ width: '3rem', fontSize: '0.68rem', fontWeight: 700, color: '#E6F9AF', textAlign: 'right' }}>{formatNumber(k.avg / WHO_ANNUAL, 1)}×</span>
+          </div>
+          {/* NAAQS Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span style={{ width: '5rem', fontSize: '0.68rem', color: 'rgba(240,244,255,0.5)', fontWeight: 600, flexShrink: 0 }}>PP 22/2021 ({NAAQS_ANNUAL})</span>
+            <div style={{ flex: 1, height: '0.45rem', borderRadius: '999px', background: 'rgba(255,255,255,0.12)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(naaqsPct, 100)}%`, background: '#8BBEB2', borderRadius: 'inherit', opacity: 0.9 }} />
+            </div>
+            <span style={{ width: '3rem', fontSize: '0.68rem', fontWeight: 700, color: '#8BBEB2', textAlign: 'right' }}>{formatNumber(k.avg / NAAQS_ANNUAL, 1)}×</span>
+          </div>
+        </div>
+      )}
+
       <div className="overview-data-row">
         <span className="overview-data-chip">
           <CalendarRange size={12} aria-hidden="true" />
@@ -97,13 +134,7 @@ function OverviewHeader({ k, filters, avgCompleteness, validObs }) {
   )
 }
 
-/* ─── Bagian 2: KPI — satu baris dengan hierarki lebar kolom ───────────── */
-/*
- * Referensi desain (gambar hijau):
- *   1 card HERO besar (PM2.5) di kiri → lebar ~2.2×
- *   4 card pendukung di kanan, berjajar dalam 1 baris
- * Semua satu baris, tidak ada baris kedua yang kelihatan "kosong".
- */
+/* ─── Bagian 2: KPI Row ────────────────────────────────────────────────── */
 function KpiSection({ k, medianDistance, health }) {
   const { who } = POLLUTANTS.pm25
   const valid = k.scoped.filter((s) => Number.isFinite(s.avg_pm25))
@@ -143,7 +174,6 @@ function KpiSection({ k, medianDistance, health }) {
       {/* ── 4 card pendukung ── */}
       <div className="ov-kpi-siblings">
 
-        {/* Baku mutu — satu-satunya yang punya aksen warna berbeda */}
         <div
           className="card kpi ov-kpi-cell"
           style={{ '--ov-alert': exceedAnnual > 0 ? 'var(--ispu-tidak-sehat)' : 'var(--ispu-baik)' }}
@@ -212,7 +242,240 @@ function KpiSection({ k, medianDistance, health }) {
   )
 }
 
-/* ─── Bagian 3: Peta + Panel Samping ───────────────────────────────────── */
+/* ─── Bagian 3: 4-Panel Summary Cards ──────────────────────────────────── */
+const MODULE_TABS = ['kualitas', 'korelasi', 'kesehatan', 'jaringan']
+
+function ModuleSummaryCards({ k, t3, t4, networkSummary, completeness, nearest, analytics }) {
+  const [activeModule, setActiveModule] = useState('kualitas')
+
+  /* Kualitas Udara stats */
+  const valid = k.scoped.filter((s) => Number.isFinite(s.avg_pm25))
+  const topStation = [...valid].sort((a, b) => b.avg_pm25 - a.avg_pm25)[0]
+  const exceedAnnual = valid.filter((s) => s.avg_pm25 > NAAQS_ANNUAL).length
+
+  /* Korelasi stats */
+  const korelasiRows = t3?.korelasi_spearman ?? []
+  const top3Korelasi = [...korelasiRows]
+    .filter((r) => r.faktor && r.rho != null)
+    .sort((a, b) => Math.abs(Number(b.rho)) - Math.abs(Number(a.rho)))
+    .slice(0, 3)
+
+  /* Kesehatan / T4 stats */
+  const ccf = t4?.ringkasan_ccf ?? []
+  const ispaRingkasan = t4?.ringkasan_ispa_periode ?? {}
+  const bestLag = ccf.length > 0
+    ? ccf.reduce((best, r) => (!best || Math.abs(Number(r.max_ccf ?? 0)) > Math.abs(Number(best.max_ccf ?? 0)) ? r : best), null)
+    : null
+  const lagValue = bestLag?.lag_at_max_ccf ?? bestLag?.lag ?? null
+
+  /* Jaringan stats */
+  const networkKpi = networkSummary?.kpi ?? {}
+  const coverageScore = networkKpi.coverage_score ?? networkKpi.completeness_avg ?? null
+  const lowestStation = (completeness?.stations ?? [])
+    .filter((s) => s.completeness_pct != null)
+    .sort((a, b) => Number(a.completeness_pct) - Number(b.completeness_pct))[0]
+  const maxDistKm = analytics.nearest.data?.overall?.max_km
+
+  const cards = [
+    {
+      id: 'kualitas',
+      label: 'Kualitas Udara',
+      badge: 'Tujuan 1 & 2',
+      badgeColor: '#8BBEB2',
+      href: '/kualitas-udara',
+      icon: Wind,
+      iconColor: '#8BBEB2',
+      content: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
+            <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#18314F', letterSpacing: '-0.03em' }}>
+              {exceedAnnual}
+            </span>
+            <span style={{ fontSize: '0.78rem', color: '#55706E' }}>stasiun melampaui {NAAQS_ANNUAL} µg/m³</span>
+          </div>
+          {topStation && (
+            <div style={{ padding: '0.55rem 0.75rem', borderRadius: '0.6rem', background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.15)' }}>
+              <span style={{ fontSize: '0.72rem', color: '#C2410C', fontWeight: 700 }}>
+                Tertinggi: {shortName(topStation)} — {formatNumber(topStation.avg_pm25, 1)} µg/m³
+              </span>
+            </div>
+          )}
+          <p style={{ fontSize: '0.74rem', color: '#55706E', lineHeight: 1.5 }}>
+            Rata-rata nasional <strong style={{ color: '#18314F' }}>{k.avg != null ? formatNumber(k.avg, 1) : '—'} µg/m³</strong> — {k.avg != null ? formatNumber(k.avg / 5, 1) : '—'}× di atas pedoman WHO.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 'korelasi',
+      label: 'Korelasi Faktor',
+      badge: 'Tujuan 3',
+      badgeColor: '#384E77',
+      href: '/korelasi',
+      icon: GitCompareArrows,
+      iconColor: '#384E77',
+      content: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <p style={{ fontSize: '0.72rem', color: '#55706E', fontWeight: 600, marginBottom: '0.2rem' }}>Top 3 faktor terkorelasi dengan PM2.5:</p>
+          {top3Korelasi.length > 0 ? top3Korelasi.map((r, i) => {
+            const rho = Number(r.rho ?? 0)
+            const pct = Math.min(100, Math.abs(rho) * 100)
+            const color = rho > 0 ? '#384E77' : '#8BBEB2'
+            return (
+              <div key={r.faktor ?? i} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#18314F' }}>{r.faktor_label ?? r.faktor ?? '—'}</span>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color }}>{rho > 0 ? '+' : ''}{formatNumber(rho, 2)}</span>
+                </div>
+                <div style={{ height: '0.35rem', borderRadius: '999px', background: 'rgba(24,49,79,0.07)', overflow: 'hidden' }}>
+                  <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 'inherit' }} />
+                </div>
+              </div>
+            )
+          }) : (
+            <p style={{ fontSize: '0.74rem', color: '#7C9693' }}>Data korelasi sedang dimuat...</p>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: 'kesehatan',
+      label: 'PM2.5 & Kesehatan',
+      badge: 'Tujuan 4',
+      badgeColor: '#FB923C',
+      href: '/pm25-kesehatan',
+      icon: HeartPulse,
+      iconColor: '#FB923C',
+      content: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', padding: '0.55rem 0.75rem', borderRadius: '0.6rem', background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.18)' }}>
+            <Timer size={14} style={{ color: '#FB923C', flexShrink: 0, marginTop: '0.1rem' }} />
+            <div>
+              <p style={{ fontSize: '0.74rem', fontWeight: 700, color: '#C2410C' }}>
+                Efek jeda {lagValue != null ? `${lagValue} hari` : '2–5 hari'}
+              </p>
+              <p style={{ fontSize: '0.7rem', color: '#55706E', marginTop: '0.15rem' }}>PM2.5 → kasus ISPA & pernapasan</p>
+            </div>
+          </div>
+          {ispaRingkasan.total_balita != null && (
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ flex: 1, textAlign: 'center', padding: '0.5rem', borderRadius: '0.6rem', background: 'rgba(24,49,79,0.04)' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#18314F' }}>{formatNumber(ispaRingkasan.total_balita)}</div>
+                <div style={{ fontSize: '0.68rem', color: '#55706E' }}>kasus balita</div>
+              </div>
+              <div style={{ flex: 1, textAlign: 'center', padding: '0.5rem', borderRadius: '0.6rem', background: 'rgba(24,49,79,0.04)' }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#18314F' }}>{formatNumber(ispaRingkasan.total_lansia)}</div>
+                <div style={{ fontSize: '0.68rem', color: '#55706E' }}>kasus lansia</div>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: 'jaringan',
+      label: 'Kecukupan Jaringan',
+      badge: 'Tujuan 5',
+      badgeColor: '#FACC15',
+      href: '/kecukupan-stasiun',
+      icon: MapPin,
+      iconColor: '#FACC15',
+      content: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          {coverageScore != null && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ flex: 1, height: '0.5rem', borderRadius: '999px', background: 'rgba(24,49,79,0.08)', overflow: 'hidden' }}>
+                <div style={{ width: `${Math.min(100, Number(coverageScore))}%`, height: '100%', background: 'linear-gradient(90deg, #FACC15, #22C55E)', borderRadius: 'inherit' }} />
+              </div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#18314F', minWidth: '3rem' }}>{formatNumber(coverageScore, 1)}%</span>
+            </div>
+          )}
+          {lowestStation && (
+            <div style={{ padding: '0.5rem 0.7rem', borderRadius: '0.6rem', background: 'rgba(250,204,21,0.1)', border: '1px solid rgba(250,204,21,0.25)' }}>
+              <p style={{ fontSize: '0.72rem', fontWeight: 700, color: '#78350F' }}>
+                Terendah: {lowestStation.station_id ?? lowestStation.location_id ?? '—'} · {formatNumber(lowestStation.completeness_pct, 1)}%
+              </p>
+            </div>
+          )}
+          {maxDistKm != null && (
+            <p style={{ fontSize: '0.74rem', color: '#55706E', lineHeight: 1.5 }}>
+              Jarak maks antarstasiun: <strong style={{ color: '#18314F' }}>{formatNumber(maxDistKm, 0)} km</strong>
+            </p>
+          )}
+        </div>
+      ),
+    },
+  ]
+
+  return (
+    <Section
+      title="Sinkronisasi lintas tujuan analisis"
+      description="Ringkasan temuan dari keempat modul analisis. Klik kartu untuk detail lengkap."
+    >
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+        gap: '1rem',
+      }}
+        className="ov-module-grid"
+      >
+        {cards.map(({ id, label, badge, badgeColor, href, icon: Icon, iconColor, content }) => (
+          <Link key={id} href={href} style={{ textDecoration: 'none' }}>
+            <div style={{
+              height: '100%',
+              padding: '1.1rem',
+              borderRadius: '1rem',
+              border: '1px solid var(--color-border)',
+              background: '#fff',
+              boxShadow: 'var(--shadow-card)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+              cursor: 'pointer',
+              transition: 'all 150ms ease',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(24,49,79,0.12)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = 'var(--shadow-card)'; }}
+            >
+              {/* Accent bar top */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: iconColor, borderRadius: '1rem 1rem 0 0' }} />
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
+                <div>
+                  <span style={{
+                    display: 'inline-block', padding: '0.2rem 0.55rem', borderRadius: '999px',
+                    background: `color-mix(in srgb, ${badgeColor} 15%, #fff)`,
+                    border: `1px solid ${badgeColor}40`,
+                    color: badgeColor === '#FACC15' ? '#78350F' : badgeColor,
+                    fontSize: '0.66rem', fontWeight: 700, marginBottom: '0.4rem',
+                  }}>{badge}</span>
+                  <p style={{ fontSize: '0.84rem', fontWeight: 700, color: '#18314F', margin: 0 }}>{label}</p>
+                </div>
+                <div style={{ width: '2rem', height: '2rem', borderRadius: '0.6rem', display: 'grid', placeItems: 'center', background: `color-mix(in srgb, ${iconColor} 15%, #fff)`, color: iconColor, flexShrink: 0 }}>
+                  <Icon size={15} />
+                </div>
+              </div>
+              {/* Content */}
+              <div style={{ flex: 1 }}>
+                {content}
+              </div>
+              {/* CTA */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.74rem', fontWeight: 700, color: iconColor === '#FACC15' ? '#78350F' : iconColor }}>
+                <span>Lihat detail</span>
+                <ArrowRight size={13} />
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+/* ─── Bagian 4: Peta + Panel Samping ───────────────────────────────────── */
 function MapSection({ scoped, onSelect }) {
   return (
     <Section
@@ -237,7 +500,7 @@ function MapSection({ scoped, onSelect }) {
   )
 }
 
-/* ─── Bagian 4: Temuan + Navigasi ──────────────────────────────────────── */
+/* ─── Bagian 5: Temuan + Navigasi ──────────────────────────────────────── */
 const NAV_LINKS = [
   { question: 'Kapan udara paling buruk?',                 href: '/kualitas-udara',    icon: Wind,            color: '#8BBEB2' },
   { question: 'Apa yang memengaruhi PM2.5?',               href: '/korelasi',          icon: GitCompareArrows, color: '#384E77' },
@@ -323,7 +586,7 @@ function FindingsSection({ scoped, avgPm25, summary, analytics }) {
   )
 }
 
-/* ─── Bagian 5: Catatan Metodologi ─────────────────────────────────────── */
+/* ─── Bagian 6: Catatan Metodologi ─────────────────────────────────────── */
 function MethodologyNote() {
   return (
     <Card variant="tint" className="overview-method">
@@ -344,6 +607,10 @@ export default function OverviewPage() {
   const { data: stations, loading: stationLoading, error: stationError } = useStations()
   const { data: summary } = useOverviewSummary()
   const analytics = useOverviewAnalytics()
+  const { data: t4 } = useT4Data()
+  const { data: t3 } = useT3Tables()
+  const { data: networkSummary } = useMonitoringNetworkSummary()
+  const { data: completenessData } = useStationCompleteness()
   const { filters, setDateRange, setStation, setRegion, resetFilters } = useFilter()
 
   const all = stations ?? EMPTY
@@ -417,6 +684,11 @@ export default function OverviewPage() {
       title="Overview"
       description="Di mana dan seberapa buruk kondisi udara Indonesia? Ringkasan jaringan 27 stasiun AQMS dan dampak kesehatan."
     >
+      <style>{`
+        @media (max-width: 1100px) { .ov-module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+        @media (max-width: 640px)  { .ov-module-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
+
       <FilterBar
         filters={filters}
         onDateChange={setDateRange}
@@ -437,6 +709,15 @@ export default function OverviewPage() {
             validObs={summary?.total_valid_records ?? null}
           />
           <KpiSection k={k} medianDistance={medianDistance} health={health} />
+          <ModuleSummaryCards
+            k={k}
+            t3={t3}
+            t4={t4}
+            networkSummary={networkSummary}
+            completeness={completenessData}
+            nearest={analytics.nearest.data}
+            analytics={analytics}
+          />
           <MapSection scoped={scoped} onSelect={handleSelect} />
           <FindingsSection scoped={scoped} avgPm25={k.avg} summary={summary} analytics={analytics} />
           <MethodologyNote />
