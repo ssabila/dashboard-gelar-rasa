@@ -1446,7 +1446,6 @@ return (
       }}
     />
 
-    {/* JUMLAH OBSERVASI DI BAWAH GRAFIK */}
     <div className="aq-weekend-counts">
       <div>
         <span>Jumlah data hari kerja</span>
@@ -4458,7 +4457,6 @@ const resetCritical = () => setCriticalFilter({
 
 <section className="aq-overview">
 
-  {/* NARASI TEMUAN UTAMA */}
   <div className="aq-overview-hero">
 
     <h2>
@@ -4858,251 +4856,6 @@ const resetCritical = () => setCriticalFilter({
 
 </Card>
       </section>
-
-      {/* 03 — EKSPLORASI STASIUN AQMS
-
-      <section className="aq-section">
-        <SectionTitle
-          number="03"
-          title="Eksplorasi Stasiun AQMS"
-          description="Jelajahi lokasi stasiun pemantauan dan lihat kondisi kualitas udara pada stasiun yang dipilih."
-        />
-
-        <div className="aq-map-detail-grid">
-
-  <Card className="aq-card">
-    <CardHeader
-      title="Peta interaktif stasiun AQMS"
-      subtitle="Klik marker untuk memilih stasiun."
-    />
-
-    <AirQualityMap
-      geo={geo.data}
-      stations={mapStations}
-      dailyRows={data.harian}
-      parameter="pm25"
-      selectedStationId={selectedStation?.station_id ?? null}
-      onSelectStation={setSelectedStation}
-    />
-    <div className="aq-map-legend-wrapper">
-
-  <p className="aq-map-legend-description">
-    Warna marker menunjukkan kategori Indeks Standar
-    Pencemar Udara (ISPU) pada masing-masing stasiun.
-    Pilih marker untuk melihat detail hasil pemantauan.
-  </p>
-
-  <div className="aq-map-legend">
-    {Object.entries(ISPU_COLORS).map(([label, color]) => (
-      <span key={label}>
-        <i style={{ background: color }} />
-        {label}
-      </span>
-    ))}
-  </div>
-</div>
-
-<StationInsight
-  station={selectedStation}
-  rows={stationPeriodRows}
-/>
-
-<div className="aq-distribusi-footer">
-    <p>
-      *Stasiun bersatuan ppm dan stasiun dengan data tidak mencukupi
-      tidak disertakan.
-    </p>
-  </div>
-
-  </Card>
-
-  <Card className="aq-card">
-
-    <div className="aq-station-panel-header">
-      <div>
-        <h3>Detail stasiun terpilih</h3>
-        <p>Ringkasan hasil pengukuran kualitas udara.</p>
-      </div>
-
-
-<div className="aq-station-period">
-
-  <div style={{ position: 'relative' }}>
-
-    <button
-      type="button"
-      className="aq-date-trigger"
-      onClick={() => {
-        setStationDateDraft({
-          dariTanggal: stationPeriodFilter.dariTanggal,
-          sampaiTanggal: stationPeriodFilter.sampaiTanggal,
-        })
-        setStationDateOpen(!stationDateOpen)
-      }}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M8 2v3" />
-        <path d="M16 2v3" />
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M3 9h18" />
-        <path d="M8 13h.01" />
-        <path d="M12 13h.01" />
-        <path d="M16 13h.01" />
-        <path d="M8 17h.01" />
-        <path d="M12 17h.01" />
-        <path d="M16 17h.01" />
-      </svg>
-
-      <span className="aq-date-label">
-        {new Date(`${stationPeriodFilter.dariTanggal}T00:00:00`)
-          .toLocaleDateString('id-ID', {
-            day: '2-digit',
-            month: 'short',
-            year: '2-digit',
-          })}
-        {' – '}
-        {new Date(`${stationPeriodFilter.sampaiTanggal}T00:00:00`)
-          .toLocaleDateString('id-ID', {
-            day: '2-digit',
-            month: 'short',
-            year: '2-digit',
-          })}
-      </span>
-
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="m6 9 6 6 6-6" />
-      </svg>
-    </button>
-
-    {stationDateOpen && (
-      <div className="aq-date-dropdown">
-
-        <label className="aq-filter-field">
-          <span>Mulai</span>
-          <input
-            type="date"
-            value={stationDateDraft.dariTanggal}
-            min="2024-01-01"
-            max={stationDateDraft.sampaiTanggal}
-            onChange={(e) =>
-              setStationDateDraft((state) => ({
-                ...state,
-                dariTanggal: e.target.value,
-              }))
-            }
-          />
-        </label>
-
-        <label className="aq-filter-field">
-          <span>Selesai</span>
-          <input
-            type="date"
-            value={stationDateDraft.sampaiTanggal}
-            min={stationDateDraft.dariTanggal}
-            max="2026-10-14"
-            onChange={(e) =>
-              setStationDateDraft((state) => ({
-                ...state,
-                sampaiTanggal: e.target.value,
-              }))
-            }
-          />
-        </label>
-
-        <div className="aq-date-presets">
-          {[
-            { value: 'Semua', label: 'Semua Data' },
-            { value: '2026', label: 'Tahun 2026' },
-            { value: '2025', label: 'Tahun 2025' },
-            { value: '2024', label: 'Tahun 2024' },
-          ].map((item) => {
-            const selected =
-              item.value === 'Semua'
-                ? stationDateDraft.dariTanggal === '2024-01-01' &&
-                  stationDateDraft.sampaiTanggal === '2026-10-14'
-                : stationDateDraft.dariTanggal === `${item.value}-01-01` &&
-                  stationDateDraft.sampaiTanggal ===
-                    (item.value === '2026'
-                      ? '2026-10-14'
-                      : `${item.value}-12-31`)
-
-            return (
-              <button
-                key={item.value}
-                type="button"
-                className={selected ? 'active' : ''}
-                aria-pressed={selected}
-                onClick={() => applyStationDatePreset(item.value)}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-        </div>
-
-        <div className="aq-date-actions">
-          <button
-            type="button"
-            onClick={() => setStationDateOpen(false)}
-          >
-            Batal
-          </button>
-
-          <button
-            type="button"
-            onClick={confirmStationDate}
-          >
-            Terapkan
-          </button>
-        </div>
-
-      </div>
-    )}
-
-  </div>
-
-  <button
-    type="button"
-    className="aq-filter-reset"
-    onClick={resetStationPeriod}
-  >
-    <RotateCcw size={14} />
-    Reset
-  </button>
-
-</div>
-
-
-    </div>
-
-    <StationDetail
-  station={selectedStation}
-  rows={stationPeriodRows}
-/>
-
-  </Card>
-</div>
-      </section> */}
 
       {/* 04 — PERBANDINGAN KUALITAS UDARA ANTARWILAYAH */}
 
@@ -5866,7 +5619,6 @@ const resetCritical = () => setCriticalFilter({
     />
   </LocalFilter>
 
-  {/* BARIS 1 — POLA PER JAM */}
   <div className="aq-chart-grid">
 
     <Card className="aq-card">
@@ -5899,7 +5651,6 @@ const resetCritical = () => setCriticalFilter({
 
   </div>
 
-  {/* BARIS 2 — HARI KERJA VS AKHIR PEKAN */}
   <div className="aq-chart-grid">
 
     <Card className="aq-card">
@@ -6047,13 +5798,11 @@ const resetCritical = () => setCriticalFilter({
       stasiun bersatuan µg/m³.
     </div>
 
-    {/* GRAFIK */}
     <SeasonalChart
       rows={seasonalFilteredRows}
       parameter={seasonFilter.parameter}
     />
 
-    {/* INTERPRETASI DALAM CARD YANG SAMA */}
     <div className="aq-season-result">
 
       <SeasonalInterpretation
@@ -6066,7 +5815,6 @@ const resetCritical = () => setCriticalFilter({
 
   </Card>
 
-  {/* KETERANGAN ANALISIS */}
   <div className="aq-distribusi-footer">
     <p>
       *Musim hujan ditetapkan pada November–April,
@@ -6081,10 +5829,7 @@ const resetCritical = () => setCriticalFilter({
   </div>
 </section>
 
-      {/* ==================================================
-          SECTION 07 — PERBANDINGAN KARAKTERISTIK KAWASAN
-      ================================================== */}
-
+      {/* SECTION 07*/}
       <section className="aq-section">
 
         <SectionTitle
@@ -6211,8 +5956,6 @@ const resetCritical = () => setCriticalFilter({
 
           </div>
 
-          {/* CATATAN METODOLOGI */}
-
           <p className="aq-area-note">
             <strong>Catatan analisis:</strong>
             {' '}Pengelompokan kawasan menggunakan metadata
@@ -6298,7 +6041,6 @@ const resetCritical = () => setCriticalFilter({
           description="Mengidentifikasi kesamaan waktu lonjakan partikulat antarstasiun, persebaran wilayah, dan kondisi angin."
         />
 
-        {/* FILTER GLOBAL SECTION */}
         <LocalFilter onReset={resetHaze}>
           <FilterDateRange
             value={hazeFilter}
@@ -6376,7 +6118,6 @@ const resetCritical = () => setCriticalFilter({
 
 <div className="haze-analysis-layout">
 
-  {/* BARIS ATAS: PETA DAN DETAIL STASIUN */}
   <div className="haze-analysis-top">
 
     {/* PETA */}
@@ -6501,7 +6242,6 @@ const resetCritical = () => setCriticalFilter({
     </div>
   </div>
 
-  {/* BARIS BAWAH: INTERPRETASI MEMBENTANG PENUH */}
   <div className="haze-map-interpretation">
     <strong>Bagaimana Membaca Peta Ini?</strong>
 

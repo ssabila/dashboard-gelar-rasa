@@ -1,26 +1,3 @@
-/*
-  AIR QUALITY DASHBOARD — AQMS
-  ============================================================
-  PETA ISI CSS
-  01. Heading, section, toolbar, card, KPI, chart, dan tabel umum
-  02. Layout eksplorasi stasiun dan komponen detail stasiun
-  03. Peta, grafik polutan, distribusi ISPU, tabel, heatmap, insight
-  04. Filter ringkas dan filter ranking
-  05. Grafik distribusi dan boxplot
-  06. Filter tren dan date picker umum
-  07. Filter compact dan tombol reset
-  08. Evaluasi BMUA: chart, summary, toolbar, dan date range
-  09. Tabel perbandingan dan filter tabel
-  10. Interpretasi tren dan ringkasan/tabel BMUA
-
-  CATATAN
-  - Urutan utama selector dipertahankan agar CSS cascade tetap aman.
-  - Selector berulang yang masih tersisa adalah refinement/override
-    atau dipakai oleh komponen berbeda, bukan otomatis duplikat.
-  - Responsive BMUA dikumpulkan dalam satu blok setelah style desktop.
-  ============================================================
-*/
-
 
 /* =========================================
    AIR QUALITY DASHBOARD — DESIGN REFINEMENT
@@ -76,7 +53,6 @@
   line-height: 1.6;
 }
 
-/* Section spacing */
 
 .aq-section {
   display: flex;
@@ -87,7 +63,6 @@
   border-top: none;
 }
 
-/* Compact filter toolbar */
 
 .aq-filter-toolbar {
   display: flex;
@@ -156,7 +131,6 @@
   color: #18314F;
 }
 
-/* Cards */
 
 .aq-card {
   min-width: 0;
@@ -243,7 +217,6 @@
   min-width: 0;
 }
 
-/* Table refinement */
 
 .aq-table-wrap {
   overflow-x: auto;
@@ -277,7 +250,6 @@
   background: #F7F9FC;
 }
 
-/* Empty state */
 
 .aq-empty {
   display: grid;
@@ -337,48 +309,6 @@
   }
 }
 
-
-/* SECTION NUMBER */
-
-.aq-section-number {
-  display: grid;
-  place-items: center;
-  flex: 0 0 36px;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(79, 131, 204, .12);
-  color: #4F83CC;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-/* =========================================================
-   02. EKSPLORASI STASIUN — LAYOUT DAN DETAIL
-   ========================================================= */
-/* MAP + DETAIL GRID */
-
-/* Layout Eksplorasi Stasiun AQMS */
-.aq-map-detail-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 6fr) minmax(280px, 4fr);
-  gap: 16px;
-  margin-top: 16px;
-  align-items: stretch;
-}
-
-.aq-map-card,
-.aq-station-card {
-  min-width: 0;
-  height: 100%;
-}
-
-.aq-station-card {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Filter Tren Kualitas Udara: satu baris */
 .aq-section .aq-filter-toolbar {
   display: flex;
   align-items: flex-end;
@@ -523,10 +453,7 @@
   }
 }
 
-/* =========================================================
-   03. PETA, POLUTAN, DISTRIBUSI ISPU, TABEL, HEATMAP, INSIGHT
-   ========================================================= */
-/* Warna badge kategori ISPU */
+   /* Warna badge kategori ISPU */
 .aq-category-pill.ispu-baik {
   background: #DCFCE7;
   color: #15803D;
@@ -793,8 +720,6 @@
   color: var(--color-text-primary);
 }
 
-/* Empty state */
-
 .aq-empty {
   min-height: 180px;
   display: flex;
@@ -885,10 +810,6 @@
   }
 }
 
-/* =========================================================
-   04. FILTER RINGKAS DAN FILTER RANKING
-   ========================================================= */
-/* FILTER SECTION - LAYOUT SERAGAM */
 .aq-filter-grid,
 .aq-ranking-filter-grid {
   display: grid;
@@ -1078,13 +999,11 @@
   }
 }
 
-/* Override tampilan akhir: nomor section disembunyikan pada dashboard. */
 .aq-section-index,
 .aq-section-number {
   display: none !important;
 }
 
-/* Refinement heatmap: transisi, warna teks, dan efek hover. */
 .aq-hour-cell {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
@@ -1103,10 +1022,6 @@
   transform: translateY(-2px);
 }
 
-/* =========================================================
-   05. GRAFIK DISTRIBUSI DAN BOXPLOT
-   ========================================================= */
-/* chartdistribution */
 .aq-distribusi-chart {
   display: flex;
   flex-direction: column;
@@ -1235,10 +1150,8 @@
   }
 }
 
-/* =========================================================
-   06. FILTER TREN DAN DATE PICKER UMUM
-   ========================================================= */
-/* trend filter */
+
+   /* trend filter */
 .aq-trend-filter {
   display: flex;
   flex-direction: column;
@@ -1367,7 +1280,6 @@
   border-radius: 10px;
 }
 
-/* Override Section 04: filter ini memakai grid, bukan flex umum di atas. */
 .aq-filter-fields {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
@@ -1375,11 +1287,6 @@
 }
 
 
-/* =========================================================
-   07. FILTER COMPACT DAN TOMBOL RESET
-   ========================================================= */
-/* FILTER compact n reset */
-/* FILTER SECTION 04 - RESET BUTTON */
 
 .aq-filter-with-reset {
   display: flex;
@@ -1507,14 +1414,6 @@
   line-height: 1.4;
 }
 
-
-
-
-
-/* =========================================================
-   08. EVALUASI BMUA — CHART, SUMMARY, TOOLBAR, DATE RANGE
-   ========================================================= */
-/* TOOLBAR EVALUASI BMUA */
 .aq-bmua-toolbar {
   display: grid;
   grid-template-columns: 1.15fr 1fr 1fr 1fr;
@@ -1542,7 +1441,6 @@
   min-width: 0;
 }
 
-/* TOMBOL RENTANG TANGGAL */
 /* TOMBOL RENTANG TANGGAL BMUA */
 .aq-bmua-date .aq-date-range-trigger {
   display: flex;
@@ -1721,21 +1619,6 @@ max-height: 40px !important;
   font-weight: 650;
 }
 
-
-
-
-
-/* =========================================================
-   09. TABEL PERBANDINGAN DAN FILTER TABEL
-   ========================================================= */
-/* TABEL PERBANDINGAN */
-
-/* ---------------------------------------------------------
-   08A. EVALUASI BMUA — RESPONSIVE TOOLBAR
-   Tablet: toolbar 3 kolom dan kontrol dipadatkan.
-   Mobile: toolbar 1 kolom, tombol lebih tinggi, popover dibatasi layar.
-   --------------------------------------------------------- */
-/* TABLET / LAYAR SETENGAH */
 @media (max-width: 1000px) {
   .aq-bmua-toolbar {
     display: grid;
@@ -1877,7 +1760,6 @@ max-height: 40px !important;
   }
 }
 
-/* Batasi lebar dropdown tampilkan berdasarkan */
 .aq-table-toolbar > .aq-filter-field:nth-child(2),
 .aq-table-toolbar > .aq-filter-select {
   width: 100%;
@@ -1885,11 +1767,6 @@ max-height: 40px !important;
   justify-self: start;
 }
 
-/* =========================================================
-   10. INTERPRETASI TREN DAN RINGKASAN BMUA
-   ========================================================= */
-/* tambahan section tren */
-/* RINGKASAN DAN INTERPRETASI TREN */
 .aq-trend-insight {
   margin-top: 20px;
   padding-top: 17px;
@@ -2034,10 +1911,6 @@ max-height: 40px !important;
   font-weight: 700;
 }
 
-/* =====================================================
-   TABEL BMUA — SCROLL DI DALAM CARD
-   ===================================================== */
-
 .aq-bmua-table-wrap {
   width: 100%;
   max-height: 420px;
@@ -2061,7 +1934,6 @@ max-height: 40px !important;
   border-spacing: 0;
 }
 
-/* HEADER TETAP TERLIHAT SAAT SCROLL */
 .aq-bmua-table-wrap .aq-comparison-table thead th {
   position: sticky;
   top: 0;
@@ -2082,7 +1954,7 @@ max-height: 40px !important;
   font-weight: 700;
 }
 
-/* SCROLLBAR CHROME, EDGE, DAN SAFARI */
+
 .aq-bmua-table-wrap::-webkit-scrollbar {
   width: 7px;
   height: 7px;
@@ -2111,10 +1983,6 @@ max-height: 40px !important;
   }
 }
 
-/* =====================================================
-   TABEL PERBANDINGAN KUALITAS UDARA
-   SCROLL DI DALAM CARD
-   ===================================================== */
 
 .aq-comparison-scroll {
   width: 100%;
@@ -2130,7 +1998,7 @@ max-height: 40px !important;
   scrollbar-color: #B8C5D6 #F1F5F9;
 }
 
-/* UKURAN TABEL */
+
 .aq-comparison-scroll .aq-comparison-table {
   width: 100%;
   min-width: 850px;
@@ -2139,7 +2007,6 @@ max-height: 40px !important;
   white-space: nowrap;
 }
 
-/* HEADER TETAP TERLIHAT */
 .aq-comparison-scroll .aq-comparison-table thead th {
   position: sticky;
   top: 0;
@@ -2147,7 +2014,7 @@ max-height: 40px !important;
   background: #F1F5F9;
 }
 
-/* UKURAN SEL */
+
 .aq-comparison-scroll .aq-comparison-table th,
 .aq-comparison-scroll .aq-comparison-table td {
   padding: 12px 10px;
@@ -2155,13 +2022,11 @@ max-height: 40px !important;
   text-align: left;
 }
 
-/* HEADER */
 .aq-comparison-scroll .aq-comparison-table th {
   font-size: 11px;
   font-weight: 700;
 }
 
-/* SCROLLBAR */
 .aq-comparison-scroll::-webkit-scrollbar {
   width: 7px;
   height: 7px;
@@ -2177,7 +2042,6 @@ max-height: 40px !important;
   border-radius: 10px;
 }
 
-/* TABLET DAN LAYAR KECIL */
 @media (max-width: 1100px) {
   .aq-comparison-scroll .aq-comparison-table th,
   .aq-comparison-scroll .aq-comparison-table td {
@@ -2185,11 +2049,6 @@ max-height: 40px !important;
     font-size: 11px;
   }
 }
-
-
-/* =========================================
-   ANALISIS WAKTU KRITIS
-========================================= */
 
 .aq-hourly-wrap {
   display: flex;
@@ -2243,7 +2102,6 @@ max-height: 40px !important;
   letter-spacing: 0.02em;
 }
 
-/* LEGENDA HEATMAP */
 
 .aq-hourly-legend {
   display: flex;
@@ -2300,7 +2158,6 @@ max-height: 40px !important;
   color: var(--color-text-secondary);
 }
 
-/* KARTU INTERPRETASI */
 
 .aq-time-interpretation {
   display: flex;
@@ -2319,7 +2176,6 @@ max-height: 40px !important;
   color: var(--color-text-primary);
 }
 
-/* HIGHLIGHT JAM TERTINGGI */
 
 .aq-time-highlight {
   display: flex;
@@ -2348,7 +2204,6 @@ max-height: 40px !important;
   color: var(--color-text-primary);
 }
 
-/* CATATAN INTERPRETASI */
 
 .aq-time-note {
   display: flex;
@@ -2370,7 +2225,6 @@ max-height: 40px !important;
   line-height: 1.55;
 }
 
-/* PERBANDINGAN HARI */
 
 .aq-weekend-stat-grid {
   display: grid;
@@ -2445,14 +2299,6 @@ max-height: 40px !important;
 }
 
 
-
-/* =========================================
-   ANALISIS MUSIMAN
-========================================= */
-
-/* FILTER MENGIKUTI EVALUASI BMUA */
-
-
 .aq-season-data-summary {
   margin: 12px 0 18px !important;
   padding: 0;
@@ -2466,15 +2312,12 @@ max-height: 40px !important;
   color: #294563;
 }
 
-/* KONTEN MUSIMAN */
 
 .aq-season-content {
   display: flex;
   flex-direction: column;
   gap: 22px;
 }
-
-/* JUDUL GRAFIK */
 
 .aq-season-chart-heading {
   display: flex;
@@ -2495,8 +2338,6 @@ max-height: 40px !important;
   color: #8292a6;
   font-size: 12px;
 }
-
-/* INTERPRETASI */
 
 
 .aq-season-interpretation {
@@ -2527,7 +2368,6 @@ max-height: 40px !important;
   color: #294563;
 }
 
-/* FOOTER */
 
 .aq-season-footer {
   padding-top: 14px;
@@ -2541,7 +2381,6 @@ max-height: 40px !important;
   line-height: 1.8;
 }
 
-/* RESPONSIVE */
 
 @media (max-width: 900px) {
   .aq-season-content {
@@ -2556,7 +2395,6 @@ max-height: 40px !important;
 }
 
 
-/* ANALISIS MUSIMAN */
 
 .aq-season-content {
   display: flex;
@@ -2584,7 +2422,6 @@ max-height: 40px !important;
   font-size: 12px;
 }
 
-/* INTERPRETASI */
 
 .aq-season-interpretation {
   padding: 20px;
@@ -2638,11 +2475,7 @@ max-height: 40px !important;
     padding: 16px;
   }
 }
-/* =========================================
-   ANALISIS MUSIMAN — FILTER
-========================================= */
 
-/* GRID */
 .aq-season-filter-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2654,7 +2487,6 @@ max-height: 40px !important;
   z-index: 30;
 }
 
-/* ITEM (tanggal + wrapper dropdown) */
 .aq-season-filter-grid > .aq-season-filter-item {
   display: flex;
   flex-direction: column;
@@ -2663,8 +2495,6 @@ max-height: 40px !important;
   position: relative;
 }
 
-/* DROPDOWN: <label class="aq-filter-field"> dari FilterSelect.
-   flex: 0 0 auto = fix gap besar (base-nya flex: 1 1 125px jadi tinggi 125px) */
 .aq-season-filter-grid .aq-filter-field {
   display: flex;
   flex: 0 0 auto;
@@ -2674,7 +2504,6 @@ max-height: 40px !important;
   min-width: 0;
 }
 
-/* LABEL: sama untuk tanggal & dropdown */
 .aq-season-filter-grid .aq-season-filter-item > span,
 .aq-season-filter-grid .aq-filter-field > span {
   display: block;
@@ -2686,9 +2515,7 @@ max-height: 40px !important;
   letter-spacing: 0;
 }
 
-/* KONTROL: tinggi sama (52px).
-   !important dibutuhkan karena SELECT_STYLE di JSX itu inline */
-.aq-season-filter-grid .aq-date-range-wrap {
+   .aq-season-filter-grid .aq-date-range-wrap {
   width: 100%;
   min-width: 0;
 }
@@ -2710,7 +2537,6 @@ max-height: 40px !important;
   font-size: 14px !important;
 }
 
-/* TOMBOL TANGGAL */
 .aq-season-filter-grid button.aq-date-range-trigger {
   display: flex;
   flex-direction: row;
@@ -2737,15 +2563,10 @@ max-height: 40px !important;
   height: 20px;
 }
 
-/* HOVER */
 .aq-season-filter-grid .aq-date-range-trigger:hover,
 .aq-season-filter-grid .aq-filter-field select:hover {
   border-color: #A9BCD2 !important;
 }
-
-/* =========================================
-   POPUP KALENDER
-========================================= */
 
 .aq-season-filter-item .aq-date-range-popover {
   position: absolute !important;
@@ -2816,7 +2637,6 @@ max-height: 40px !important;
   border-top: 1px solid #E5EAF1;
 }
 
-/* RESPONSIVE */
 @media (max-width: 1100px) {
   .aq-season-filter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2830,7 +2650,6 @@ max-height: 40px !important;
   }
 }
 
-/* FILTER CAKUPAN WILAYAH MUSIMAN */
 
 .aq-season-filter-item .aq-date-range-field select {
   box-sizing: border-box;
@@ -2857,7 +2676,6 @@ max-height: 40px !important;
 }
 
 
-/* Status periode kritis */
 .aq-critical-status {
   display: inline-flex;
   align-items: center;
@@ -2951,9 +2769,6 @@ max-height: 40px !important;
   }
 }
 
-/* ======================================================
-   SECTION 07 — PERBANDINGAN KARAKTERISTIK KAWASAN
-====================================================== */
 
 .aq-area-summary-grid {
   display: grid;
@@ -3076,7 +2891,6 @@ max-height: 40px !important;
   color: #668D91;
 }
 
-/* RESPONSIVE */
 
 @media (max-width: 900px) {
   .aq-area-summary-grid {
@@ -3108,7 +2922,6 @@ max-height: 40px !important;
   }
 }
 
-/* ANALISIS INDIKASI EPISODE KABUT ASAP */
 
 .aq-haze-summary {
   display: flex;
@@ -3159,7 +2972,6 @@ max-height: 40px !important;
   }
 }
 
-/* HAZE EPISODE MAP */
 
 .haze-map {
   position: relative;
@@ -3243,7 +3055,6 @@ max-height: 40px !important;
   }
 }
 
-/* HAZE EPISODE - MAP & STATION RANKING */
 
 .haze-detail-layout {
   display: grid;
@@ -3536,7 +3347,6 @@ max-height: 40px !important;
   }
 }
 
-/* POPUP IDENTITAS STASIUN */
 
 .haze-map-popup {
   min-width: 150px;
@@ -3563,7 +3373,6 @@ max-height: 40px !important;
   margin-top: 3px;
 }
 
-/* INTERPRETASI PETA */
 
 .haze-map-interpretation {
   padding: 14px 15px;
@@ -3647,7 +3456,6 @@ max-height: 40px !important;
   }
 }
 
-/* INTERPRETASI HEATMAP */
 
 .haze-heatmap-interpretation {
   margin-top: 12px;
@@ -3675,15 +3483,6 @@ max-height: 40px !important;
   margin-bottom: 0;
 }
 
-/* =========================================================
-   FINAL — PENYERAGAMAN INTERPRETASI & FOOTER
-   Taruh di PALING BAWAH aqms.css (setelah semua blok lain).
-   Blok ini menimpa gaya lama, jadi blok lama tidak wajib dihapus.
-   ========================================================= */
-
-/* ---------------------------------------------------------
-   1. KOTAK INTERPRETASI (satu gaya untuk semua seksi)
-   --------------------------------------------------------- */
 .aq-trend-interpretation,
 .aq-bmua-interpretation,
 .aq-area-interpretation,
@@ -3708,7 +3507,6 @@ max-height: 40px !important;
   text-align: left;
 }
 
-/* Judul kotak */
 .aq-trend-interpretation > strong,
 .aq-bmua-interpretation > strong,
 .aq-season-interpretation > strong,
@@ -3724,7 +3522,6 @@ max-height: 40px !important;
   line-height: 1.4;
 }
 
-/* Judul area punya ikon */
 .aq-area-interpretation-heading {
   display: flex;
   align-items: center;
@@ -3741,7 +3538,6 @@ max-height: 40px !important;
   color: #7898BE;
 }
 
-/* Paragraf */
 .aq-trend-interpretation p,
 .aq-bmua-interpretation p,
 .aq-area-interpretation p,
@@ -3767,7 +3563,6 @@ max-height: 40px !important;
   margin-bottom: 0;
 }
 
-/* Penekanan di dalam paragraf */
 .aq-trend-interpretation p strong,
 .aq-bmua-interpretation p strong,
 .aq-area-interpretation p strong,
@@ -3782,11 +3577,8 @@ max-height: 40px !important;
   font-weight: 700;
 }
 
-/* ---------------------------------------------------------
-   2. INTERPRETASI TANPA KOTAK (di dalam card yang sudah
-      punya judul sendiri) — tipografi disamakan
-   --------------------------------------------------------- */
-.aq-time-interpretation,
+
+   .aq-time-interpretation,
 .aq-haze-summary {
   color: #526B86;
   font-size: 12px;
@@ -3811,10 +3603,7 @@ max-height: 40px !important;
   font-weight: 700;
 }
 
-/* ---------------------------------------------------------
-   3. FOOTER / CATATAN (satu gaya untuk semua seksi)
-   --------------------------------------------------------- */
-.aq-distribusi-footer,
+   .aq-distribusi-footer,
 .aq-bmua-footer,
 .aq-season-footer,
 .aq-area-note {
@@ -3851,7 +3640,6 @@ max-height: 40px !important;
   margin-top: 5px;
 }
 
-/* Label "Catatan analisis:" */
 .aq-distribusi-footer > strong,
 .aq-area-note > strong {
   display: block;
@@ -3866,16 +3654,11 @@ max-height: 40px !important;
   font-weight: 650;
 }
 
-/* Catatan area (<i>site_type</i>) */
 .aq-area-note i {
   font-style: italic;
 }
 
-/* ---------------------------------------------------------
-   4. FILTER MUSIMAN: 4 KOLOM
-      (diulang setelah media query supaya tidak tertimpa urutan)
-   --------------------------------------------------------- */
-.aq-season-filter-grid {
+   .aq-season-filter-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
@@ -3891,10 +3674,8 @@ max-height: 40px !important;
   }
 }
 
-/* ---------------------------------------------------------
-   5. RESPONSIVE KOTAK INTERPRETASI
-   --------------------------------------------------------- */
-@media (max-width: 640px) {
+
+   @media (max-width: 640px) {
   .aq-trend-interpretation,
   .aq-bmua-interpretation,
   .aq-area-interpretation,
@@ -3906,14 +3687,6 @@ max-height: 40px !important;
   }
 }
 
-/* ---------------------------------------------------------
-   6. RENTANG PENGAMATAN DI TOOLBAR FILTER (LocalFilter)
-      Dipakai di seksi 05, karakteristik kawasan, periode kritis, haze.
-      Sebelumnya gaya picker hanya ada untuk .aq-bmua-date dan
-      .aq-season-filter-*, jadi di toolbar popup-nya tampil "inline".
-   --------------------------------------------------------- */
-
-/* Toolbar yang punya rentang: grid yang boleh wrap, bukan 1 baris nowrap */
 .aq-section .aq-filter-toolbar:has(.aq-filter-field--date) {
   position: relative;
   z-index: 30;
@@ -3933,14 +3706,12 @@ max-height: 40px !important;
   min-width: 0;
 }
 
-/* Label: satu baris, tidak patah */
 .aq-section .aq-filter-toolbar:has(.aq-filter-field--date) .aq-filter-field > span {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* Rentang mengambil 2 kolom supaya teks tanggal muat */
 .aq-filter-field--date {
   position: relative;
   grid-column: span 2;
@@ -3953,7 +3724,6 @@ max-height: 40px !important;
   min-width: 0;
 }
 
-/* Tombol: samakan dengan select (tinggi 38, radius 9) */
 .aq-filter-field--date .aq-date-range-trigger {
   display: flex;
   flex-direction: row;
@@ -3998,7 +3768,6 @@ max-height: 40px !important;
   font-weight: 600;
 }
 
-/* Popup kalender: melayang di bawah tombol */
 .aq-filter-field--date .aq-date-range-popover {
   position: absolute;
   top: calc(100% + 8px);
@@ -4073,24 +3842,18 @@ max-height: 40px !important;
   border-top: 1px solid #E5EAF1;
 }
 
-/* HP: rentang satu baris penuh */
 @media (max-width: 420px) {
   .aq-filter-field--date {
     grid-column: 1 / -1;
   }
 }
 
-/* ---------------------------------------------------------
-   7. CAKUPAN WILAYAH (cascade) DI TOOLBAR FILTER
-   --------------------------------------------------------- */
 
-/* Cakupan hanya butuh 1 kolom (rentang tetap 2 kolom) */
 .aq-filter-field--scope {
   grid-column: span 1;
   z-index: 35;
 }
 
-/* Select di dalam popup mengikuti gaya input popup */
 .aq-filter-field--date .aq-date-range-field select {
   box-sizing: border-box;
   width: 100%;
@@ -4117,27 +3880,19 @@ max-height: 40px !important;
   }
 }
 
-/* =========================================
-   RINGKASAN TEMUAN — COMPACT LAYOUT
-========================================= */
-
-/* Jarak antar-section */
 .aq-section {
   gap: 12px;
   margin-top: 22px;
 }
 
-/* Section pertama lebih dekat ke judul halaman */
 .aq-section:first-of-type {
   margin-top: 18px;
 }
 
-/* Jarak judul section ke kartu */
 .aq-section-heading {
   margin: 0 0 2px;
 }
 
-/* Grid ringkasan */
 .aq-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4145,7 +3900,6 @@ max-height: 40px !important;
   width: 100%;
 }
 
-/* Tinggi dan isi kartu */
 .aq-summary-grid .aq-kpi-card {
   min-height: 180px;
   padding: 17px 18px;
@@ -4154,12 +3908,10 @@ max-height: 40px !important;
   justify-content: space-between;
 }
 
-/* Jarak keterangan bawah kartu */
 .aq-summary-grid .aq-kpi-foot {
   margin-top: 8px;
 }
 
-/* Catatan setelah kartu */
 .aq-section > .card-sub {
   margin-top: 2px !important;
 }
@@ -4187,10 +3939,6 @@ max-height: 40px !important;
   }
 }
 
-
-/* =========================================
-   RINGKASAN TEMUAN KUALITAS UDARA
-========================================= */
 
 .aq-summary-section {
   margin-top: 22px;
@@ -4308,10 +4056,6 @@ max-height: 40px !important;
 }
 
 
-/* =========================================
-   01 — OVERVIEW KUALITAS UDARA
-========================================= */
-
 .aq-overview {
   display: flex;
   flex-direction: column;
@@ -4320,7 +4064,6 @@ max-height: 40px !important;
   margin-bottom: 30px;
 }
 
-/* HERO NARRATIVE */
 
 .aq-overview-hero {
   position: relative;
@@ -4363,7 +4106,6 @@ max-height: 40px !important;
   line-height: 1.7;
 }
 
-/* KPI GRID */
 
 .aq-overview-kpi-grid {
   display: grid;
@@ -4376,7 +4118,6 @@ max-height: 40px !important;
   min-width: 0;
 }
 
-/* NOTE */
 
 .aq-overview-note {
   margin: -3px 0 0;
@@ -4385,7 +4126,6 @@ max-height: 40px !important;
   line-height: 1.6;
 }
 
-/* RESPONSIVE */
 
 @media (max-width: 900px) {
   .aq-overview-kpi-grid {
@@ -4414,12 +4154,11 @@ max-height: 40px !important;
     gap: 10px;
   }
 }
-/* Jarak overview ke section Tren */
+
 .aq-overview {
   margin-bottom: 0;
 }
 
-/* Khusus section pertama setelah overview */
 .aq-overview + .aq-section {
   margin-top: 18px;
 }
