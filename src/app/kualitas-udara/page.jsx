@@ -167,7 +167,7 @@ function isInDateRange(row, from, to) {
   )
   if (!raw) return true
 
-  const length = Math.min(raw.length, 10)   // 'YYYY' | 'YYYY-MM' | 'YYYY-MM-DD'
+  const length = Math.min(raw.length, 10)   
   const value = raw.slice(0, length)
 
   return (
@@ -665,7 +665,6 @@ function getQuantile(sorted, q) {
 function PollutantBoxplot({ rows, parameter }) {
   const groups = {};
 
-  // 1. Kelompokkan data berdasarkan pulau
   rows.forEach((row) => {
     const island = row.pulau || 'Tidak diketahui';
     const value = Number(row[parameter]);
@@ -685,7 +684,6 @@ function PollutantBoxplot({ rows, parameter }) {
   const outliers = [];
   const validLabels = [];
 
-  // 2. Hitung statistik boxplot setiap pulau
   labels.forEach((island) => {
     const values = groups[island].sort((a, b) => a - b);
 
@@ -716,7 +714,6 @@ function PollutantBoxplot({ rows, parameter }) {
       value: [low, q1, median, q3, high],
     });
 
-    // Simpan outlier berdasarkan nama pulau
     values.forEach((value) => {
       if (value < lowerFence || value > upperFence) {
         outliers.push([value, island]);
@@ -724,7 +721,6 @@ function PollutantBoxplot({ rows, parameter }) {
     });
   });
 
-  // 3. Konfigurasi grafik
   const option = {
     animation: true,
 
@@ -879,7 +875,6 @@ function PollutantBoxplot({ rows, parameter }) {
     ],
   };
 
-  // 4. Jika tidak ada data
   if (!boxData.length) {
     return (
       <EmptyData message="Data distribusi polutan belum tersedia." />
@@ -1030,11 +1025,6 @@ return (
   )
 }
 
-
-// ======================================================
-// ANALISIS WAKTU KRITIS
-// ======================================================
-
 const HOURLY_COLORS = [
   '#4CAF50', // Rendah
   '#FACC15', // Sedang
@@ -1049,7 +1039,6 @@ const HOURLY_LEVELS = [
   'Sangat tinggi',
 ]
 
-// Menghitung rata-rata konsentrasi setiap jam
 function getHourlySummary(rows = [], parameter = 'pm25') {
   const groups = Array.from({ length: 24 }, () => [])
 
@@ -1121,7 +1110,6 @@ function getHourlySummary(rows = [], parameter = 'pm25') {
   }
 }
 
-// Menentukan tingkat warna relatif pada heatmap
 function getHourlyLevel(value, min, max) {
   if (
     value === null ||
@@ -1140,7 +1128,6 @@ function getHourlyLevel(value, min, max) {
   return 3
 }
 
-// Legenda warna dengan rentang nilai dinamis
 function HourlyLegend({ min, max }) {
   if (min === null || max === null) return null
 
@@ -1189,7 +1176,6 @@ function HourlyLegend({ min, max }) {
   )
 }
 
-// Heatmap konsentrasi per jam
 function HourlyHeatmap({ rows, parameter }) {
   const summary = getHourlySummary(rows, parameter)
 
@@ -1253,7 +1239,6 @@ function HourlyHeatmap({ rows, parameter }) {
   )
 }
 
-// Interpretasi pola konsentrasi per jam
 function HourlyInterpretation({ rows, parameter }) {
   const summary = getHourlySummary(rows, parameter)
 
@@ -1310,7 +1295,6 @@ function HourlyInterpretation({ rows, parameter }) {
   )
 }
 
-// Menghitung rata-rata hari kerja dan akhir pekan
 
 function getWeekendSummary(rows = [], parameter = 'pm25') {
   const getGroup = (label) => {
@@ -1369,8 +1353,6 @@ function getWeekendSummary(rows = [], parameter = 'pm25') {
   }
 }
 
-
-// Grafik hari kerja vs akhir pekan
 function WeekendChart({ rows, parameter }) {
   const summary = getWeekendSummary(rows, parameter)
 
@@ -1468,7 +1450,6 @@ return (
   
 }
 
-// Interpretasi hari kerja vs akhir pekan
 function WeekendInterpretation({ rows, parameter }) {
   const summary = getWeekendSummary(rows, parameter)
 
@@ -1776,14 +1757,12 @@ function CriticalPeriods({ items }) {
   1
 )
 
-  // Mengambil waktu pengamatan yang tersedia
   const timestamps = [...new Set(
     items.map((item) => item.timestamp)
   )]
     .sort((a, b) => a.localeCompare(b))
     .slice(-72)
 
-  // Mengelompokkan data berdasarkan stasiun
   const stationGroups = items.reduce((groups, item) => {
     const id = item.station_id
 
@@ -1809,7 +1788,6 @@ function CriticalPeriods({ items }) {
     return groups
   }, {})
 
-  // Memilih lima stasiun dengan lonjakan tertinggi
   const selectedStations = Object.values(stationGroups)
     .sort((a, b) => b.maxValue - a.maxValue)
     .slice(0, 5)
@@ -2138,8 +2116,6 @@ function DateRangePicker({ startDate, endDate, minDate, maxDate, years, onApply 
   )
 }
 
-
-// Filter rentang pengamatan untuk toolbar LocalFilter
 function FilterDateRange({ value, bounds, years, onChange }) {
   return (
     <div className="aq-filter-field aq-filter-field--date">
@@ -2165,7 +2141,6 @@ function seasonScopeLabel({ pulau, provinsi, station_id }) {
   return 'Nasional'
 }
 
-// Cakupan wilayah (cascade) untuk toolbar LocalFilter
 function FilterScope({
   rows,
   value,
@@ -2191,7 +2166,6 @@ function FilterScope({
   )
 }
 
-// Teks cakupan untuk subtitle kartu: "Nasional", "Sumatera · Kawasan Industri", dst.
 function filterScopeText(filter) {
   const scope = seasonScopeLabel(filter)
 
@@ -2389,10 +2363,6 @@ function RegionScopePicker({
   )
 }
 
-// ======================================================
-// KLASIFIKASI KARAKTERISTIK KAWASAN — SECTION 07
-// ======================================================
-
 function classifyAreaType(siteType = '') {
   const value = String(siteType).toLowerCase()
 
@@ -2445,7 +2415,6 @@ export default function KualitasUdaraPage() {
 const overviewInsight = useMemo(() => {
   const dailyRows = data.harian || []
 
-  // ISPU kategori Tidak Sehat+
   const unhealthyCategories = [
     'Tidak Sehat',
     'Sangat Tidak Sehat',
@@ -2495,7 +2464,6 @@ const overviewInsight = useMemo(() => {
     }))
     .sort((a, b) => b.value - a.value)[0] ?? null
 
-  // Jam dengan rerata PM2.5 tertinggi
   const hourlyRows = (data.hourly || []).filter(
     (row) =>
       row.satuan === 'µg/m³' &&
@@ -2507,7 +2475,6 @@ const overviewInsight = useMemo(() => {
     (a, b) => Number(b.pm25) - Number(a.pm25)
   )[0] ?? null
 
-  // Perubahan rerata PM2.5 tahunan 2024–2025
   const annualRows = (data.tahunan || []).filter(
     (row) =>
       row.satuan === 'µg/m³' &&
@@ -2621,8 +2588,6 @@ const [tableFilter, setTableFilter] = useState({
   tampilan: 'provinsi',
 })
 
-// FILTER EVALUASI BAKU MUTU UDARA AMBIEN
-
 const [bmuaFilter, setBmuaFilter] = useState({
   dariTanggal: '',
   sampaiTanggal: '',
@@ -2631,8 +2596,6 @@ const [bmuaFilter, setBmuaFilter] = useState({
   acuan: 'bmua',
 })
 
-
-// FILTER SECTION LAINNYA
 const [stationFilter, setStationFilter] = useState({
   tahun: 'Semua',
   bulan: 'Semua',
@@ -2666,9 +2629,7 @@ const [hazeFilter, setHazeFilter] = useState({
   provinsi: 'Semua',
 })
 
-// State stasiun yang dipilih pada peta kabut asap
 const [selectedHazeStation, setSelectedHazeStation] = useState(null)
-// FILTER SECTION 07 — KARAKTERISTIK KAWASAN
 
 const [areaFilter, setAreaFilter] = useState({
   dariTanggal: '',
@@ -2900,11 +2861,9 @@ const [stationDateDraft, setStationDateDraft] = useState({
   sampaiTanggal: '2026-10-14',
 })
 
-// RINGKASAN TEMUAN KUALITAS UDARA
 const findings = useMemo(() => {
   const rows = data.harian
 
-  // 1. PROPORSI ISPU TIDAK SEHAT KE ATAS
   const unhealthyCategories = [
     'Tidak Sehat',
     'Sangat Tidak Sehat',
@@ -2920,7 +2879,6 @@ const findings = useMemo(() => {
     : null
 
 
-  // 2. PROVINSI DENGAN RERATA PM2.5 TERTINGGI
   const provinceGroups = {}
 
   rows.forEach((row) => {
@@ -2944,7 +2902,6 @@ const findings = useMemo(() => {
     .sort((a, b) => b.value - a.value)[0] ?? null
 
 
-  // 3. PERIODE PALING KRITIS BERDASARKAN POLA JAM
   const hourlyRows = data.hourly.filter(
     (row) => row.satuan === 'µg/m³'
   )
@@ -2953,9 +2910,6 @@ const findings = useMemo(() => {
     .filter((row) => Number.isFinite(Number(row.pm25)))
     .sort((a, b) => b.pm25 - a.pm25)[0] ?? null
 
-
-  // 4. TREN KUALITAS UDARA 2024–2025
-  // Menggunakan periode tahunan lengkap dan stasiun yang sama.
   const annualRows = data.tahunan.filter(
     (row) =>
       row.satuan === 'µg/m³' &&
@@ -3104,10 +3058,6 @@ const trendRows = useMemo(() => {
   })
 }, [data.trendDaily, trendFilter])
 
-// ======================================================
-// DATA SECTION 07 — PERBANDINGAN KARAKTERISTIK KAWASAN
-// ======================================================
-
 const areaGroups = useMemo(() => {
   const categories = [
     'Perkotaan',
@@ -3123,7 +3073,6 @@ const areaGroups = useMemo(() => {
     ])
   )
 
-  // Filter data bulanan
   const filteredRows = data.bulanan.filter((row) => {
     return (
       row.satuan === 'µg/m³' &&
@@ -3136,7 +3085,6 @@ const areaGroups = useMemo(() => {
     )
   })
 
-  // Pengelompokan berdasarkan tipe kawasan
   return categories.map((category) => {
     const groupRows = filteredRows.filter((row) => {
       const station = stationLookup.get(row.station_id)
@@ -3144,7 +3092,6 @@ const areaGroups = useMemo(() => {
       return classifyAreaType(station?.site_type) === category
     })
 
-    // Rata-rata tertimbang berdasarkan jumlah hari
     const totalDays = groupRows.reduce(
       (sum, row) => sum + (Number(row.jumlah_hari) || 1),
       0
@@ -3175,10 +3122,6 @@ const areaGroups = useMemo(() => {
   data.stations,
   areaFilter,
 ])
-
-// ======================================================
-// GRAFIK SECTION 07
-// ======================================================
 
 const areaChartOption = {
   tooltip: {
@@ -3276,9 +3219,6 @@ const areaChartOption = {
   ],
 }
 
-// ======================================================
-// INTERPRETASI SECTION 07
-// ======================================================
 
 const areaRanked = areaGroups
   .filter((item) => item.concentration !== null)
@@ -3495,7 +3435,6 @@ const trendOption = useMemo(() => {
   }
 }, [trendRows, trendFilter])
 
-// RINGKASAN DAN INTERPRETASI TREN
 const trendInsight = useMemo(() => {
   const groups = {}
 
@@ -3534,7 +3473,6 @@ const trendInsight = useMemo(() => {
   const first = points[0]
   const last = points[points.length - 1]
 
-  // Arah tren berdasarkan regresi linear seluruh periode
   const meanX = (points.length - 1) / 2
   const meanY = average(points.map((point) => point.value))
 
@@ -3559,7 +3497,6 @@ const trendInsight = useMemo(() => {
         ? 'Menurun'
         : 'Relatif stabil'
 
-  // Perubahan konsentrasi awal dibanding akhir
   const difference = last.value - first.value
 
   const percentage = first.value !== 0
@@ -3623,7 +3560,6 @@ const trendInsight = useMemo(() => {
   })
 }, [data.harian, selectedStation, stationPeriodFilter])
 
-  // DATA RANKING RATA-RATA KONSENTRASI PER PROVINSI
 const rankingRows = useMemo(() => (
   filterRows(data.harian, rankingFilter)
 ), [data.harian, rankingFilter])
@@ -3677,13 +3613,11 @@ const rankingOption = buildBarOption(
   rankingColors.slice(0, ranking.slice(0, 10).length)
 )
 
-// DATA DISTRIBUSI KATEGORI ISPU
 const ispuRows = useMemo(() => (
   filterRows(data.harian, ispuFilter)
 ), [data.harian, ispuFilter])
 
 
-// DATA RANKING POLUTAN PER PROVINSI
 const pollutantRows = useMemo(() => {
   return data.trendDaily.filter((row) => {
     const tanggal = String(row.tanggal ?? '').slice(0, 10);
@@ -3702,7 +3636,6 @@ const pollutantRows = useMemo(() => {
   });
 }, [data.trendDaily, pollutantFilter]);
 
-// DATA DISTRIBUSI POLUTAN ANTARWILAYAH (BOXPLOT)
 const boxplotRows = useMemo(() => {
   return data.trendDaily.filter((row) => {
     const tanggal = String(row.tanggal ?? '').slice(0, 10);
@@ -3721,7 +3654,6 @@ const boxplotRows = useMemo(() => {
   });
 }, [data.trendDaily, boxplotFilter]);
 
-// DATA PERBANDINGAN ANTARPULAU
 const islandRows = useMemo(() => (
   filterRows(data.harian, islandFilter)
 ), [data.harian, islandFilter])
@@ -3754,9 +3686,6 @@ const islandOption = buildBarOption(
   '#75A6C8'
 )
 
-
-// DATA TABEL PERBANDINGAN PROVINSI
-// BATAS TANGGAL DATA TABEL
 const tableDateBounds = useMemo(() => {
   const dates = data.harian
     .map((row) => String(row.tanggal ?? '').slice(0, 10))
@@ -3821,7 +3750,6 @@ const resetTablePeriod = () => {
   setTableDateOpen(false)
 }
 
-// DATA TABEL PERBANDINGAN
 const tableRows = useMemo(() => {
   const start = tableFilter.dariTanggal || tableDateBounds.min
   const end = tableFilter.sampaiTanggal || tableDateBounds.max
@@ -3837,7 +3765,6 @@ const tableRows = useMemo(() => {
   tableDateBounds,
 ])
 
-// DATA EVALUASI BMUA
 
 const bmuaResult = useMemo(() => {
   const start = bmuaFilter.dariTanggal || tableDateBounds.min
@@ -3989,9 +3916,6 @@ const bmuaChartOption = useMemo(() => ({
   }],
 }), [bmuaResult])
 
-
-
- // Peta stasiun -> karakteristik kawasan (untuk filter kawasan)
 const stationAreaLookup = useMemo(() => new Map(
   data.stations.map((station) => [
     station.station_id,
@@ -4046,7 +3970,6 @@ const seasonalDateBounds = useMemo(() => {
   }
 }, [seasonalBaseRows])
 
-// PILIHAN PULAU
 const seasonalIslands = useMemo(() => (
   [...new Set(
     seasonalBaseRows
@@ -4055,7 +3978,6 @@ const seasonalIslands = useMemo(() => (
   )].sort()
 ), [seasonalBaseRows])
 
-// PILIHAN PROVINSI BERDASARKAN PULAU
 const seasonalProvinces = useMemo(() => (
   [...new Set(
     seasonalBaseRows
@@ -4068,7 +3990,6 @@ const seasonalProvinces = useMemo(() => (
   )].sort()
 ), [seasonalBaseRows, seasonFilter.pulau])
 
-// PILIHAN STASIUN BERDASARKAN PULAU DAN PROVINSI
 const seasonalStations = useMemo(() => (
   [...new Set(
     seasonalBaseRows
@@ -4088,7 +4009,6 @@ const seasonalStations = useMemo(() => (
   seasonFilter.provinsi,
 ])
 
-// DATA ANALISIS INDIKASI EPISODE KABUT ASAP
 const hazeRows = useMemo(() => (
   data.criticalPeriods.filter((row) => {
     const year = Number(row.year || getYear(row))
@@ -4103,7 +4023,6 @@ const hazeRows = useMemo(() => (
   })
 ), [data.criticalPeriods, hazeFilter])
 
-// Kelompokkan kejadian berdasarkan jam
 const hazeHourlyGroups = useMemo(() => {
   const groups = {}
 
@@ -4128,7 +4047,6 @@ const hazeHourlyGroups = useMemo(() => {
     .sort((a, b) => a.time.localeCompare(b.time))
 }, [hazeRows])
 
-// Pilih maksimal 30 kelompok waktu dengan jumlah stasiun terbanyak
 const hazeSelectedHours = useMemo(() => (
   [...hazeHourlyGroups]
     .sort((a, b) => (
@@ -4139,7 +4057,6 @@ const hazeSelectedHours = useMemo(() => (
     .sort((a, b) => a.time.localeCompare(b.time))
 ), [hazeHourlyGroups])
 
-// Data heatmap: stasiun x waktu
 const hazeHeatmap = useMemo(() => {
   const stations = [...new Set(
     hazeSelectedHours.flatMap((group) => group.stations)
@@ -4235,7 +4152,6 @@ const hazeHeatmapOption = {
   }],
 }
 
-// Stasiun dengan lonjakan partikulat tertinggi
 const hazeStationSummary = useMemo(() => {
   const groups = {}
 
@@ -4264,7 +4180,6 @@ const hazeStationSummary = useMemo(() => {
     ))
 }, [hazeRows])
 
-// Stasiun yang memiliki data indikasi pada filter aktif
 const hazeStationIds = useMemo(() => (
   new Set(hazeRows.map((row) => row.station_id))
 ), [hazeRows])
@@ -4277,7 +4192,6 @@ const hazeMapRows = useMemo(() => (
   filterRows(data.harian, hazeFilter)
 ), [data.harian, hazeFilter])
 
-// Ringkasan waktu dengan kejadian serentak terbanyak
 const hazeMainEpisode = useMemo(() => (
   [...hazeHourlyGroups].sort((a, b) => (
     b.stations.length - a.stations.length ||
@@ -4300,7 +4214,6 @@ const hazeEpisodeStations = (() => {
     return rowTime === episodeTime
   })
 
-  // Satu stasiun cukup ditampilkan satu kali
   const uniqueStations = new Map()
 
   matchedRows.forEach((row) => {
@@ -4319,7 +4232,6 @@ const resetHaze = () => setHazeFilter({
   provinsi: 'Semua',
 })
 
-// FILTER DATA MUSIMAN
 const seasonalFilteredRows = useMemo(() => {
   return seasonalBaseRows.filter((row) => {
     const date = row.tanggal
@@ -4365,13 +4277,6 @@ const seasonalFilteredRows = useMemo(() => {
     setSelectedStation(null)
   }
 
-  // const resetRegion = () => setRegionFilter({
-  //   tahun: 'Semua',
-  //   bulan: 'Semua',
-  //   pulau: 'Semua',
-  //   provinsi: 'Semua',
-  //   rankingParameter: 'pm25',
-  // })
 
   const resetTime = () => setTimeFilter({
     dariTanggal: '',
