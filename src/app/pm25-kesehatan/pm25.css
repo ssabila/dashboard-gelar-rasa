@@ -1,0 +1,96 @@
+/* Gaya tambahan modul PM2.5 & Kesehatan — hanya memakai token dari globals.css */
+
+.pk-stack { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+
+/* Navigasi sub-analisis memakai .filter-bar + .fpill dari globals.css */
+.pk-nav .fpill { gap: 0.4rem; }
+.pk-nav .fpill.is-current { border-color: var(--color-elevated); background: rgba(56, 78, 119, 0.08); font-weight: 700; }
+
+/* Filter */
+.pk-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem 1.5rem; padding: 0.9rem 1.1rem; }
+.pk-field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.pk-field-label { font-size: 0.68rem; font-weight: 700; color: var(--color-text-secondary); }
+.pk-field .seg { flex-wrap: wrap; }
+.pk-field select.input { min-width: 15rem; }
+
+/* Callout */
+.pk-callout { display: flex; gap: 0.75rem; padding: 0.8rem 1rem; border-radius: 0.8rem; border: 1px solid; font-size: 0.8rem; line-height: 1.5; color: var(--color-text-primary); }
+.pk-callout svg { flex: none; margin-top: 0.15rem; }
+.pk-callout strong { display: block; margin-bottom: 0.1rem; }
+.pk-callout--info { background: rgba(56, 78, 119, 0.07); border-color: rgba(56, 78, 119, 0.22); }
+.pk-callout--info svg, .pk-callout--info strong { color: var(--color-elevated); }
+.pk-callout--warn { background: rgba(251, 146, 60, 0.1); border-color: rgba(251, 146, 60, 0.35); }
+.pk-callout--warn svg, .pk-callout--warn strong { color: #C2410C; }
+
+/* Daftar temuan */
+
+/* Tabel */
+.pk-table-wrap { overflow: auto; border: 1px solid var(--color-border); border-radius: 0.8rem; }
+.pk-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+.pk-table th { position: sticky; top: 0; z-index: 1; padding: 0.5rem 0.7rem; background: #fff; border-bottom: 1px solid var(--color-border-strong); white-space: nowrap; }
+.pk-table th button { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0; border: 0; background: transparent; font: inherit; font-size: 0.68rem; font-weight: 700; color: var(--color-text-secondary); cursor: pointer; }
+.pk-table th button:hover { color: var(--color-text-primary); }
+.pk-table td { padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--color-border); color: var(--color-text-primary); white-space: nowrap; }
+.pk-table tbody tr:last-child td { border-bottom: 0; }
+.pk-table tr.is-selected td { background: rgba(56, 78, 119, 0.1); font-weight: 700; }
+.pk-table .is-na { color: var(--color-text-disabled); font-style: italic; }
+.pk-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.pk-empty { display: grid; place-items: center; align-content: center; gap: 0.4rem; min-height: 14rem; padding: 1.5rem; text-align: center; border: 1px dashed var(--color-border-strong); border-radius: 0.8rem; }
+.pk-empty strong { color: var(--color-text-primary); }
+.pk-empty p { max-width: 30rem; font-size: 0.8rem; }
+
+.card-head .btn { flex: none; white-space: nowrap; }
+
+/* Pager & catatan */
+.pk-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.6rem; font-size: 0.72rem; color: var(--color-text-secondary); }
+.pk-pager-btns { display: inline-flex; align-items: center; gap: 0.5rem; }
+.pk-pager .btn { height: 1.9rem; padding: 0 0.55rem; }
+.pk-pager .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pk-note { margin-top: 0.7rem; font-size: 0.72rem; line-height: 1.5; color: var(--color-text-secondary); }
+.pk-note strong { color: var(--color-text-primary); }
+
+/* Khusus PM2.5 & Kesehatan */
+.pk-field input.input[type='date'] { min-width: 9.5rem; }
+.pk-field select.input { min-width: 13rem; max-width: 22rem; }
+.pk-note { font-size: 0.72rem; color: var(--color-text-secondary); line-height: 1.5; }
+
+/* KPI: hari dalam rentang (kiri) + total kasus tiap indikator (3 × 2) */
+.pk-kpi-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: var(--gap); align-items: stretch; }
+.pk-kpi-cases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+@media (max-width: 1100px) { .pk-kpi-split { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) { .pk-kpi-cases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pk-note-list { margin-top: 0.8rem; font-size: 0.78rem; line-height: 1.55; color: var(--color-text-secondary); }
+.pk-note-list > strong { display: block; margin-bottom: 0.25rem; color: var(--color-text-primary); font-weight: 700; }
+.pk-note-list ul { margin: 0; padding: 0 0 0 1.1rem; list-style: disc outside; display: block; }
+.pk-note-list li { display: list-item; }
+.pk-note-list li + li { margin-top: 0.2rem; }
+.pk-note-list li::marker { color: var(--color-elevated); }
+
+.pk-note--em { font-size: 0.8rem; color: var(--color-text-primary); }
+/* Teks deskriptif / insight */
+.pk-text { font-size: 0.84rem; line-height: 1.65; color: var(--color-text-primary); text-align: justify; }
+.pk-text p { margin: 0; }
+.pk-text p + p { margin-top: 0.6rem; }
+.pk-text ul { margin: 0; padding: 0 0 0 1.1rem; list-style: disc outside; display: block; }
+.pk-text li { display: list-item; }
+.pk-text li + li { margin-top: 0.55rem; }
+.pk-text li::marker { color: var(--color-elevated); }
+/* CCF: dua kartu bertumpuk (kiri) + insight (kanan) */
+.pk-split-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--gap); align-items: stretch; }
+@media (max-width: 1100px) { .pk-split-2 { grid-template-columns: minmax(0, 1fr); } }
+.pk-card-stack { display: flex; flex-direction: column; gap: var(--gap); }
+.pk-card-stack > * { flex: 1; }
+/* Kelompok Rentan: grafik (kiri) + tabel (kanan) */
+.pk-split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--gap); align-items: stretch; }
+@media (max-width: 1100px) { .pk-split { grid-template-columns: minmax(0, 1fr); } }
+
+/* KPI Hubungan: kolom kiri = dua kartu bertumpuk (hari + rumah sakit) */
+.pk-kpi-hero { display: flex; flex-direction: column; gap: var(--gap); }
+.pk-kpi-hero > * { flex: 1; }
+/* Efek Jeda: balita vs lansia berdampingan */
+
+/* Legenda CCF + tabel tanpa urutan */
+.pk-legend { justify-content: center; margin-top: 0.9rem; }
+.pk-legend-dash { display: inline-block; width: 1.2rem; border-top: 2px dashed #55706E; }
+.pk-th-plain { font-size: 0.68rem; font-weight: 700; color: var(--color-text-secondary); }
