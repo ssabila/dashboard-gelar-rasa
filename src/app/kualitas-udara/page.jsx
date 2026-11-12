@@ -1579,8 +1579,7 @@ function SeasonalChart({ rows = [], parameter = 'pm25' }) {
   return (
     <div className="aq-season-content">
       <div className="aq-season-chart-heading">
-        <h3>Perbandingan Konsentrasi Berdasarkan Musim</h3>
-        <span>Rata-rata konsentrasi · µg/m³</span>
+        
       </div>
 
       <EChart
@@ -4417,9 +4416,9 @@ const resetCritical = () => setCriticalFilter({
   if (loading) {
     return (
       <ModuleLayout
-        eyebrow="AIR QUALITY MONITORING"
+        eyebrow="Kondisi dan Pola Kualitas Udara"
         title="Kualitas Udara"
-        description="Bagaimana gambaran umum kualitas udara Indonesia?"
+        description="Bagaimana kondisi kualitas udara di berbagai wilayah Indonesia, kapan pencemaran paling tinggi, dan daerah mana yang paling terdampak?"
       >
         <div className="aqms-dashboard">
         <Card>
@@ -4449,9 +4448,9 @@ const resetCritical = () => setCriticalFilter({
 
   return (
     <ModuleLayout
-      eyebrow="AIR QUALITY MONITORING"
+      eyebrow="Kondisi dan Pola Kualitas Udara"
       title="Kualitas Udara"
-      description="Bagaimana gambaran umum kualitas udara Indonesia?"
+      description="Bagaimana kondisi kualitas udara di berbagai wilayah Indonesia, kapan pencemaran paling tinggi, dan daerah mana yang paling terdampak?"
     >
 
 
@@ -4461,10 +4460,6 @@ const resetCritical = () => setCriticalFilter({
 
   {/* NARASI TEMUAN UTAMA */}
   <div className="aq-overview-hero">
-
-    <span className="aq-overview-eyebrow">
-      TEMUAN UTAMA
-    </span>
 
     <h2>
       Konsentrasi PM2.5 menunjukkan peningkatan,
@@ -4528,13 +4523,6 @@ const resetCritical = () => setCriticalFilter({
     />
 
   </div>
-
-  <p className="aq-overview-note">
-    Analisis menggunakan data stasiun pemantauan yang tersedia.
-    Hasil tidak serta-merta mewakili seluruh wilayah Indonesia.
-    Kategori ISPU Tidak Sehat+ bukan persentase pelampauan baku
-    mutu udara ambien.
-  </p>
 
 </section>
 
@@ -6067,7 +6055,6 @@ const resetCritical = () => setCriticalFilter({
 
     {/* INTERPRETASI DALAM CARD YANG SAMA */}
     <div className="aq-season-result">
-      <h3>Interpretasi Analisis Musiman</h3>
 
       <SeasonalInterpretation
         rows={seasonalFilteredRows}
@@ -6152,17 +6139,7 @@ const resetCritical = () => setCriticalFilter({
 
             <div className="aq-area-chart-heading">
 
-              <div>
-                <strong>
-                  Perbandingan Konsentrasi {areaParameterLabel}
-                </strong>
-
-                <p className="card-sub">
-                  Rata-rata konsentrasi berdasarkan karakteristik kawasan.
-                </p>
-              </div>
-
-              <span>µg/m³</span>
+            
 
             </div>
 
@@ -6184,7 +6161,6 @@ const resetCritical = () => setCriticalFilter({
           <div className="aq-area-interpretation">
 
             <div className="aq-area-interpretation-heading">
-              <TrendingUp size={17} />
 
               <strong>
                 Interpretasi Perbandingan Kawasan
@@ -6291,10 +6267,6 @@ const resetCritical = () => setCriticalFilter({
   </LocalFilter>
 
   <Card className="aq-card">
-    <CardHeader
-      title="Identifikasi Periode Kritis"
-      subtitle={`Lokasi, waktu, dan parameter dengan konsentrasi yang mengalami lonjakan · ${filterScopeText(criticalFilter)}`}
-    />
 
     <CriticalPeriods
       items={data.criticalPeriods.filter((item) =>
@@ -6640,11 +6612,6 @@ const resetCritical = () => setCriticalFilter({
         </div>
       </section>
 
-      <p className="card-sub" style={{ marginTop: 24 }}>
-        Catatan: Dataset yang digunakan merupakan dataset sintetis
-        untuk Case Study DA Gelar Rasa 2026, bukan hasil pengukuran
-        operasional aktual.
-      </p>
     </ModuleLayout>
   )
 }
