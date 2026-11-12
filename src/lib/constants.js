@@ -69,9 +69,11 @@ export const POLLUTANTS = {
     label:     'PM2.5',
     unit:      'µg/m³',
     color:     '#E6F9AF',  /* accent */
-    naaqs:     25,         /* PP No. 22/2021, rata-rata 24 jam */
-    who:       15,         /* WHO AQG 2021, rata-rata 24 jam */
     shortDesc: 'Partikel halus < 2,5 µm',
+    naaqs: 25,          // 24 jam (tidak dipakai untuk rata-rata periode)
+    who: 15,
+    naaqsAnnual: 15,    // PP 22/2021, tahunan
+    whoAnnual: 5,       // WHO AQG 2021, tahunan
   },
   pm10: {
     key:       'pm10_ug_m3',

@@ -5,13 +5,10 @@ import { useMemo, useState } from 'react'
 import {
   AlertTriangle,
   ArrowRight,
-  BookOpen,
   CheckCircle2,
   ChevronRight,
-  Clock,
   GitCompareArrows,
   HeartPulse,
-  Lightbulb,
   MapPin,
   Network,
   Stethoscope,
@@ -20,21 +17,17 @@ import {
   Zap,
 } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
-import { Card, CardHeader } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useStations, useOverviewSummary, useOverviewAnalytics } from '@/hooks/useAqmsData'
 import { useT4Data } from '@/hooks/usePm25KesehatanData'
 import { useT3Tables } from '@/hooks/useKorelasiData'
 import { useMonitoringNetworkSummary } from '@/hooks/useKecukupanData'
-import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
+import { formatNumber } from '@/lib/formatters'
 import { POLLUTANTS } from '@/lib/constants'
 
 const NAAQS_ANNUAL = 15
 const WHO_ANNUAL = 5
-
-function shortName(s) {
-  return (s?.kota_kabupaten ?? s?.location_id ?? '—').replace(/^(Kota Administrasi|Kabupaten|Kota)\s+/i, '')
-}
 
 /* ─── Status Scorecard Cards ───────────────────────────────────────────── */
 const STATUS_CARDS = [
@@ -92,47 +85,31 @@ const STATUS_CARDS = [
   },
 ]
 
-function ScorecardSection({ avgPm25, lagValue, maxDistKm, exceedCount }) {
+function ScorecardSection() {
   return (
     <Section
       title="Status dashboard"
       description="Ringkasan status dari keempat tujuan analisis berdasarkan data terkini."
     >
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: '1rem' }} className="ins-scorecard-grid">
-        {STATUS_CARDS.map(({ id, icon: Icon, label, statusColor, statusBg, statusBorder, statusLabel, desc, href, dot }) => (
-          <Link key={id} href={href} style={{ textDecoration: 'none' }}>
-            <div style={{
-              height: '100%', padding: '1.1rem', borderRadius: '1rem',
-              border: `1px solid ${statusBorder}`,
-              background: statusBg,
-              display: 'flex', flexDirection: 'column', gap: '0.65rem',
-              cursor: 'pointer', transition: 'all 150ms ease',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ width: '2.1rem', height: '2.1rem', borderRadius: '0.6rem', display: 'grid', placeItems: 'center', background: `color-mix(in srgb, ${statusColor} 15%, #fff)`, color: statusColor }}>
-                  <Icon size={15} />
-                </div>
-                <span style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
-                  padding: '0.22rem 0.55rem', borderRadius: '999px',
-                  background: `color-mix(in srgb, ${statusColor} 18%, #fff)`,
-                  border: `1px solid ${statusColor}50`,
-                  fontSize: '0.66rem', fontWeight: 700, color: statusColor === '#FACC15' ? '#78350F' : statusColor,
-                }}>
-                  <span style={{ width: '0.45rem', height: '0.45rem', borderRadius: '50%', background: dot, flexShrink: 0 }} />
-                  {statusLabel}
-                </span>
-              </div>
-              <div>
-                <p style={{ fontSize: '0.84rem', fontWeight: 700, color: '#18314F', marginBottom: '0.3rem' }}>{label}</p>
-                <p style={{ fontSize: '0.74rem', color: '#55706E', lineHeight: 1.5 }}>{desc}</p>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontWeight: 700, color: statusColor === '#FACC15' ? '#78350F' : statusColor, marginTop: 'auto' }}>
-                Detail <ChevronRight size={12} />
-              </div>
+      <div className="ins-scorecard-grid">
+        {STATUS_CARDS.map(({ id, icon: Icon, label, status, statusColor, statusLabel, desc, href, dot }) => (
+          <Link key={id} href={href} className="card kpi ins-scorecard-card" style={{ '--ins-color': statusColor, '--ins-text': statusColor === '#FACC15' ? '#78350F' : statusColor }}>
+            <div className="ins-scorecard-top">
+              <span className="ins-scorecard-icon">
+                <Icon size={15} />
+              </span>
+              <span className="ins-scorecard-status">
+                <i style={{ background: dot }} />
+                {statusLabel}
+              </span>
+            </div>
+            <div>
+              <p className="ins-scorecard-label">{label}</p>
+              <p className="ins-scorecard-value">{status === 'kritis' ? 'Perlu perhatian' : 'Perlu penguatan'}</p>
+              <p className="ins-scorecard-desc">{desc}</p>
+            </div>
+            <div className="ins-scorecard-link">
+              Detail <ChevronRight size={12} />
             </div>
           </Link>
         ))}
@@ -383,9 +360,9 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
       title="Temuan utama per tujuan"
       description="Pilih tab untuk menjelajahi temuan kunci dari setiap modul analisis."
     >
-      <Card>
+      <Card className="ins-findings-card">
         {/* Tab Bar */}
-        <div className="overview-tabs">
+        <div className="overview-tabs ins-findings-tabs">
           {TAB_DEFS.map(({ id, label, icon: Icon, color }) => (
             <button
               key={id}
@@ -399,7 +376,7 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
           ))}
         </div>
         {/* Tab Content */}
-        <div style={{ padding: '0 0.1rem' }}>
+        <div className="ins-findings-content">
           {TAB_CONTENT[activeTab] ?? null}
         </div>
       </Card>
@@ -430,23 +407,20 @@ function RecommendationMatrix() {
       title="Matriks rekomendasi"
       description="10 rekomendasi berbasis data, dikelompokkan berdasarkan prioritas dan urgensi implementasi."
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <Card className="ins-recommendation-card">
+        <div className="ins-recommendation-groups">
         {['tinggi', 'sedang', 'rendah'].map((priority) => {
           const recs = RECS.filter((r) => r.priority === priority)
           const color = PRIORITY_COLORS[priority]
           return (
-            <div key={priority}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.65rem' }}>
-                <span style={{ width: '0.7rem', height: '0.7rem', borderRadius: '50%', background: color, flexShrink: 0 }} />
-                <h3 style={{ fontSize: '0.84rem', fontWeight: 700, color: '#18314F' }}>{PRIORITY_LABELS[priority]}</h3>
+            <div key={priority} className="ins-recommendation-group">
+              <div className="ins-priority-heading">
+                <span style={{ background: color }} />
+                <h3>{PRIORITY_LABELS[priority]}</h3>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: '0.75rem' }} className="ins-rec-grid">
                 {recs.map((r) => (
-                  <div key={r.num} style={{
-                    padding: '0.9rem 1rem', borderRadius: '0.8rem',
-                    border: `1px solid ${r.border}`, background: r.bg,
-                    display: 'flex', flexDirection: 'column', gap: '0.4rem',
-                  }}>
+                  <div key={r.num} className="ins-recommendation-item" style={{ '--rec-color': r.color, '--rec-bg': r.bg, '--rec-border': r.border }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span style={{ width: '1.4rem', height: '1.4rem', borderRadius: '50%', background: `color-mix(in srgb, ${r.color} 20%, #fff)`, color: r.color === '#FACC15' ? '#78350F' : r.color, display: 'grid', placeItems: 'center', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>
@@ -464,7 +438,8 @@ function RecommendationMatrix() {
             </div>
           )
         })}
-      </div>
+        </div>
+      </Card>
     </Section>
   )
 }
@@ -506,35 +481,31 @@ function TimelineSection() {
       title="Timeline implementasi"
       description="Tiga fase implementasi rekomendasi berdasarkan urgency dan kompleksitas."
     >
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: '1rem', position: 'relative' }} className="ins-timeline-grid">
+      <Card className="ins-timeline-card">
+      <div className="ins-timeline-grid">
         {/* Connector line */}
         <div style={{
           position: 'absolute', top: '2.25rem', left: '10%', right: '10%', height: '2px',
           background: 'linear-gradient(90deg, #EF4444, #FACC15, #22C55E)',
           zIndex: 0, borderRadius: '1px',
         }} className="ins-timeline-line" />
-        {TIMELINE_PHASES.map((phase, idx) => (
-          <div key={phase.num} style={{
-            position: 'relative', zIndex: 1,
-            padding: '1.1rem', borderRadius: '1rem',
-            border: `1px solid ${phase.border}`, background: phase.bg,
-            display: 'flex', flexDirection: 'column', gap: '0.75rem',
-          }}>
+        {TIMELINE_PHASES.map((phase) => (
+          <div key={phase.num} className="ins-timeline-phase" style={{ '--phase-color': phase.color, '--phase-bg': phase.bg, '--phase-border': phase.border }}>
             {/* Phase number */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', border: `2px solid ${phase.color}`, background: '#fff', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 800, color: phase.color }}>F{phase.num}</span>
+            <div className="ins-timeline-phase-head">
+              <div className="ins-timeline-number">
+                <span>F{phase.num}</span>
               </div>
               <div>
-                <p style={{ fontSize: '0.68rem', color: '#7C9693', fontWeight: 600, margin: 0 }}>{phase.period}</p>
-                <p style={{ fontSize: '0.88rem', fontWeight: 800, color: '#18314F', margin: 0, lineHeight: 1.3 }}>{phase.title}</p>
+                <p className="ins-timeline-period">{phase.period}</p>
+                <p className="ins-timeline-title">{phase.title}</p>
               </div>
             </div>
             {/* Items */}
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <ul className="ins-timeline-items">
               {phase.items.map((item) => (
-                <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.76rem', color: '#55706E', lineHeight: 1.5 }}>
-                  <span style={{ width: '0.4rem', height: '0.4rem', borderRadius: '50%', background: phase.color, flexShrink: 0, marginTop: '0.4rem' }} />
+                <li key={item}>
+                  <span style={{ background: phase.color }} />
                   {item}
                 </li>
               ))}
@@ -542,37 +513,8 @@ function TimelineSection() {
           </div>
         ))}
       </div>
+      </Card>
     </Section>
-  )
-}
-
-/* ─── Referensi & Metodologi ────────────────────────────────────────────── */
-function ReferenceSection() {
-  const refs = [
-    { label: 'PP No. 22/2021', desc: 'Baku Mutu Udara Ambien Nasional — PM2.5 tahunan 15 µg/m³, PM2.5 24-jam 55 µg/m³' },
-    { label: 'WHO AQG 2021', desc: 'Air Quality Guidelines — PM2.5 tahunan 5 µg/m³, PM2.5 24-jam 15 µg/m³' },
-    { label: 'Permen LHK No. 14/2020', desc: 'Indeks Standar Pencemar Udara (ISPU) — skala dan kategori kualitas udara Indonesia' },
-    { label: 'BMKG / KLHK', desc: 'Data meteorologi & pemantauan kualitas udara dari jaringan AQMS nasional' },
-  ]
-
-  return (
-    <Card variant="tint" className="overview-method">
-      <h4>Referensi & Metodologi</h4>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: '0.65rem', marginBottom: '0.75rem' }} className="ins-ref-grid">
-        {refs.map((r) => (
-          <div key={r.label} style={{ padding: '0.65rem 0.75rem', borderRadius: '0.6rem', background: 'rgba(24,49,79,0.04)', border: '1px solid rgba(24,49,79,0.07)' }}>
-            <p style={{ fontSize: '0.74rem', fontWeight: 700, color: '#18314F', marginBottom: '0.2rem' }}>{r.label}</p>
-            <p style={{ fontSize: '0.7rem', color: '#55706E', margin: 0, lineHeight: 1.5 }}>{r.desc}</p>
-          </div>
-        ))}
-      </div>
-      <ul>
-        <li>Insight & rekomendasi merupakan sintesis dari empat tujuan analisis: Tujuan 1–2 (kualitas udara), Tujuan 3 (korelasi), Tujuan 4 (kesehatan), Tujuan 5 (kecukupan jaringan).</li>
-        <li>Angka-angka kuantitatif bersumber dari data real AQMS 2024–2026 dan data kesehatan sintetis.</li>
-        <li>Rekomendasi bersifat indikatif dan perlu dikonfirmasi dengan analisis lebih lanjut sebelum implementasi kebijakan.</li>
-        <li>Visualisasi lag effect menggunakan Cross-Correlation Function (CCF) antara deret waktu PM2.5 dan kasus ISPA.</li>
-      </ul>
-    </Card>
   )
 }
 
@@ -593,19 +535,7 @@ export default function InsightPage() {
     return valid.reduce((t, s) => t + s.avg_pm25, 0) / valid.length
   }, [all])
 
-  const exceedCount = useMemo(
-    () => all.filter((s) => Number.isFinite(s.avg_pm25) && s.avg_pm25 > NAAQS_ANNUAL).length,
-    [all]
-  )
-
-  const lagValue = useMemo(() => {
-    const ccf = t4?.ringkasan_ccf ?? []
-    if (!ccf.length) return null
-    const best = ccf.reduce((b, r) => (!b || Math.abs(Number(r.max_ccf ?? 0)) > Math.abs(Number(b.max_ccf ?? 0)) ? r : b), null)
-    return best?.lag_at_max_ccf ?? best?.lag ?? null
-  }, [t4])
-
-  const maxDistKm = analytics.nearest.data?.overall?.max_km ?? null
+  const [subTab, setSubTab] = useState('insight')
 
   return (
     <ModuleLayout
@@ -613,40 +543,43 @@ export default function InsightPage() {
       title="Insight & Rekomendasi"
       description="Sintesis temuan lintas empat tujuan analisis: kualitas udara, korelasi polutan, dampak kesehatan, dan kecukupan jaringan."
     >
-      <style>{`
-        @media (max-width: 1100px) {
-          .ins-scorecard-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
-          .ins-tab-grid { grid-template-columns: 1fr !important; }
-          .ins-timeline-grid { grid-template-columns: 1fr !important; }
-          .ins-timeline-line { display: none !important; }
-          .ins-rec-grid { grid-template-columns: 1fr !important; }
-          .ins-ref-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 640px) {
-          .ins-scorecard-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
+      <div className="ov-subtabs" role="tablist" aria-label="Bagian insight">
+        {[
+          { id: 'insight', label: 'Insight' },
+          { id: 'rekomendasi', label: 'Rekomendasi' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={subTab === tab.id}
+            className={`ov-subtab${subTab === tab.id ? ' is-active' : ''}`}
+            onClick={() => setSubTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-      <ScorecardSection
-        avgPm25={avgPm25}
-        lagValue={lagValue}
-        maxDistKm={maxDistKm}
-        exceedCount={exceedCount}
-      />
+      {subTab === 'insight' && (
+        <>
+          <ScorecardSection />
+          <FindingsTabsSection
+            avgPm25={avgPm25}
+            t3={t3}
+            t4={t4}
+            analytics={analytics}
+            networkSummary={networkSummary}
+          />
+        </>
+      )}
 
-      <FindingsTabsSection
-        avgPm25={avgPm25}
-        t3={t3}
-        t4={t4}
-        analytics={analytics}
-        networkSummary={networkSummary}
-      />
-
-      <RecommendationMatrix />
-
-      <TimelineSection />
-
-      <ReferenceSection />
+      {subTab === 'rekomendasi' && (
+        <>
+          <RecommendationMatrix />
+          <TimelineSection />
+        </>
+      )}
     </ModuleLayout>
   )
 }
