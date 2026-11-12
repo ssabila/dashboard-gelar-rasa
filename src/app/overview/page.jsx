@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   Activity,
   AlertTriangle,
@@ -36,6 +36,11 @@ const StationMap = dynamic(
 const EMPTY = []
 const NAAQS_ANNUAL = 15 // PP No. 22/2021 tahunan
 
+const SUB_TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'metodologi', label: 'Metodologi & keterbatasan' },
+]
+
 /* ─── Helpers ──────────────────────────────────────────────────────────── */
 function isMassConcentration(row) {
   return row && !String(row.satuan ?? row.unit ?? '').toLowerCase().includes('ppm')
@@ -50,6 +55,29 @@ function stationId(s) {
 function korelasiLabel(rho) {
   if (rho == null) return '—'
   return rho >= 0.5 ? 'kuat' : rho >= 0.3 ? 'sedang' : 'lemah'
+}
+
+/* ─── Subtab pill ──────────────────────────────────────────────────────── */
+function SubTabs({ value, onChange }) {
+  return (
+    <div className="ov-subtabs" role="tablist" aria-label="Bagian overview">
+      {SUB_TABS.map((t) => {
+        const active = t.id === value
+        return (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            className={`ov-subtab${active ? ' is-active' : ''}`}
+            onClick={() => onChange(t.id)}
+          >
+            {t.label}
+          </button>
+        )
+      })}
+    </div>
+  )
 }
 
 /* ─── Bagian 1: Header gelap ───────────────────────────────────────────── */
@@ -97,122 +125,146 @@ function OverviewHeader({ k, filters, avgCompleteness, validObs }) {
   )
 }
 
-/* ─── Bagian 2: KPI — satu baris dengan hierarki lebar kolom ───────────── */
-/*
- * Referensi desain (gambar hijau):
- *   1 card HERO besar (PM2.5) di kiri → lebar ~2.2×
- *   4 card pendukung di kanan, berjajar dalam 1 baris
- * Semua satu baris, tidak ada baris kedua yang kelihatan "kosong".
- */
-function KpiSection({ k, medianDistance, health }) {
+/* ─── Kartu KPI kecil ──────────────────────────────────────────────────── */
+function KpiCard({ label, icon: Icon, value, unit, note, href, color }) {
+  const body = (
+    <>
+      <div className="kpi-top">
+        <p className="kpi-label">{label}</p>
+        {Icon && (
+          <span
+            className="kpi-icon"
+            style={color ? { color, background: `color-mix(in srgb, ${color} 16%, #fff)` } : undefined}
+            aria-hidden="true"
+          >
+            <Icon size={16} />
+          </span>
+        )}
+      </div>
+      <div className="kpi-value-row">
+        <span className="kpi-value">{value ?? '—'}</span>
+        {unit && <span className="kpi-unit">{unit}</span>}
+      </div>
+      <div className="kpi-foot">
+        <span>{note ?? ''}</span>
+      </div>
+    </>
+  )
+
+  if (href) {
+    return (
+      <a href={href} className="card kpi ov-kpi-cell ov-kpi-link" style={{ '--gw': color }}>
+        {body}
+      </a>
+    )
+  }
+  return <div className="card kpi ov-kpi-cell">{body}</div>
+}
+
+/* ─── KPI: baris 1 (kondisi umum) dan baris 2 (angka tiap modul) ───────── */
+function KpiSection({ k, health, avgCompleteness, topStation, rho, maxDist }) {
   const { who } = POLLUTANTS.pm25
   const valid = k.scoped.filter((s) => Number.isFinite(s.avg_pm25))
   const exceedAnnual = valid.filter((s) => s.avg_pm25 > NAAQS_ANNUAL).length
   const cat = k.avg != null ? getIspuFromPm25(k.avg) : null
 
   return (
-    <div className="ov-kpi-row">
+    <div className="ov-kpi-block">
+      <div className="ov-kpi-row">
+        <div className="card kpi kpi--hero ov-kpi-hero">
+          <div className="kpi-top">
+            <p className="kpi-label">Rata-rata PM2.5 nasional</p>
+            <span className="kpi-icon" aria-hidden="true"><Wind size={18} /></span>
+          </div>
+          <div className="kpi-value-row">
+            <span className="kpi-value ov-kpi-hero-num">
+              {k.avg != null ? formatNumber(k.avg, 1) : '—'}
+            </span>
+            <span className="kpi-unit">µg/m³</span>
+          </div>
+          <div className="kpi-foot">
+            {cat && (
+              <span
+                className="badge"
+                style={{
+                  fontSize: '0.7rem',
+                  color: `color-mix(in srgb, ${cat.color} 55%, #18314F)`,
+                  background: cat.bg,
+                  border: `1px solid ${cat.color}40`,
+                }}
+              >
+                {cat.label}
+              </span>
+            )}
+            {k.avg != null && <span>{formatNumber(k.avg / who, 1)}× pedoman WHO ({who} µg/m³)</span>}
+          </div>
+        </div>
 
-      {/* ── Hero: PM2.5 nasional ── */}
-      <div className="card kpi kpi--hero ov-kpi-hero">
-        <div className="kpi-top">
-          <p className="kpi-label">Rata-rata PM2.5 nasional</p>
-          <span className="kpi-icon" aria-hidden="true"><Wind size={18} /></span>
-        </div>
-        <div className="kpi-value-row">
-          <span className="kpi-value ov-kpi-hero-num">
-            {k.avg != null ? formatNumber(k.avg, 1) : '—'}
-          </span>
-          <span className="kpi-unit">µg/m³</span>
-        </div>
-        <div className="kpi-foot">
-          {cat && (
-            <span className="badge" style={{
-              fontSize: '0.7rem',
-              color: `color-mix(in srgb, ${cat.color} 55%, #18314F)`,
-              background: cat.bg,
-              border: `1px solid ${cat.color}40`,
-            }}>{cat.label}</span>
-          )}
-          {k.avg != null && (
-            <span>{formatNumber(k.avg / who, 1)}× pedoman WHO ({who} µg/m³)</span>
-          )}
-        </div>
+        <KpiCard
+          label="Di atas baku mutu tahunan"
+          icon={AlertTriangle}
+          color={exceedAnnual > 0 ? 'var(--ispu-tidak-sehat)' : 'var(--ispu-baik)'}
+          value={exceedAnnual}
+          unit="stasiun"
+          note={`dari ${valid.length} · baku mutu ${NAAQS_ANNUAL} µg/m³/tahun`}
+        />
+        <KpiCard
+          label="Stasiun AQMS"
+          icon={Network}
+          value={k.total}
+          unit="stasiun"
+          note={`${k.active} sensor aktif`}
+        />
+        <KpiCard
+          label="Kelengkapan data"
+          icon={CheckCircle2}
+          value={avgCompleteness != null ? `${formatNumber(avgCompleteness, 1)}%` : '—'}
+          note="Rata-rata seluruh stasiun"
+        />
       </div>
 
-      {/* ── 4 card pendukung ── */}
-      <div className="ov-kpi-siblings">
-
-        {/* Baku mutu — satu-satunya yang punya aksen warna berbeda */}
-        <div
-          className="card kpi ov-kpi-cell"
-          style={{ '--ov-alert': exceedAnnual > 0 ? 'var(--ispu-tidak-sehat)' : 'var(--ispu-baik)' }}
-        >
-          <div className="kpi-top">
-            <p className="kpi-label">Di atas baku mutu tahunan</p>
-            <span className="kpi-icon" style={{ background: `color-mix(in srgb, var(--ov-alert) 16%, #fff)`, color: 'var(--color-text-primary)' }} aria-hidden="true">
-              <AlertTriangle size={16} />
-            </span>
-          </div>
-          <div className="kpi-value-row">
-            <span className="kpi-value">{exceedAnnual}</span>
-            <span className="kpi-unit">stasiun</span>
-          </div>
-          <div className="kpi-foot">
-            <span>dari {valid.length} · {NAAQS_ANNUAL} µg/m³/tahun</span>
-          </div>
-        </div>
-
-        <div className="card kpi ov-kpi-cell">
-          <div className="kpi-top">
-            <p className="kpi-label">Stasiun AQMS</p>
-            <span className="kpi-icon" aria-hidden="true"><Network size={16} /></span>
-          </div>
-          <div className="kpi-value-row">
-            <span className="kpi-value">{k.total}</span>
-            <span className="kpi-unit">stasiun</span>
-          </div>
-          <div className="kpi-foot">
-            <span>{k.active} sensor aktif</span>
-          </div>
-        </div>
-
-        <div className="card kpi ov-kpi-cell">
-          <div className="kpi-top">
-            <p className="kpi-label">Rawat inap pernapasan</p>
-            <span className="kpi-icon" style={{ background: 'rgba(251,146,60,0.14)', color: 'var(--color-text-primary)' }} aria-hidden="true">
-              <Activity size={16} />
-            </span>
-          </div>
-          <div className="kpi-value-row">
-            <span className="kpi-value">{health ? formatNumber(health.total_resp) : '—'}</span>
-            <span className="kpi-unit">kasus</span>
-          </div>
-          <div className="kpi-foot">
-            <span>semua RS, periode penuh</span>
-          </div>
-        </div>
-
-        <div className="card kpi ov-kpi-cell">
-          <div className="kpi-top">
-            <p className="kpi-label">Median jarak antarstasiun</p>
-            <span className="kpi-icon" aria-hidden="true"><Ruler size={16} /></span>
-          </div>
-          <div className="kpi-value-row">
-            <span className="kpi-value">{formatNumber(medianDistance, 0)}</span>
-            <span className="kpi-unit">km</span>
-          </div>
-          <div className="kpi-foot">
-            <span>Haversine terdekat</span>
-          </div>
-        </div>
-
+      <div className="ov-kpi-modules">
+        <KpiCard
+          label="Kualitas udara"
+          icon={Wind}
+          color="#FB923C"
+          href="/kualitas-udara"
+          value={topStation ? formatNumber(topStation.avg_pm25, 1) : '—'}
+          unit="µg/m³"
+          note={topStation ? `Tertinggi: ${shortName(topStation)}` : 'Stasiun PM2.5 tertinggi'}
+        />
+        <KpiCard
+          label="Faktor PM2.5"
+          icon={GitCompareArrows}
+          color="#384E77"
+          href="/korelasi"
+          value={rho != null ? `r ${formatNumber(rho, 2)}` : '—'}
+          note="Lalu lintas terhadap PM2.5"
+        />
+        <KpiCard
+          label="PM2.5 & kesehatan"
+          icon={HeartPulse}
+          color="#EF4444"
+          href="/pm25-kesehatan"
+          value={health ? formatNumber(health.total_resp) : '—'}
+          unit="kasus napas"
+          note="Rawat inap seluruh RS rujukan"
+        />
+        <KpiCard
+          label="Kecukupan stasiun"
+          icon={MapPin}
+          color="#60A5FA"
+          href="/kecukupan-stasiun"
+          value={maxDist != null ? formatNumber(maxDist, 0) : '—'}
+          unit="km"
+          note="Jarak antarstasiun terjauh"
+        />
       </div>
     </div>
   )
 }
 
-/* ─── Bagian 3: Peta + Panel Samping ───────────────────────────────────── */
+/* ─── Peta + panel samping ─────────────────────────────────────────────── */
 function MapSection({ scoped, onSelect }) {
   return (
     <Section
@@ -220,19 +272,20 @@ function MapSection({ scoped, onSelect }) {
       description="Warna titik mencerminkan kategori ISPU dari rata-rata PM2.5 seluruh periode. Klik titik untuk detail stasiun."
     >
       <div className="ov-map-layout">
-        {/* Peta — kolom kiri */}
         <Card className="ov-map-card">
           <div className="map-frame">
             <StationMap stations={scoped} onSelect={onSelect} height="400px" />
           </div>
-          <div className="map-foot" style={{ marginTop: '0.75rem' }}>
+          <div className="map-foot">
             <IspuLegend note="ISPU PM2.5 · Permen LHK No. 14/2020" />
           </div>
         </Card>
 
+        <div className="ov-map-side">
           <IspuDonut stations={scoped} />
         </div>
-         <StationRanking stations={scoped} />
+        <StationRanking stations={scoped} className="ov-rank-full" />
+      </div>
     </Section>
   )
 }
@@ -323,19 +376,50 @@ function FindingsSection({ scoped, avgPm25, summary, analytics }) {
   )
 }
 
-/* ─── Bagian 5: Catatan Metodologi ─────────────────────────────────────── */
-function MethodologyNote() {
+/* ─── Tab Metodologi & keterbatasan (berlaku untuk seluruh halaman) ───── */
+function MethodologyPanel() {
+  const groups = [
+    {
+      title: 'Data dan pengolahan',
+      items: [
+        'Dataset bersifat sintetis dan disediakan panitia Gelar Rasa 2026. Tidak ada data eksternal yang digunakan.',
+        'Hanya observasi dengan qc_flag = VALID yang digunakan.',
+        'Nilai kosong dipertahankan sebagai null dan tidak diubah menjadi nol.',
+        'PM2.5 dalam ppm dan µg/m³ tidak dicampur dan tidak dikonversi.',
+      ],
+    },
+    {
+      title: 'Baku mutu dan acuan',
+      items: [
+        'Baku mutu nasional: PP No. 22/2021, PM2.5 tahunan 15 µg/m³.',
+        'Pedoman WHO AQG 2021, PM2.5 tahunan 5 µg/m³, sebagai pembanding kesehatan.',
+        'Kategori ISPU mengacu pada Permen LHK No. 14/2020.',
+      ],
+    },
+    {
+      title: 'Batasan interpretasi',
+      items: [
+        'Korelasi menunjukkan keterkaitan, bukan hubungan sebab-akibat.',
+        'Data kesehatan belum dipisah per stasiun dan tidak mewakili seluruh populasi.',
+        'Jarak antarstasiun menggambarkan kedekatan lokasi pemantauan, bukan bukti area yang tidak terpantau.',
+        'Hasil di setiap halaman mencerminkan stasiun yang tersedia, bukan kondisi seluruh wilayah Indonesia.',
+      ],
+    },
+  ]
+
   return (
-    <Card variant="tint" className="overview-method">
-      <h4>Catatan metodologi</h4>
-      <ul>
-        <li>Overview adalah ringkasan. Detail tersedia di setiap halaman analisis.</li>
-        <li>Baku mutu: <strong>PP No. 22/2021</strong> (tahunan 15 µg/m³) dan <strong>WHO AQG 2021</strong> (tahunan 5 µg/m³).</li>
-        <li>Hanya observasi dengan <code>qc_flag = VALID</code> yang digunakan.</li>
-        <li>PM2.5 dalam ppm dan µg/m³ tidak dicampur dan tidak dikonversi.</li>
-        <li>Data kesehatan bersifat sintetis dan belum dipisah per stasiun.</li>
-      </ul>
-    </Card>
+    <div className="ov-method-grid">
+      {groups.map((g) => (
+        <Card key={g.title} variant="tint" className="ov-method-card">
+          <h4>{g.title}</h4>
+          <ul>
+            {g.items.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </Card>
+      ))}
+    </div>
   )
 }
 
@@ -345,6 +429,7 @@ export default function OverviewPage() {
   const { data: summary } = useOverviewSummary()
   const analytics = useOverviewAnalytics()
   const { filters, setDateRange, setStation, setRegion, resetFilters } = useFilter()
+  const [subTab, setSubTab] = useState('overview')
 
   const all = stations ?? EMPTY
 
@@ -387,17 +472,10 @@ export default function OverviewPage() {
     return { total: scoped.length, active: scoped.filter((s) => s.status_operasional === 'Active').length, avg, scoped }
   }, [scoped])
 
-  const medianDistance = useMemo(() => {
-    const codes = new Set(scoped.map((s) => s.station_code))
-    const values = (analytics.nearest.data?.stations ?? [])
-      .filter((r) => codes.has(r.station_code))
-      .map((r) => Number(r.nearest_distance_km))
-      .filter(Number.isFinite)
-      .sort((a, b) => a - b)
-    if (!values.length) return null
-    const mid = Math.floor(values.length / 2)
-    return values.length % 2 ? values[mid] : (values[mid - 1] + values[mid]) / 2
-  }, [analytics.nearest.data, scoped])
+  const topStation = useMemo(() => {
+    const valid = scoped.filter((s) => Number.isFinite(s.avg_pm25))
+    return [...valid].sort((a, b) => b.avg_pm25 - a.avg_pm25)[0] ?? null
+  }, [scoped])
 
   const avgCompleteness = useMemo(() => {
     const codes = new Set(scoped.map((s) => s.station_code))
@@ -409,6 +487,9 @@ export default function OverviewPage() {
   }, [analytics.readiness.data, scoped])
 
   const health = useMemo(() => summary?.health ?? null, [summary])
+  const rho = summary?.factors?.traffic?.rho ?? null
+  const maxDist = analytics.nearest.data?.overall?.max_km ?? null
+
   const handleSelect = useCallback((s) => setStation(s.location_id), [setStation])
 
   return (
@@ -417,31 +498,45 @@ export default function OverviewPage() {
       title="Overview"
       description="Di mana dan seberapa buruk kondisi udara Indonesia? Ringkasan jaringan 27 stasiun AQMS dan dampak kesehatan."
     >
-      <FilterBar
-        filters={filters}
-        onDateChange={setDateRange}
-        onReset={resetFilters}
-        regions={regions}
-        onRegionChange={setRegion}
-      />
+      <SubTabs value={subTab} onChange={setSubTab} />
 
-      {stationError && <ErrorState message={stationError} />}
-      {stationLoading && <Card><LoadingSpinner /></Card>}
-
-      {!stationLoading && !stationError && (
+      {subTab === 'overview' && (
         <>
-          <OverviewHeader
-            k={k}
+          <FilterBar
             filters={filters}
-            avgCompleteness={avgCompleteness}
-            validObs={summary?.total_valid_records ?? null}
+            onDateChange={setDateRange}
+            onReset={resetFilters}
+            regions={regions}
+            onRegionChange={setRegion}
           />
-          <KpiSection k={k} medianDistance={medianDistance} health={health} />
-          <MapSection scoped={scoped} onSelect={handleSelect} />
-          <FindingsSection scoped={scoped} avgPm25={k.avg} summary={summary} analytics={analytics} />
-          <MethodologyNote />
+
+          {stationError && <ErrorState message={stationError} />}
+          {stationLoading && <Card><LoadingSpinner /></Card>}
+
+          {!stationLoading && !stationError && (
+            <>
+              <OverviewHeader
+                k={k}
+                filters={filters}
+                avgCompleteness={avgCompleteness}
+                validObs={summary?.total_valid_records ?? null}
+              />
+              <KpiSection
+                k={k}
+                health={health}
+                avgCompleteness={avgCompleteness}
+                topStation={topStation}
+                rho={rho}
+                maxDist={maxDist}
+              />
+              <MapSection scoped={scoped} onSelect={handleSelect} />
+              <FindingsSection scoped={scoped} avgPm25={k.avg} summary={summary} analytics={analytics} />
+            </>
+          )}
         </>
       )}
+
+      {subTab === 'metodologi' && <MethodologyPanel />}
     </ModuleLayout>
   )
 }
