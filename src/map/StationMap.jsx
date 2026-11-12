@@ -30,10 +30,9 @@ export function StationMap({ stations = [], height = '420px', onSelect }) {
       map.on('focus', () => map.scrollWheelZoom.enable())
       map.on('blur', () => map.scrollWheelZoom.disable())
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
       }).addTo(map)
 
       const points = []

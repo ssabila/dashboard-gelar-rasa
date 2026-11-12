@@ -2,7 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Activity, GitCompareArrows, HeartPulse, LayoutDashboard, Lightbulb, MapPinned, Wind } from 'lucide-react'
+import Image from 'next/image'
+import { Activity, GitCompareArrows, HeartPulse, LayoutDashboard, Lightbulb, MapPinned, PanelLeftClose, PanelLeftOpen, Wind } from 'lucide-react'
+import { useState } from 'react'
 
 const NAV_ITEMS = [
   { href: '/overview',          label: 'Overview',              icon: LayoutDashboard },
@@ -16,11 +18,31 @@ const NAV_ITEMS = [
 // Pill "Live monitoring aktif" dihapus: datanya sintetis & berhenti 14 Okt 2026, jadi bukan live.
 export function Navbar() {
   const pathname = usePathname()
+  const [collapsed, setCollapsed] = useState(false)
+
   return (
-    <aside className="app-sidebar" role="navigation" aria-label="Navigasi utama">
+    <aside className={`app-sidebar${collapsed ? ' is-collapsed' : ''}`} role="navigation" aria-label="Navigasi utama">
       <div className="sidebar-brand">
-        <div className="brand-mark" aria-hidden="true"><Activity size={16} strokeWidth={2.5} /></div>
-        <div><strong>AQMS</strong><span>Gelar Rasa 2026</span></div>
+        <Image
+          src="/logo-gelar-rasa.png"
+          alt="Gelar Rasa"
+          width={220}
+          height={72}
+          className="sidebar-logo"
+          priority
+        />
+        <div className="sidebar-brand-title">
+          <strong>AQMS Dashboard</strong>
+        </div>
+        <button
+          type="button"
+          className="sidebar-toggle"
+          onClick={() => setCollapsed((value) => !value)}
+          aria-label={collapsed ? 'Tampilkan label navigasi' : 'Sembunyikan label navigasi'}
+          title={collapsed ? 'Tampilkan label navigasi' : 'Sembunyikan label navigasi'}
+        >
+          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+        </button>
       </div>
       <nav>
         <p className="sidebar-label">Menu</p>

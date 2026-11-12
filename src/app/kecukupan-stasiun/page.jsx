@@ -1,513 +1,584 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronDown, Cpu, Layers, MapPin, MapPinned, RotateCcw, Ruler, SlidersHorizontal, Target } from 'lucide-react'
+import { useMemo } from 'react'
+import { Activity, AlertTriangle, ArrowRight, Gauge, Radio, Ruler } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { MetricCard } from '@/components/ui/MetricCard'
 import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
-import {
-  useCoverageSummary, useCoverageGeo, useCoverageKabupaten, useCoverageRegion,
-  useStationQuality, useStationCorrelation, useRecommendations, useCoverageCurve,
-} from '@/hooks/useCoverageData'
 import { formatNumber } from '@/lib/formatters'
-import { DEFAULT_WEIGHTS, GAP_COMPONENTS, METRICS, PULAU_ORDER, buildContext, buildGapMap } from '@/lib/coverage'
 import {
-  CompletenessHeatmap, CorrelationHeatmap, CoverageCurveChart, DecayChart, GapContributionChart,
-  ProvinceTreemap, PulauDensityChart, RoleScatter, SiteTypeChart,
-} from './charts'
-import {
-  Callout, ChartCard, Chip, DetailPanel, GapRankTable, MapLegend, ProvinceTable,
-  RecommendationCard, SegmentedControl, SliderField,
-} from './panels'
+  useMonitoringNetworkSummary,
+  useStationMaster,
+  useStationCompleteness,
+  useStationNearestNeighbor,
+  useStationPollutantSummary,
+  useStationPriority,
+  useCoverageKabupatenGeoJSON,
+} from '@/hooks/useKecukupanData'
 
-// Leaflet tidak bisa SSR — dynamic import wajib
-const CoverageMap = dynamic(
-  () => import('@/map/CoverageMap').then((m) => m.CoverageMap),
+const NetworkMap = dynamic(
+  () => import('./NetworkMap').then((m) => m.NetworkMap),
   { ssr: false, loading: () => <LoadingSpinner label="Memuat peta..." /> }
 )
 
-const EMPTY = []
+/* ─── Konstanta ────────────────────────────────────────────────────────── */
+const COMP_THRESHOLD = 85
+const FAR_KM        = 400
+const OPS_REVIEW    = 35
+
 const NAVY = 'var(--color-text-primary)'
+const SOFT = 'var(--color-text-secondary)'
 
-/** Mode warna peta yang tampil default; mode lain muncul bila sedang dipilih. */
-const MAIN_METRICS = ['jarak', 'cov', 'bivar']
-
-const DETAIL_TABS = [
-  { id: 'provinsi',  label: 'Per provinsi',      hint: 'Tabel kecukupan tiap provinsi' },
-  { id: 'keandalan', label: 'Keandalan data',    hint: 'Seberapa lengkap dan beragam data stasiun' },
-  { id: 'jangkauan', label: 'Jangkauan stasiun', hint: 'Seberapa jauh satu stasiun masih mewakili sekitarnya' },
-  { id: 'prioritas', label: 'Skor kebutuhan',    hint: 'Cara skor prioritas dihitung dan diuji' },
-  { id: 'metode',    label: 'Metodologi',        hint: 'Asumsi dan keterbatasan' },
-]
-
-const METODOLOGI_LABEL = {
-  data: 'Data',
-  batas_admin: 'Batas administrasi',
-  jarak: 'Jarak',
-  radius: 'Radius representatif',
-  pm25_estimasi: 'Estimasi PM2.5',
-  gap_score_bobot: 'Bobot skor kebutuhan',
-  sumber_proxy: 'Faktor sumber polusi',
-  penduduk: 'Penduduk',
-  benchmark: 'Benchmark kepadatan',
-  cakupan: 'Cakupan',
-  greedy: 'Pemilihan lokasi baru',
+const STATUS_COLOR = {
+  Active:       '#16A34A',
+  Intermittent: '#F59E0B',
+  Defective:    '#EF4444',
 }
 
-export default function KecukupanStasiunPage() {
-  const summary = useCoverageSummary()
-  const geo = useCoverageGeo()
-  const kab = useCoverageKabupaten()
-  const region = useCoverageRegion()
-  const stationQ = useStationQuality()
-  const corr = useStationCorrelation()
-  const recs = useRecommendations()
-  const curve = useCoverageCurve()
+const DIST_BINS = [
+  { label: '< 100 km',    min: 0,   max: 100      },
+  { label: '100–400 km',  min: 100, max: 400       },
+  { label: '400–800 km',  min: 400, max: 800       },
+  { label: '> 800 km',    min: 800, max: Infinity  },
+]
 
-  const [pulau, setPulau] = useState(null)
-  const [radiusState, setRadius] = useState(null)
-  const [metric, setMetric] = useState('jarak')
-  const [layers, setLayers] = useState({ circles: true, stations: true, links: false })
-  const [nAdd, setNAdd] = useState(0)
-  const [weights, setWeights] = useState(DEFAULT_WEIGHTS)
-  const [selected, setSelected] = useState(null)
-  const [tab, setTab] = useState('provinsi')
-  const [radiusOpen, setRadiusOpen] = useState(false)
-  const [mapOptsOpen, setMapOptsOpen] = useState(false)
-  const mapSectionRef = useRef(null)
-  const radiusRef = useRef(null)
+const AVAIL = [
+  { key: 'avail_distance',    label: 'jarak'          },
+  { key: 'avail_region',      label: 'wilayah'        },
+  { key: 'avail_site',        label: 'tipe lokasi'    },
+  { key: 'avail_status',      label: 'status sensor'  },
+  { key: 'avail_completeness',label: 'kelengkapan'    },
+  { key: 'avail_invalid',     label: 'data QC'        },
+]
 
-  // Tutup popover radius saat klik di luar atau tekan Esc
-  useEffect(() => {
-    if (!radiusOpen) return
-    const onDown = (e) => radiusRef.current && !radiusRef.current.contains(e.target) && setRadiusOpen(false)
-    const onKey = (e) => e.key === 'Escape' && setRadiusOpen(false)
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey) }
-  }, [radiusOpen])
+const METHOD_ITEMS = [
+  {
+    title: 'Sumber dan cakupan data',
+    text: 'Metadata stasiun (sites.csv), sensor (sensors.csv), periode observasi (metadata_dates.csv), dan 27 file observasi AQMS. Periode evaluasi 1 Januari 2024 sampai 14 Oktober 2026. Dataset bersifat sintetis.',
+  },
+  {
+    title: 'Definisi indikator',
+    text: 'Kelengkapan: jumlah jam yang memiliki nilai valid dibagi jumlah jam yang seharusnya diamati, dibatasi maksimal 100%. Jarak: jarak geodesik ke stasiun terdekat. Status sensor: Active, Intermittent, atau Defective sesuai sensors.csv.',
+  },
+  {
+    title: 'Metode jarak Haversine',
+    text: 'Jarak dihitung dari koordinat lintang dan bujur setiap stasiun dengan rumus Haversine dan jari-jari bumi 6.371 km. Jarak ini menunjukkan keterpisahan antarlokasi, bukan luas wilayah yang tercakup.',
+  },
+  {
+    title: 'Penanganan data hilang',
+    text: 'Data hilang tidak dianggap nol. Jam tanpa observasi valid tidak dihitung sebagai valid. Stasiun tanpa data PM2.5 valid ditandai dan tidak dibandingkan.',
+  },
+  {
+    title: 'Pemisahan satuan PM2.5',
+    text: 'Stasiun dengan satuan µg/m³ dan ppm dianalisis terpisah. Nilai ppm tidak dikonversi ke µg/m³ karena tidak ada dasar konversi yang tervalidasi untuk PM2.5.',
+  },
+  {
+    title: 'Peran SHP',
+    text: 'Batas administrasi dipakai sebagai polygon visual untuk menghitung jumlah stasiun dan sensor per kabupaten/kota. Detail peatland berasal dari tipe lokasi dan karakteristik wilayah pada metadata stasiun.',
+  },
+  {
+    title: 'Batasan interpretasi',
+    text: 'Hasil ini menunjukkan kondisi jaringan yang tercatat dalam dataset, bukan kepastian cakupan wilayah. Peringkat prioritas adalah bahan untuk tinjauan lanjutan, bukan keputusan lokasi pembangunan. Rekomendasi kebijakan dibahas di halaman Insight.',
+  },
+]
 
-  const all = [summary, geo, kab, region, stationQ, corr, recs, curve]
-  const error = all.find((x) => x.error)?.error
-  const ready = all.every((x) => x.data)
+/* ─── Helpers ──────────────────────────────────────────────────────────── */
+const pct = (v) => (v == null ? '—' : `${formatNumber(v, 1)}%`)
 
-  const sum = summary.data
-  const radii = sum?.radii_km ?? EMPTY
-  const radius = radiusState ?? sum?.radius_utama_km ?? null
+function groupCount(items, key, valueKey) {
+  const map = new Map()
+  for (const it of items) {
+    const k = it[key] || 'Tidak diketahui'
+    map.set(k, (map.get(k) ?? 0) + (valueKey ? Number(it[valueKey] ?? 0) : 1))
+  }
+  return [...map.entries()]
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value)
+}
 
-  /* ── Data turunan (logika tidak berubah) ── */
-  const kabRows = kab.data ?? EMPTY
-  const stations = stationQ.data?.stations ?? EMPTY
-  const kabById = useMemo(() => new Map(kabRows.map((r) => [r.kab_id, r])), [kabRows])
-  const stationsByKode = useMemo(() => new Map(stations.map((s) => [s.kode, s])), [stations])
-  const mapStations = useMemo(() => (pulau ? stations.filter((s) => s.pulau === pulau) : stations), [stations, pulau])
+function sensorStatusOf(s) {
+  if (s.sensor_status?.includes('Defective'))    return 'Defective'
+  if (s.sensor_status?.includes('Intermittent')) return 'Intermittent'
+  return 'Active'
+}
 
-  const gapById = useMemo(() => buildGapMap(kabRows, weights), [kabRows, weights])
-  const ctx = useMemo(
-    () => (kabRows.length && radius ? buildContext(kabRows, radius, gapById) : null),
-    [kabRows, radius, gapById]
-  )
+function buildTrigger(status, comp, dist) {
+  const reasons = []
+  if (status !== 'Active')                   reasons.push(`Sensor ${status}`)
+  if (comp != null && comp < COMP_THRESHOLD) reasons.push(`Kelengkapan ${formatNumber(comp, 1)}%`)
+  if (dist != null && dist > FAR_KM)        reasons.push(`Tetangga terdekat ${formatNumber(dist, 0)} km`)
+  return reasons.length ? reasons.slice(0, 2).join('; ') : null
+}
 
-  const eligibleSorted = useMemo(
-    () => kabRows.filter((r) => r.eligible).map((r) => ({ ...r, gap: gapById.get(r.kab_id) })).sort((a, b) => b.gap - a.gap),
-    [kabRows, gapById]
-  )
-  const rankById = useMemo(() => new Map(eligibleSorted.map((r, i) => [r.kab_id, i + 1])), [eligibleSorted])
-  const ranked = useMemo(
-    () => eligibleSorted.filter((r) => !pulau || r.pulau === pulau).slice(0, 10),
-    [eligibleSorted, pulau]
-  )
+function buildModel({ summary, stationsRaw, comp, nearest, pollutant, priority, geo }) {
+  const nnBy  = new Map(nearest.map((n) => [n.location_id, n]))
+  const opsBy = new Map((priority?.operational_ranking ?? []).map((o) => [o.location_id, o]))
 
-  const curveRows = curve.data?.curve ?? EMPTY
-  const curveMax = Math.max(0, curveRows.length - 1)
-  const nAddEff = Math.min(nAdd, curveMax)
-  const candidates = useMemo(
-    () =>
-      curveRows
-        .slice(1, nAddEff + 1)
-        .map((c) => {
-          const k = kabById.get(c.kab_id)
-          return k ? { kab_id: c.kab_id, prioritas: c.n_added, lat: k.lat, lon: k.lon } : null
-        })
-        .filter(Boolean),
-    [curveRows, nAddEff, kabById]
-  )
-
-  const regionPulau = useMemo(
-    () => (region.data?.pulau ?? EMPTY).slice().sort((a, b) => PULAU_ORDER.indexOf(a.pulau) - PULAU_ORDER.indexOf(b.pulau)),
-    [region.data]
-  )
-  const regionProv = useMemo(
-    () => (region.data?.provinsi ?? EMPTY).filter((r) => !pulau || r.pulau === pulau),
-    [region.data, pulau]
-  )
-  const pulauRow = pulau ? regionPulau.find((r) => r.pulau === pulau) : null
-
-  const kpi = useMemo(() => {
-    if (!ready || !radius) return null
-    const st = pulau ? stations.filter((s) => s.pulau === pulau) : stations
-    const active = st.filter((s) => s.status_operasional === 'Active').length
-    const avg = st.length ? st.reduce((s, x) => s + (x.completeness_pct ?? 0), 0) / st.length : null
-    const provCovered = regionProv.filter((r) => r.n_stasiun > 0).length
-    return {
-      active, nStasiun: st.length, avgCompleteness: avg,
-      provCovered, provTotal: regionProv.length,
-      cov: pulauRow ? pulauRow[`cov_pct_${radius}`] : sum.cov_pct_by_radius?.[String(radius)],
-      medianJarak: pulauRow ? pulauRow.median_jarak_km : sum.median_jarak_km,
-    }
-  }, [ready, radius, pulau, stations, regionProv, pulauRow, sum])
-
-  /* ── Handler ── */
-  const togglePulau = (name) => setPulau((p) => (p === name ? null : name))
-  const scrollToMap = () => mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  const focusKab = (id) => { setSelected({ type: 'kab', id, fly: true }); scrollToMap() }
-  const weightsChanged = GAP_COMPONENTS.some((c) => Math.abs(weights[c.key] - DEFAULT_WEIGHTS[c.key]) > 1e-9)
-  const resetAll = () => {
-    setPulau(null); setRadius(null); setMetric('jarak'); setNAdd(0)
-    setWeights(DEFAULT_WEIGHTS); setSelected(null); setRadiusOpen(false)
-    setLayers({ circles: true, stations: true, links: false })
+  const compAcc = new Map()
+  for (const r of comp) {
+    if (r.completeness_pct == null) continue
+    const a = compAcc.get(r.location_id) ?? { sum: 0, n: 0 }
+    a.sum += r.completeness_pct
+    a.n   += 1
+    compAcc.set(r.location_id, a)
   }
 
-  const radiusIdx = Math.max(0, radii.indexOf(radius))
-  const isMainRadius = radius === sum?.radius_utama_km
-  const usedFallback = Boolean(sum?.radius_fit?.used_fallback)
-  const radiusTag = isMainRadius ? (usedFallback ? ' (asumsi)' : ' (dari data)') : ''
-  const weightSum = GAP_COMPONENTS.reduce((s, c) => s + weights[c.key], 0) || 1
+  const stations = stationsRaw.map((s) => {
+    const status       = sensorStatusOf(s)
+    const a            = compAcc.get(s.location_id)
+    const completeness = a ? a.sum / a.n : null
+    const nn           = nnBy.get(s.location_id)
+    const dist         = nn?.nearest_distance_km ?? null
+    const ops          = opsBy.get(s.location_id)
+    return {
+      ...s,
+      status_operasional:    status,
+      completeness_pct:      completeness,
+      nearest_distance_km:   dist,
+      nearest_station_code:  nn?.nearest_station_code ?? null,
+      primary_trigger:       buildTrigger(status, completeness, dist),
+      recommendation_status: ops ? (ops.operational_score >= OPS_REVIEW ? 'Perlu ditinjau' : 'Pantau') : null,
+    }
+  })
 
-  const selKab = selected?.type === 'kab' ? kabById.get(selected.id) : null
-  const selStation = selected?.type === 'station' ? stationsByKode.get(selected.id) : null
-  const blankInScope = regionProv.filter((r) => r.blank_spot)
-  const mapMetrics = METRICS.filter((m) => MAIN_METRICS.includes(m.id) || m.id === metric)
+  const withDist   = stations.filter((s) => s.nearest_distance_km != null)
+  const withComp   = stations.filter((s) => s.completeness_pct    != null)
+  const byDistDesc = [...withDist].sort((a, b) => b.nearest_distance_km - a.nearest_distance_km)
+
+  const dualIssue = stations.filter(
+    (s) => s.nearest_distance_km > FAR_KM && s.completeness_pct != null && s.completeness_pct < COMP_THRESHOLD
+  )
+
+  return {
+    summary,
+    geo,
+    stations,
+    statusCounts: ['Active', 'Intermittent', 'Defective'].map((k) => ({
+      label: k,
+      value: stations.filter((s) => s.status_operasional === k).length,
+    })),
+    regionStations: groupCount(stations, 'region_group'),
+    regionSensors:  groupCount(stations, 'region_group', 'sensor_count'),
+    siteTypes:      groupCount(stations, 'site_type'),
+    compSorted:     [...withComp].sort((a, b) => a.completeness_pct - b.completeness_pct),
+    avgComp: withComp.length
+      ? withComp.reduce((s, x) => s + x.completeness_pct, 0) / withComp.length
+      : null,
+    belowThreshold: withComp.filter((s) => s.completeness_pct < COMP_THRESHOLD).length,
+    distBins: DIST_BINS.map((b) => ({
+      label: b.label,
+      value: withDist.filter((s) => s.nearest_distance_km >= b.min && s.nearest_distance_km < b.max).length,
+    })),
+    farList:    byDistDesc.slice(0, 5),
+    nearList:   [...byDistDesc].reverse().slice(0, 5),
+    farCount:   withDist.filter((s) => s.nearest_distance_km > FAR_KM).length,
+    dualIssue,
+    pmUg:  pollutant.filter((r) => r.pollutant === 'pm25_ug_m3').sort((a, b) => b.mean - a.mean),
+    pmPpm: pollutant.filter((r) => r.pollutant === 'pm25_ppm'),
+  }
+}
+
+/* ─── Komponen UI lokal ────────────────────────────────────────────────── */
+
+function HBar({ rows, format = (v) => formatNumber(v, 0), unit = '', colorOf }) {
+  const max = Math.max(...rows.map((r) => r.value ?? 0), 0) || 1
+  return (
+    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 6 }}>
+      {rows.map((r) => (
+        <li
+          key={r.label}
+          style={{ display: 'grid', gridTemplateColumns: '9rem 1fr 5rem', alignItems: 'center', gap: 8, fontSize: '0.75rem' }}
+        >
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={r.label}>
+            {r.label}
+          </span>
+          <span style={{ height: 8, background: 'rgba(24,49,79,0.08)', borderRadius: 4 }}>
+            <span style={{ display: 'block', height: '100%', width: `${((r.value ?? 0) / max) * 100}%`, background: colorOf ? colorOf(r) : '#384E77', borderRadius: 4 }} />
+          </span>
+          <strong style={{ textAlign: 'right' }}>{format(r.value)}{unit}</strong>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function Insight({ icon: Icon = AlertTriangle, color = '#C2410C', bg = 'rgba(251,146,60,0.08)', border = 'rgba(251,146,60,0.3)', title, children }) {
+  return (
+    <div style={{ display: 'flex', gap: 12, padding: '0.85rem 1rem', borderRadius: '0.85rem', border: `1px solid ${border}`, background: bg }}>
+      <Icon size={18} style={{ color, flexShrink: 0, marginTop: 2 }} aria-hidden="true" />
+      <div style={{ fontSize: '0.8rem', color: NAVY, lineHeight: 1.55 }}>
+        {title && <strong style={{ display: 'block', marginBottom: 2, color }}>{title}</strong>}
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function RankTable({ title, subtitle, rows, scoreKey, rankKey, farIds, lowCompIds }) {
+  const top = [...rows].sort((a, b) => a[rankKey] - b[rankKey]).slice(0, 10)
+  return (
+    <Card>
+      <CardHeader title={title} subtitle={subtitle} />
+      <ol style={{ margin: 0, paddingLeft: '1.2rem', display: 'grid', gap: 10, fontSize: '0.8rem' }}>
+        {top.map((r) => {
+          const missing   = AVAIL.filter((a) => !r[a.key]).map((a) => a.label)
+          const isFar     = farIds?.has(r.location_id ?? r.station_code)
+          const isLowComp = lowCompIds?.has(r.location_id ?? r.station_code)
+          const tags = []
+          if (isFar)     tags.push({ label: 'Terisolasi', color: '#C2410C', bg: 'rgba(251,146,60,0.1)' })
+          if (isLowComp) tags.push({ label: 'Data tipis',  color: '#B45309', bg: 'rgba(245,158,11,0.1)' })
+          return (
+            <li key={r.location_id ?? r.station_code}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <strong>{r.station_code}</strong>
+                <span style={{ color: SOFT }}>· skor {formatNumber(r[scoreKey], 1)}</span>
+                {tags.map((t) => (
+                  <span key={t.label} style={{ fontSize: '0.68rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: 999, background: t.bg, color: t.color }}>
+                    {t.label}
+                  </span>
+                ))}
+              </div>
+              {missing.length > 0 && (
+                <div style={{ fontSize: '0.7rem', color: '#B45309', marginTop: 2 }}>
+                  Data tidak tersedia: {missing.join(', ')}
+                </div>
+              )}
+            </li>
+          )
+        })}
+      </ol>
+    </Card>
+  )
+}
+
+function Bridge({ children }) {
+  return (
+    <p style={{ fontSize: '0.82rem', color: SOFT, lineHeight: 1.65, padding: '0.1rem 0 0.25rem' }}>
+      {children}
+    </p>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE
+═══════════════════════════════════════════════════════════════════════════ */
+export default function KecukupanStasiunPage() {
+  const summaryHook   = useMonitoringNetworkSummary()
+  const stationsHook  = useStationMaster()
+  const compHook      = useStationCompleteness()
+  const nearestHook   = useStationNearestNeighbor()
+  const pollutantHook = useStationPollutantSummary()
+  const priorityHook  = useStationPriority()
+  const geoHook       = useCoverageKabupatenGeoJSON()
+
+  const core  = [summaryHook, stationsHook, compHook, nearestHook, pollutantHook, geoHook]
+  const error = core.find((h) => h.error)?.error
+  const ready = core.every((h) => h.data) && !core.some((h) => h.loading)
+
+  const m = useMemo(
+    () =>
+      ready
+        ? buildModel({
+            summary:     summaryHook.data,
+            stationsRaw: stationsHook.data,
+            comp:        compHook.data,
+            nearest:     nearestHook.data,
+            pollutant:   pollutantHook.data,
+            priority:    priorityHook.data ?? null,
+            geo:         geoHook.data,
+          })
+        : null,
+    [ready, summaryHook.data, stationsHook.data, compHook.data, nearestHook.data, pollutantHook.data, priorityHook.data, geoHook.data]
+  )
+
+  const layout = {
+    eyebrow:     'Kecukupan jaringan',
+    title:       'Kecukupan Stasiun',
+    description: 'Apakah 27 stasiun sudah tersebar merata, dan wilayah mana yang paling butuh tambahan titik pemantauan?',
+  }
+
+  if (error) return <ModuleLayout {...layout}><ErrorState message={error} /></ModuleLayout>
+  if (!m)    return <ModuleLayout {...layout}><LoadingSpinner label="Menyiapkan data jaringan..." /></ModuleLayout>
+
+  /* ── Nilai turunan untuk narasi ── */
+  const s             = m.summary
+  const needAttention = (s.sensor_status.Intermittent ?? 0) + (s.sensor_status.Defective ?? 0)
+  const topRegion     = m.regionStations[0]
+  const bottomRegion  = m.regionStations.at(-1)
+  const topSite       = m.siteTypes[0]
+  const topPm         = m.pmUg[0]
+  const ppmCount      = s.pm25_unit_groups.ppm_stations
+
+  const farIds     = new Set(m.farList.map((s) => s.location_id))
+  const lowCompIds = new Set(m.compSorted.filter((s) => s.completeness_pct < COMP_THRESHOLD).map((s) => s.location_id))
+
+  const isUneven  = topRegion && bottomRegion && topRegion.value >= 3 * bottomRegion.value
+  const hasIsolated = m.farCount > 0
+  const hasWeakData = m.belowThreshold > 0
 
   return (
-    <ModuleLayout
-      eyebrow="Kecukupan jaringan"
-      title="Kecukupan Stasiun"
-      description="Apakah 27 stasiun sudah cukup mewakili kondisi udara Indonesia, dan di mana stasiun baru paling dibutuhkan?"
-    >
-      {error && <ErrorState message={`Data gagal dimuat: ${error}. Pastikan notebook preprocessing sudah dijalankan.`} />}
-      {!ready && !error && <Card><LoadingSpinner label="Memuat data kecukupan stasiun..." /></Card>}
+    <ModuleLayout {...layout}>
 
-      {ready && kpi && ctx && (
-        <>
-          {/* ═════════ Filter halaman ═════════ */}
-          <div className="filter-bar" role="group" aria-label="Filter halaman">
-            <Chip active={!pulau} onClick={() => setPulau(null)}>Semua pulau</Chip>
-            {regionPulau.map((r) => (
-              <Chip key={r.pulau} active={pulau === r.pulau} onClick={() => togglePulau(r.pulau)}>{r.pulau}</Chip>
+      {/* ── Kesimpulan di awal ───────────────────────────────────────────── */}
+      <Card variant="dark">
+        <h2 className="headline">
+          Jaringan{' '}
+          {isUneven
+            ? <>terkonsentrasi di <strong>{topRegion.label}</strong> dan belum merata ke timur</>
+            : <>sudah tersebar di semua wilayah, tapi belum merata</>
+          }.{' '}
+          {hasIsolated && <><strong>{m.farCount} stasiun</strong> berdiri sendiri lebih dari {FAR_KM} km dari yang lain. </>}
+          {hasWeakData && <><strong>{m.belowThreshold} stasiun</strong> datanya di bawah {COMP_THRESHOLD}% kelengkapan.</>}
+        </h2>
+        <p className="headline-sub">
+          Dari {s.total_stations} stasiun, {s.sensor_status.Active} sensor aktif.
+          {needAttention > 0 && ` ${needAttention} sensor perlu diperiksa.`}{' '}
+          Halaman ini menelusuri sebab dan wilayah mana yang paling butuh tambahan titik pemantauan.
+        </p>
+      </Card>
+
+      {/* ── KPI ─────────────────────────────────────────────────────────── */}
+      <div className="kpi-grid">
+        <MetricCard
+          variant="hero"
+          label="Stasiun AQMS"
+          value={s.total_stations}
+          unit="lokasi"
+          subtext={`${s.total_sensors} sensor terdaftar`}
+          icon={<Radio size={18} />}
+        />
+        <MetricCard
+          label="Sensor aktif"
+          value={s.sensor_status.Active}
+          unit={`dari ${s.total_sensors}`}
+          subtext={needAttention > 0 ? `${needAttention} perlu diperiksa` : 'Semua beroperasi'}
+          accentColor={needAttention > 0 ? 'var(--ispu-tidak-sehat)' : 'var(--ispu-baik)'}
+          icon={<Activity size={18} />}
+        />
+        <MetricCard
+          label="Median jarak antarlokasi"
+          value={formatNumber(s.median_nearest_distance_km, 0)}
+          unit="km"
+          subtext={`${m.farCount} stasiun > ${FAR_KM} km dari yang lain`}
+          accentColor={m.farCount > 0 ? 'var(--ispu-sedang)' : 'var(--ispu-baik)'}
+          icon={<Ruler size={18} />}
+        />
+        <MetricCard
+          label="Rata-rata kelengkapan data"
+          value={pct(m.avgComp)}
+          subtext={m.belowThreshold > 0 ? `${m.belowThreshold} stasiun di bawah ${COMP_THRESHOLD}%` : `Semua di atas ${COMP_THRESHOLD}%`}
+          accentColor={m.belowThreshold > 0 ? 'var(--ispu-sedang)' : 'var(--ispu-baik)'}
+          icon={<Gauge size={18} />}
+        />
+      </div>
+
+      {/* ═══ 1. SEBARAN ═══════════════════════════════════════════════════ */}
+      <Section
+        title={`Stasiun terkonsentrasi di ${topRegion?.label ?? '—'} — wilayah timur jauh tertinggal`}
+        description="Langkah pertama: lihat di mana saja stasiun berada dan apakah sebarannya merata."
+      >
+        <Card>
+          <CardHeader
+            title="Peta persebaran stasiun"
+            subtitle="Warna titik menunjukkan status sensor. Klik titik untuk melihat detail kelengkapan data dan jarak ke stasiun terdekat."
+          />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, fontSize: '0.75rem', marginBottom: 10 }}>
+            {m.statusCounts.map((c) => (
+              <span key={c.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: STATUS_COLOR[c.label] }} />
+                {c.label}: <strong>{c.value}</strong>
+              </span>
             ))}
-            <span className="filter-spacer" />
-
-            <div ref={radiusRef} className="fpill-wrap">
-              <button
-                type="button" className={`fpill${radiusOpen ? ' active' : ''}`}
-                aria-expanded={radiusOpen} aria-haspopup="dialog" onClick={() => setRadiusOpen((o) => !o)}
-              >
-                <Ruler size={14} aria-hidden="true" />
-                <span>Radius {radius} km{radiusTag}</span>
-                <ChevronDown size={12} aria-hidden="true" />
-              </button>
-              <div className={`fpill-menu${radiusOpen ? ' open' : ''}`} style={{ left: 'auto', right: 0, minWidth: '21rem' }} role="dialog" aria-label="Radius representatif">
-                <SliderField
-                  label="Radius representatif stasiun"
-                  valueLabel={`${radius} km${radiusTag}`}
-                  min={0} max={Math.max(0, radii.length - 1)} value={radiusIdx}
-                  onChange={(i) => setRadius(radii[i])}
-                  ticks={radii.map((r) => `${r}`)}
-                />
-                <p className="card-sub">
-                  Radius = seberapa jauh satu stasiun dianggap masih mewakili wilayah sekitarnya.
-                  {isMainRadius && usedFallback && ' Angka bawaan ini asumsi, bukan temuan data.'}
-                </p>
-              </div>
-            </div>
-
-            <button type="button" className="fpill-reset" onClick={resetAll}>
-              <RotateCcw size={13} aria-hidden="true" /> Reset
-            </button>
           </div>
+          <NetworkMap geo={m.geo} stations={m.stations} height="520px" />
+          <p style={{ marginTop: 10, fontSize: '0.72rem', color: SOFT }}>
+            Warna polygon menunjukkan jumlah stasiun atau sensor per kabupaten/kota. Klik polygon yang memiliki stasiun untuk melihat detail pemantauan dan peatland.
+          </p>
+        </Card>
 
-          {/* ═════════ LAPIS 1 — Cukupkah? ═════════ */}
-          <Card variant="dark">
-            <h2 className="headline">
-              {kpi.nStasiun} stasiun hanya mencakup <strong>{formatNumber(kpi.cov, 1)}%</strong> luas daratan{' '}
-              {pulau ? `wilayah ${pulau}` : 'Indonesia'}
-              {kpi.provTotal - kpi.provCovered > 0
-                ? <>, dan <strong>{kpi.provTotal - kpi.provCovered} dari {kpi.provTotal} provinsi</strong> belum punya stasiun.</>
-                : '. Semua provinsi sudah punya stasiun.'}
-            </h2>
-            <p className="headline-sub">
-              Dihitung dengan radius {radius} km{isMainRadius ? (usedFallback ? ' — ini asumsi, bukan temuan data' : ' — diturunkan dari data') : ' — skenario pilihanmu'}.
-              Jarak, cakupan, dan estimasi PM2.5 bersifat tetap; tidak bergantung pada periode waktu.
-            </p>
+        <div className="layout-main">
+          <Card>
+            <CardHeader
+              title="Tipe lokasi stasiun"
+              subtitle={`Terbanyak: ${topSite?.label ?? '—'}. Beragamnya tipe lokasi menentukan representativitas data.`}
+            />
+            <HBar rows={m.siteTypes} />
           </Card>
+        </div>
 
-          <div className="kpi-grid kpi-grid--4">
-            <MetricCard
-              variant="hero" label="Luas daratan tercakup" value={formatNumber(kpi.cov, 1)} unit="%"
-              subtext={`radius ${radius} km`} icon={<Target size={18} />}
-            />
-            <MetricCard
-              label="Stasiun aktif" value={kpi.active} unit={`dari ${kpi.nStasiun}`}
-              subtext={pulau ?? 'Seluruh Indonesia'} accentColor="var(--ispu-baik)" icon={<Cpu size={18} />}
-            />
-            <MetricCard
-              label="Provinsi tercakup" value={kpi.provCovered} unit={`dari ${kpi.provTotal}`}
-              subtext={`${kpi.provTotal - kpi.provCovered} provinsi tanpa stasiun`}
-              accentColor="var(--color-elevated)" icon={<MapPinned size={18} />}
-            />
-            <MetricCard
-              label="Jarak median ke stasiun" value={formatNumber(kpi.medianJarak)} unit="km"
-              subtext="dari kabupaten ke stasiun terdekat" accentColor="var(--ispu-tidak-sehat)" icon={<Ruler size={18} />}
-            />
-          </div>
+        <Bridge>
+          Sebaran tampak tidak merata. Langkah berikutnya: periksa seberapa jauh stasiun satu sama lain —
+          celah besar dalam jarak berarti ada wilayah yang tidak terpantau sama sekali.
+        </Bridge>
+      </Section>
 
-          <section ref={mapSectionRef} style={{ scrollMarginTop: '5rem' }}>
+      {/* ═══ 2. KONDISI JARINGAN ══════════════════════════════════════════ */}
+      <Section
+        title={`${m.farCount} stasiun terisolasi dan ${m.belowThreshold} datanya tipis — dua masalah yang memperkuat satu sama lain`}
+        description="Stasiun yang jauh dari yang lain seharusnya jadi andalan datanya. Kalau datanya juga bolong, wilayah itu praktis tidak terpantau."
+      >
+        <div className="layout-3">
+          <Card>
+            <CardHeader
+              title="Distribusi jarak ke stasiun terdekat"
+              subtitle={`Dihitung dengan rumus Haversine. Di atas ${FAR_KM} km dianggap terisolasi.`}
+            />
+            <HBar
+              rows={m.distBins}
+              colorOf={(r) => (r.label.startsWith('>') || r.label.startsWith('400') ? '#EF4444' : '#384E77')}
+            />
+          </Card>
+          <Card>
+            <CardHeader
+              title="Paling terpisah dari jaringan"
+              subtitle="Lima stasiun dengan jarak terjauh ke stasiun lain — daerahnya kemungkinan paling kurang terpantau."
+            />
+            <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.8rem', display: 'grid', gap: 6 }}>
+              {m.farList.map((r) => (
+                <li key={r.location_id}>
+                  <strong>{r.station_code}</strong>
+                  <span style={{ color: SOFT }}> → {r.nearest_station_code}: {formatNumber(r.nearest_distance_km, 1)} km</span>
+                </li>
+              ))}
+            </ol>
+          </Card>
+          <Card>
+            <CardHeader
+              title="Paling berdekatan"
+              subtitle="Lima stasiun yang paling rapat — potensi tumpang tindih cakupan pemantauan."
+            />
+            <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.8rem', display: 'grid', gap: 6 }}>
+              {m.nearList.map((r) => (
+                <li key={r.location_id}>
+                  <strong>{r.station_code}</strong>
+                  <span style={{ color: SOFT }}> → {r.nearest_station_code}: {formatNumber(r.nearest_distance_km, 1)} km</span>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </div>
+      </Section>
+
+      {/* ═══ 3. KUALITAS DATA PM2.5 ═══════════════════════════════════════ */}
+      <Section
+        title={`PM2.5 tertinggi di ${topPm?.station_code ?? '—'} (${formatNumber(topPm?.mean, 1)} µg/m³) — tapi ${ppmCount} stasiun tidak bisa dibandingkan langsung`}
+        description="Dua kelompok satuan dianalisis terpisah. Ini bukan kekurangan data, tapi batas teknis yang perlu dicatat."
+      >
+        <div className="layout-main">
+          <Card>
+            <CardHeader
+              title={`PM2.5 dalam µg/m³ — ${m.pmUg.length} stasiun`}
+              subtitle="Rata-rata seluruh periode per stasiun. Bisa dibandingkan satu sama lain."
+            />
+            <HBar
+              rows={m.pmUg.map((r) => ({ label: r.station_code, value: r.mean }))}
+              format={(v) => formatNumber(v, 1)}
+              unit=" µg/m³"
+              colorOf={(r) => r.value > 55 ? '#EF4444' : r.value > 25 ? '#F59E0B' : '#16A34A'}
+            />
+          </Card>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--gap)' }}>
             <Card>
               <CardHeader
-                title="Peta kecukupan jaringan"
-                subtitle={METRICS.find((m) => m.id === metric)?.hint}
-                action={
-                  <button type="button" className="btn" aria-expanded={mapOptsOpen} onClick={() => setMapOptsOpen((o) => !o)}>
-                    <Layers size={14} aria-hidden="true" /> Opsi peta
-                  </button>
-                }
+                title={`PM2.5 dalam ppm — ${m.pmPpm.length} stasiun`}
+                subtitle="Hanya ditampilkan. Tidak dikonversi dan tidak dibandingkan dengan µg/m³."
               />
-              <div className="stack">
-                <div className="map-toolbar">
-                  <div className="stack-sm">
-                    <span className="field-label">Warnai kabupaten menurut</span>
-                    <SegmentedControl label="Mode warna peta" options={mapMetrics} value={metric} onChange={setMetric} />
-                  </div>
-                  {nAddEff > 0 && (
-                    <span className="count-pill">Simulasi: +{nAddEff} stasiun baru (pin bernomor)</span>
-                  )}
-                </div>
-
-                {mapOptsOpen && (
-                  <div className="row-wrap" role="group" aria-label="Layer peta">
-                    <Chip active={layers.circles} onClick={() => setLayers((l) => ({ ...l, circles: !l.circles }))}>Lingkaran radius</Chip>
-                    <Chip active={layers.stations} onClick={() => setLayers((l) => ({ ...l, stations: !l.stations }))}>Stasiun</Chip>
-                    <Chip active={layers.links} onClick={() => setLayers((l) => ({ ...l, links: !l.links }))}>Pasangan stasiun kembar</Chip>
-                  </div>
-                )}
-
-                <div className="layout-map">
-                  <div className="map-frame">
-                    <CoverageMap
-                      geo={geo.data} stations={mapStations} redundantPairs={corr.data.redundant_pairs}
-                      kabById={kabById} metric={metric} ctx={ctx} pulau={pulau}
-                      selected={selected} onSelect={setSelected}
-                      showCircles={layers.circles} showStations={layers.stations} showLinks={layers.links}
-                      radius={radius} candidates={candidates} candidateRadius={curve.data.radius_km}
-                      height="560px"
-                    />
-                  </div>
-                  <DetailPanel
-                    selected={selected} kab={selKab} station={selStation} stationsByKode={stationsByKode}
-                    radius={radius} gapScore={selKab ? gapById.get(selKab.kab_id) : null}
-                    gapRank={selKab ? rankById.get(selKab.kab_id) : null} onClose={() => setSelected(null)}
-                  />
-                </div>
-                <MapLegend metric={metric} ctx={ctx} />
-              </div>
-            </Card>
-          </section>
-
-          <div className="layout-2">
-            <ChartCard
-              title="Kepadatan stasiun per pulau"
-              subtitle="Klik batang untuk memfilter halaman ke satu pulau. Garis putus-putus = rata-rata nasional (pembanding relatif, bukan standar resmi)."
-            >
-              <PulauDensityChart rows={regionPulau} benchmark={region.data.benchmark_per_100k_km2} selected={pulau} onSelect={togglePulau} />
-            </ChartCard>
-            <ChartCard
-              title="Luas provinsi dan seberapa besar yang tercakup"
-              subtitle={`Luas kotak = luas wilayah; warna = persen luas tercakup radius ${radius} km. Kotak besar yang pucat adalah celah terbesar.`}
-            >
-              <ProvinceTreemap rows={regionProv} radius={radius} />
-            </ChartCard>
-          </div>
-
-          {blankInScope.length > 0 && (
-            <Callout title={`${blankInScope.length} provinsi belum punya stasiun`}>
-              {blankInScope.map((r) => r.provinsi).join(', ')}.
-              {' '}Provinsi yang luas atau berpenduduk besar sebaiknya jadi perhatian pertama.
-            </Callout>
-          )}
-
-          {/* ═════════ LAPIS 2 — Di mana stasiun baru dibutuhkan? ═════════ */}
-          <Section
-            title="Di mana stasiun baru paling dibutuhkan?"
-            description={`Lima lokasi dipilih berurutan agar tambahan luas daratan yang tercakup (radius ${recs.data.radius_km} km) sebesar mungkin, dengan memperhitungkan risiko PM2.5.`}
-          >
-            <div className="layout-auto">
-              {recs.data.greedy.map((r) => <RecommendationCard key={r.kab_id} rec={r} onFocus={focusKab} />)}
-            </div>
-
-            <ChartCard
-              title="Berapa stasiun tambahan yang efisien?"
-              subtitle="Kurva biasanya melandai: setelah titik tertentu, tiap stasiun baru menambah sedikit cakupan. Geser slider untuk memunculkan lokasinya sebagai pin bernomor di peta."
-              action={<button type="button" className="btn" onClick={scrollToMap}>Lihat di peta</button>}
-            >
-              <SliderField
-                label="Simulasi tambah stasiun"
-                valueLabel={nAddEff === 0 ? 'Kondisi saat ini' : `+${nAddEff} stasiun`}
-                min={0} max={curveMax} value={nAddEff} onChange={setNAdd}
-                hint={`Cakupan ${formatNumber(curveRows[nAddEff]?.cov_pct, 1)}% pada radius ${curve.data.radius_km} km`}
-              />
-              <CoverageCurveChart curve={curveRows} nAdd={nAddEff} />
-            </ChartCard>
-          </Section>
-
-          {/* ═════════ LAPIS 3 — Detail analisis (tab) ═════════ */}
-          <Section
-            title="Detail analisis"
-            description="Bukti pendukung kesimpulan di atas. Buka sesuai kebutuhan."
-          >
-            <div className="tabs-wrap">
-              <SegmentedControl label="Detail analisis" options={DETAIL_TABS} value={tab} onChange={setTab} />
-            </div>
-
-            {tab === 'provinsi' && (
-              <ChartCard title="Kecukupan tiap provinsi" subtitle="Urutkan dengan klik judul kolom. Baris oranye = provinsi tanpa stasiun.">
-                <ProvinceTable rows={regionProv} radius={radius} onFocusPulau={togglePulau} />
-              </ChartCard>
-            )}
-
-            {tab === 'keandalan' && (
-              <div className="stack">
-                <Callout tone="info" title={`Rata-rata kelengkapan data jaringan: ${formatNumber(kpi.avgCompleteness, 1)}%`}>
-                  Stasiun hanya berguna bila datanya lengkap dan mewakili berbagai tipe lokasi.
-                </Callout>
-                <div className="layout-wide-side">
-                  <ChartCard
-                    title="Seberapa lengkap data tiap stasiun?"
-                    subtitle="Persen jam valid dibanding jam seharusnya, per bulan. Stasiun paling tidak lengkap ada di bawah."
-                  >
-                    <CompletenessHeatmap heat={stationQ.data.completeness_heatmap} stations={mapStations} />
-                  </ChartCard>
-                  <ChartCard title="Tipe lokasi apa saja yang terwakili?" subtitle="Apakah tepi jalan, industri, dan gambut ada yang memantau?">
-                    <SiteTypeChart mix={stationQ.data.site_type_mix} />
-                  </ChartCard>
-                </div>
-                <ChartCard
-                  title="Stasiun mana yang tak tergantikan?"
-                  subtitle="Kanan-atas: bila stasiun ini mati, banyak wilayah kehilangan pantauan dan estimasi meleset jauh (kritis). Kiri-bawah: datanya bisa digantikan stasiun lain (redundan)."
-                >
-                  <RoleScatter stations={mapStations} />
-                </ChartCard>
-              </div>
-            )}
-
-            {tab === 'jangkauan' && (
-              <div className="stack">
-                <div className="layout-wide-side">
-                  <ChartCard
-                    title="Seberapa jauh satu stasiun masih mewakili sekitarnya?"
-                    subtitle="Titik = pasangan stasiun. Garis biru = median per rentang jarak. Garis hijau = radius yang dipakai untuk lingkaran di peta."
-                  >
-                    <DecayChart corr={corr.data} />
-                  </ChartCard>
-                  <div className="stack">
-                    {usedFallback ? (
-                      <Callout title={`Radius ${sum.radius_utama_km} km adalah asumsi`}>
-                        Kurva korelasi–jarak tidak cukup jelas (R² {formatNumber(sum.radius_fit?.r2, 2)}), sehingga radius bawaan dipakai.
-                        Perlakukan sebagai skenario, bukan temuan.
-                      </Callout>
-                    ) : (
-                      <Callout tone="info" title={`Radius ${sum.radius_utama_km} km berasal dari data`}>
-                        Kemiripan data turun hingga {corr.data.params?.corr_threshold ?? 0.5} pada jarak ±{formatNumber(sum.radius_fit?.radius_fit_km)} km
-                        (R² {formatNumber(sum.radius_fit?.r2, 2)}).
-                      </Callout>
-                    )}
-                    <Card className="stack-sm">
-                      <h4 style={{ color: NAVY }}>Pasangan stasiun yang saling meniru</h4>
-                      <p className="card-sub">
-                        Kemiripan ≥ {corr.data.params?.redundant_corr} dan jarak ≤ {corr.data.params?.redundant_dist_km} km.
-                        Aktifkan “Pasangan stasiun kembar” di Opsi peta untuk melihatnya.
-                      </p>
-                      {corr.data.redundant_pairs.length === 0 && <p className="empty">Tidak ada pasangan yang memenuhi kriteria.</p>}
-                      <ul className="pair-list">
-                        {corr.data.redundant_pairs.map((p) => (
-                          <li key={`${p.a}-${p.b}`}>
-                            <strong>{p.a} ↔ {p.b}</strong>
-                            <span>r = {formatNumber(p.corr, 2)} · {formatNumber(p.dist_km)} km</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </Card>
-                  </div>
-                </div>
-                <ChartCard title="Stasiun mana yang merekam pola serupa?" subtitle="Diurutkan menurut klaster. Blok gelap = stasiun dengan pola PM2.5 yang mirip.">
-                  <CorrelationHeatmap corr={corr.data} />
-                </ChartCard>
-              </div>
-            )}
-
-            {tab === 'prioritas' && (
-              <div className="stack">
-                <ChartCard
-                  title="Atur prioritas skor kebutuhan"
-                  subtitle="Ubah bobot, lalu lihat ranking di bawah berubah langsung. Kolom Stabilitas hanya berlaku untuk bobot bawaan."
-                  action={
-                    <div className="row-wrap">
-                      <button type="button" className="btn" onClick={() => { setMetric('gap'); setMapOptsOpen(false); scrollToMap() }}>
-                        Warnai peta dengan skor ini
-                      </button>
-                      {weightsChanged && <button type="button" className="btn" onClick={() => setWeights(DEFAULT_WEIGHTS)}>Kembalikan bawaan</button>}
-                    </div>
-                  }
-                >
-                  <div className="layout-2">
-                    {GAP_COMPONENTS.map((c) => (
-                      <SliderField
-                        key={c.key} label={c.label}
-                        valueLabel={`${Math.round((weights[c.key] / weightSum) * 100)}%`}
-                        min={0} max={1} step={0.05} value={weights[c.key]}
-                        onChange={(v) => setWeights((w) => ({ ...w, [c.key]: v }))}
-                      />
-                    ))}
-                  </div>
-                  <p className="card-sub">
-                    Komponen penduduk tidak dimodelkan karena data penduduk tidak tersedia. Faktor sumber polusi hanya proxy dari teks karakter wilayah stasiun terdekat.
-                  </p>
-                </ChartCard>
-                <div className="layout-2">
-                  <ChartCard
-                    title={`Kabupaten dengan kebutuhan tertinggi${pulau ? ` · ${pulau}` : ''}`}
-                    subtitle="Jauh dari stasiun, PM2.5 estimasi tinggi, dan luas wilayah tak terlayani besar."
-                  >
-                    <GapRankTable rows={ranked} onFocus={focusKab} weightsChanged={weightsChanged} />
-                  </ChartCard>
-                  <ChartCard title="Apa yang membentuk skornya?" subtitle="Tiap batang menunjukkan kontribusi komponen terhadap skor kebutuhan.">
-                    <GapContributionChart rows={ranked} weights={weights} />
-                  </ChartCard>
-                </div>
-              </div>
-            )}
-
-            {tab === 'metode' && (
-              <Card>
-                <dl className="def-list">
-                  {Object.entries(sum.metodologi ?? {}).map(([k, v]) => (
-                    <div key={k}>
-                      <dt>{METODOLOGI_LABEL[k] ?? k}</dt>
-                      <dd>
-                        {typeof v === 'object'
-                          ? Object.entries(v).map(([a, b]) => `${a} ${Math.round(b * 100)}%`).join(' · ')
-                          : v}
-                      </dd>
-                    </div>
+              {m.pmPpm.length === 0 ? (
+                <p style={{ fontSize: '0.8rem', color: SOFT }}>Tidak ada stasiun dengan satuan ppm.</p>
+              ) : (
+                <ul style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.8rem', display: 'grid', gap: 4 }}>
+                  {m.pmPpm.map((r) => (
+                    <li key={r.station_code}>
+                      <strong>{r.station_code}</strong>: {formatNumber(r.mean, 4)} ppm
+                      <span style={{ color: SOFT }}> ({formatNumber(r.valid_records, 0)} observasi valid)</span>
+                    </li>
                   ))}
-                </dl>
-              </Card>
-            )}
-          </Section>
-        </>
-      )}
+                </ul>
+              )}
+            </Card>
+            <Insight
+              icon={ArrowRight}
+              color="#384E77"
+              bg="rgba(56,78,119,0.07)"
+              border="rgba(56,78,119,0.2)"
+              title="Analisis PM2.5 lebih lanjut ada di halaman lain"
+            >
+              Tren, pola harian, dan episode kabut asap dibahas di halaman <strong>Kualitas Udara</strong>.
+              Hubungan PM2.5 dengan kasus kesehatan ada di <strong>PM2.5 &amp; Kesehatan</strong>.
+            </Insight>
+          </div>
+        </div>
+
+        <Bridge>
+          Dengan mengetahui sebaran lokasi, kondisi jaringan, dan kualitas data PM2.5, kita sudah bisa
+          menentukan wilayah mana yang paling perlu tambahan titik pemantauan.
+        </Bridge>
+      </Section>
+
+      {/* ═══ 4. PRIORITAS EVALUASI ════════════════════════════════════════ */}
+      <Section
+        title="Wilayah mana yang paling perlu ditambah titik pemantauan?"
+        description="Dua peringkat dihitung terpisah: satu berdasarkan posisi stasiun dalam jaringan, satu berdasarkan kondisi operasional. Tag 'Terisolasi' dan 'Data tipis' menandai stasiun yang muncul di kedua daftar masalah."
+      >
+        {priorityHook.error || !priorityHook.data ? (
+          <Insight title="Peringkat prioritas belum tersedia">
+            Jalankan sel prioritas di notebook preprocessing agar file <code>station_priority.json</code> terbentuk.
+          </Insight>
+        ) : (
+          <>
+            <div className="layout-main">
+              <RankTable
+                title="Prioritas berdasarkan distribusi jaringan"
+                subtitle="Stasiun yang terisolasi dan berada di wilayah dengan sedikit pemantauan."
+                rows={priorityHook.data.distribution_ranking}
+                scoreKey="distribution_score"
+                rankKey="distribution_rank"
+                farIds={farIds}
+                lowCompIds={lowCompIds}
+              />
+              <RankTable
+                title="Prioritas berdasarkan kesiapan operasional"
+                subtitle="Stasiun dengan sensor bermasalah atau data yang sering bolong."
+                rows={priorityHook.data.operational_ranking}
+                scoreKey="operational_score"
+                rankKey="operational_rank"
+                farIds={farIds}
+                lowCompIds={lowCompIds}
+              />
+            </div>
+            <Insight
+              icon={AlertTriangle}
+              color="#384E77"
+              bg="rgba(56,78,119,0.07)"
+              border="rgba(56,78,119,0.2)"
+              title="Cara membaca peringkat ini"
+            >
+              Peringkat ini adalah bahan untuk tinjauan lanjutan, bukan keputusan lokasi pembangunan.
+              Stasiun yang muncul di kedua daftar — ditandai &quot;Terisolasi&quot; dan &quot;Data tipis&quot; — adalah
+              yang paling prioritas untuk dievaluasi. Rekomendasi kebijakan konkret dibahas di halaman{' '}
+              <strong>Insight &amp; Rekomendasi</strong>.
+            </Insight>
+          </>
+        )}
+      </Section>
+
+      {/* ═══ 5. METODOLOGI ════════════════════════════════════════════════ */}
+      <Section
+        title="Metodologi dan catatan interpretasi"
+        description="Sumber data, definisi indikator, dan batasan yang perlu dibaca sebelum menarik kesimpulan."
+      >
+        <div className="layout-3">
+          {METHOD_ITEMS.map((item) => (
+            <Card key={item.title}>
+              <h4 style={{ margin: 0, color: NAVY, fontSize: '0.9rem' }}>{item.title}</h4>
+              <p style={{ marginTop: 6, fontSize: '0.8rem', lineHeight: 1.6 }}>{item.text}</p>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
     </ModuleLayout>
   )
 }

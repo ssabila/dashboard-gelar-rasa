@@ -1,0 +1,7 @@
+﻿file,jumlah_baris,jumlah_stasiun,distribusi_satuan,pm25_valid,pm10_valid,so2_valid,co_valid,o3_valid,no2_valid
+aqms_bulanan.json,846,25.0,"{'µg/m³': 753, 'ppm': 93}",846,846,846,846,846,846
+aqms_tahunan.json,80,25.0,"{'µg/m³': 71, 'ppm': 9}",80,80,80,80,80,80
+aqms_hari_kerja.json,1687,25.0,"{'µg/m³': 1501, 'ppm': 186}",1687,1687,1687,1687,1687,1687
+aqms_musim.json,4,,"{'ppm': 2, 'µg/m³': 2}",4,4,4,4,4,4
+aqms_per_provinsi.json,20,,"{'µg/m³': 17, 'ppm': 3}",20,20,20,20,20,20
+aqms_per_pulau.json,7,,"{'µg/m³': 5, 'ppm': 2}",7,7,7,7,7,7

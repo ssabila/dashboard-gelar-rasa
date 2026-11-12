@@ -1,18 +1,29 @@
 {
   "total_stations": 27,
-  "active_sensors": 23,
-  "monitored_regions": 22,
-  "median_nearest_distance_km": 186.46706094331924,
-  "median_completeness_pct": 20.0147347740668,
+  "total_sensors": 27,
+  "sensor_status": {
+    "Active": 23,
+    "Intermittent": 3,
+    "Defective": 1
+  },
+  "pm25_unit_groups": {
+    "ug_m3_stations": 24,
+    "ppm_stations": 3,
+    "pm25_valid_stations": 24,
+    "conversion_applied": false,
+    "pm25_comparison_scope": "Stasiun µg/m³ saja"
+  },
+  "median_nearest_distance_km": 186.47,
+  "radius_representative_km": null,
   "observed_period": {
-    "start": "1970-01-01T00:00:00",
-    "end": "2026-10-14T23:11:22.750000"
+    "start": "2024-01-01T00:00:00",
+    "end": "2026-10-14T23:00:00"
   },
   "quality_audit": {
     "raw_aqms_rows": 667981,
-    "processed_aqms_rows": 447870,
+    "processed_aqms_rows": 667758,
     "duplicate_rows_removed": 223,
-    "valid_qc_rows": 385752
+    "valid_qc_rows": 599182
   },
   "scoring": {
     "weights": {
@@ -20,158 +31,154 @@
       "P": 0.35,
       "R": 0.25
     },
-    "definition": "Relative exploratory monitoring-gap score, not an official standard.",
+    "definition": "Skor relatif eksploratif, bukan standar resmi.",
     "sensitivity": [
       {
         "scenario": "default",
         "weights": {
-          "name": "default",
           "D": 0.4,
           "P": 0.35,
           "R": 0.25
         },
         "ranking": [
           {
+            "location_id": "LOC-SM2-01",
+            "station_code": "AQMS-SM2-01",
+            "score": 83.28595317725751
+          },
+          {
+            "location_id": "LOC-PLB-01",
+            "station_code": "AQMS-PLB-01",
+            "score": 73.26923076923077
+          },
+          {
+            "location_id": "LOC-BTM-01",
+            "station_code": "AQMS-BTM-01",
+            "score": 68.7876254180602
+          },
+          {
+            "location_id": "LOC-MRS-01",
+            "station_code": "AQMS-MRS-01",
+            "score": 65.81103678929765
+          },
+          {
             "location_id": "LOC-MER-01",
             "station_code": "AQMS-MER-01",
-            "score": 69.02027027027027
-          },
-          {
-            "location_id": "LOC-SRG-01",
-            "station_code": "AQMS-SRG-01",
-            "score": 67.47587410187447
-          },
-          {
-            "location_id": "LOC-JMB-02",
-            "station_code": "AQMS-JMB-02",
-            "score": 60.0
-          },
-          {
-            "location_id": "LOC-PSW-01",
-            "station_code": "AQMS-PSW-01",
-            "score": 57.528751017348824
-          },
-          {
-            "location_id": "LOC-JKT-02",
-            "station_code": "AQMS-JKT-02",
-            "score": 52.26387419531436
+            "score": 62.83444816053511
           }
         ]
       },
       {
         "scenario": "geographic_focus",
         "weights": {
-          "name": "geographic_focus",
           "D": 0.55,
           "P": 0.25,
           "R": 0.2
         },
         "ranking": [
           {
+            "location_id": "LOC-SM2-01",
+            "station_code": "AQMS-SM2-01",
+            "score": 81.8938127090301
+          },
+          {
             "location_id": "LOC-MER-01",
             "station_code": "AQMS-MER-01",
-            "score": 77.87162162162163
+            "score": 72.87625418060202
           },
           {
             "location_id": "LOC-SRG-01",
             "station_code": "AQMS-SRG-01",
-            "score": 75.1621393900774
-          },
-          {
-            "location_id": "LOC-PSW-01",
-            "station_code": "AQMS-PSW-01",
-            "score": 47.30515764885464
+            "score": 71.84782608695653
           },
           {
             "location_id": "LOC-MRS-01",
             "station_code": "AQMS-MRS-01",
-            "score": 46.86071771099629
+            "score": 70.93645484949832
           },
           {
-            "location_id": "LOC-JMB-02",
-            "station_code": "AQMS-JMB-02",
-            "score": 45.0
+            "location_id": "LOC-MDN-01",
+            "station_code": "AQMS-MDN-01",
+            "score": 69.87179487179488
           }
         ]
       },
       {
         "scenario": "pollution_focus",
         "weights": {
-          "name": "pollution_focus",
           "D": 0.25,
           "P": 0.55,
           "R": 0.2
         },
         "ranking": [
           {
-            "location_id": "LOC-JMB-02",
-            "station_code": "AQMS-JMB-02",
-            "score": 75.0
-          },
-          {
-            "location_id": "LOC-PSW-01",
-            "station_code": "AQMS-PSW-01",
-            "score": 65.2861281696268
-          },
-          {
-            "location_id": "LOC-JKT-02",
-            "station_code": "AQMS-JKT-02",
-            "score": 62.3872608990985
+            "location_id": "LOC-SM2-01",
+            "station_code": "AQMS-SM2-01",
+            "score": 86.935618729097
           },
           {
             "location_id": "LOC-PLB-01",
             "station_code": "AQMS-PLB-01",
-            "score": 53.52947831495813
+            "score": 82.11538461538461
           },
           {
             "location_id": "LOC-BTM-01",
             "station_code": "AQMS-BTM-01",
-            "score": 52.054040063842095
+            "score": 67.79264214046823
+          },
+          {
+            "location_id": "LOC-KTG-02",
+            "station_code": "AQMS-KTG-02",
+            "score": 67.26170568561872
+          },
+          {
+            "location_id": "LOC-JMB-02",
+            "station_code": "AQMS-JMB-02",
+            "score": 65.31354515050168
           }
         ]
       },
       {
         "scenario": "representation_focus",
         "weights": {
-          "name": "representation_focus",
           "D": 0.25,
           "P": 0.25,
           "R": 0.5
         },
         "ranking": [
           {
-            "location_id": "LOC-MER-01",
-            "station_code": "AQMS-MER-01",
-            "score": 77.87162162162161
+            "location_id": "LOC-SM2-01",
+            "station_code": "AQMS-SM2-01",
+            "score": 80.16304347826086
           },
           {
-            "location_id": "LOC-SRG-01",
-            "station_code": "AQMS-SRG-01",
-            "score": 76.98555475961749
+            "location_id": "LOC-PLB-01",
+            "station_code": "AQMS-PLB-01",
+            "score": 74.03846153846153
           },
           {
-            "location_id": "LOC-JMB-02",
-            "station_code": "AQMS-JMB-02",
-            "score": 75.0
+            "location_id": "LOC-BTM-01",
+            "station_code": "AQMS-BTM-01",
+            "score": 70.1505016722408
+          },
+          {
+            "location_id": "LOC-MRS-01",
+            "station_code": "AQMS-MRS-01",
+            "score": 67.47491638795987
           },
           {
             "location_id": "LOC-PSW-01",
             "station_code": "AQMS-PSW-01",
-            "score": 72.68477681827545
-          },
-          {
-            "location_id": "LOC-JKT-02",
-            "station_code": "AQMS-JKT-02",
-            "score": 69.43117981801743
+            "score": 66.66666666666666
           }
         ]
       }
     ]
   },
   "limitations": [
-    "Dataset tidak menyediakan geometri wilayah, populasi, inventaris emisi, atau standar radius cakupan.",
-    "Kandidat hanya merepresentasikan stasiun/lokasi yang dapat dihitung dari metadata.",
-    "Jarak adalah jarak geodesik, bukan jarak perjalanan atau bukti cakupan area.",
-    "Baseline PM2.5 bukan pengganti ringkasan PM2.5 hasil pengukuran."
+    "Dataset tidak menyediakan populasi, inventaris emisi, atau standar radius cakupan.",
+    "Jarak adalah jarak geodesik, bukan bukti cakupan area.",
+    "Baseline PM2.5 adalah metadata, bukan pengukuran.",
+    "Korelasi antarstasiun bersifat indikatif; ppm hanya tiga stasiun."
   ]
 }

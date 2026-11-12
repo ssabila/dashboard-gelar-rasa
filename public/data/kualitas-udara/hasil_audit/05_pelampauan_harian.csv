@@ -1,0 +1,5 @@
+﻿parameter,ambang,jumlah_valid,jumlah_melampaui,persen_melampaui
+pm25,55,14816,1979,13.36
+pm10,75,14816,2620,17.68
+so2,75,14816,0,0.0
+no2,65,14816,5,0.03

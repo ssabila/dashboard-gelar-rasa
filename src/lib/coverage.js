@@ -16,20 +16,20 @@ export const PULAU_ORDER = [
 ]
 
 export const METRICS = [
-  { id: 'jarak', label: 'Jarak', hint: 'Jarak titik representatif kabupaten ke stasiun terdekat.' },
-  { id: 'cov',   label: 'Cakupan', hint: 'Persentase luas daratan kabupaten dalam radius stasiun.' },
-  { id: 'gap',   label: 'Gap score', hint: 'Skor prioritas gabungan; makin tinggi makin butuh stasiun.' },
-  { id: 'pm25',  label: 'PM2.5', hint: 'Estimasi PM2.5 (IDW dari stasiun sekitar). Makin jauh dari stasiun, makin tidak pasti.' },
-  { id: 'bivar', label: 'PM2.5 × Jarak', hint: 'PM2.5 tinggi dan jauh dari stasiun = wilayah paling terlewat.' },
+  { id: 'jarak', label: 'Jarak',          hint: 'Jarak dari titik tengah kabupaten ke stasiun terdekat.' },
+  { id: 'cov',   label: 'Terjangkau',     hint: 'Berapa persen luas daratan kabupaten yang masuk jangkauan stasiun.' },
+  { id: 'gap',   label: 'Skor kebutuhan', hint: 'Makin tinggi skornya, makin butuh stasiun.' },
+  { id: 'pm25',  label: 'PM2.5',          hint: 'Perkiraan PM2.5 dari stasiun di sekitarnya. Makin jauh dari stasiun, makin kurang pasti.' },
+  { id: 'bivar', label: 'PM2.5 × Jarak',  hint: 'PM2.5 tinggi dan jauh dari stasiun berarti wilayah yang paling terlewat.' },
 ]
 
 export const DEFAULT_WEIGHTS = { jarak: 0.3, pm25: 0.3, luas: 0.25, sumber: 0.15 }
 
 export const GAP_COMPONENTS = [
-  { key: 'jarak',  norm: 'jarak_norm',  label: 'Jarak ke stasiun',     color: '#384E77' },
-  { key: 'pm25',   norm: 'pm25_norm',   label: 'Estimasi PM2.5',       color: '#FB923C' },
-  { key: 'luas',   norm: 'luas_norm',   label: 'Luas tak terlayani',   color: '#8BBEB2' },
-  { key: 'sumber', norm: 'sumber_norm', label: 'Proxy sumber polusi',  color: '#C084FC' },
+  { key: 'jarak',  norm: 'jarak_norm',  label: 'Jarak ke stasiun',        color: '#384E77' },
+  { key: 'pm25',   norm: 'pm25_norm',   label: 'Perkiraan PM2.5',         color: '#FB923C' },
+  { key: 'luas',   norm: 'luas_norm',   label: 'Wilayah belum terlayani', color: '#8BBEB2' },
+  { key: 'sumber', norm: 'sumber_norm', label: 'Perkiraan sumber polusi', color: '#C084FC' },
 ]
 
 /* ─── Warna ────────────────────────────────────────────────────────────── */
@@ -70,7 +70,7 @@ export function quantile(sorted, q) {
 
 const bucket = (v, [a, b]) => (v <= a ? 0 : v <= b ? 1 : 2)
 
-/* ─── Gap score (dihitung ulang di browser saat bobot diubah) ──────────── */
+/* ─── Skor kebutuhan (dihitung ulang di browser saat bobot diubah) ─────── */
 
 export function computeGap(row, weights) {
   const sum = GAP_COMPONENTS.reduce((s, c) => s + (weights[c.key] ?? 0), 0)
@@ -129,9 +129,9 @@ export function formatKabValue(p, metric, ctx) {
   const n = (v, d = 0) => (Number.isFinite(v) ? v.toFixed(d) : '—')
   switch (metric) {
     case 'jarak': return `${n(p.jarak_km)} km ke ${p.stasiun_terdekat}`
-    case 'cov':   return `${n(p[`cov_pct_${ctx.radius}`])}% tercakup (${ctx.radius} km)`
-    case 'gap':   return `Gap score ${n(ctx.gapById.get(p.kab_id), 2)}`
-    case 'pm25':  return `±${n(p.pm25_idw, 1)} µg/m³ (estimasi)`
+    case 'cov':   return `${n(p[`cov_pct_${ctx.radius}`])}% terjangkau (${ctx.radius} km)`
+    case 'gap':   return `Skor kebutuhan ${n(ctx.gapById.get(p.kab_id), 2)}`
+    case 'pm25':  return `±${n(p.pm25_idw, 1)} µg/m³ (perkiraan)`
     case 'bivar': return `PM2.5 ±${n(p.pm25_idw, 1)} · ${n(p.jarak_km)} km dari stasiun`
     default:      return ''
   }
@@ -144,13 +144,13 @@ export function legendFor(metric, ctx) {
     case 'jarak':
       return { type: 'gradient', stops: RAMPS.jarak, min: '0 km', max: `≥ ${Math.round(ctx.jarakMax)} km`, title: 'Jarak ke stasiun terdekat' }
     case 'cov':
-      return { type: 'gradient', stops: RAMPS.cov, min: '0%', max: '100%', title: `Luas tercakup (radius ${ctx.radius} km)` }
+      return { type: 'gradient', stops: RAMPS.cov, min: '0%', max: '100%', title: `Luas terjangkau (radius ${ctx.radius} km)` }
     case 'gap':
-      return { type: 'gradient', stops: RAMPS.gap, min: 'Rendah', max: 'Tinggi', title: 'Gap score (bobot saat ini)' }
+      return { type: 'gradient', stops: RAMPS.gap, min: 'Rendah', max: 'Tinggi', title: 'Skor kebutuhan (bobot saat ini)' }
     case 'pm25':
       return {
         type: 'categories',
-        title: 'Estimasi PM2.5 menurut kategori ISPU',
+        title: 'Perkiraan PM2.5 menurut kategori ISPU',
         items: ISPU_CATEGORIES.map((c) => ({ label: c.label, color: c.color })),
       }
     case 'bivar':
@@ -158,7 +158,7 @@ export function legendFor(metric, ctx) {
         type: 'bivar',
         title: 'PM2.5 × jarak ke stasiun',
         grid: BIVAR,
-        rowLabel: 'PM2.5 estimasi →',
+        rowLabel: 'PM2.5 perkiraan →',
         colLabel: 'Jarak ke stasiun →',
       }
     default:
