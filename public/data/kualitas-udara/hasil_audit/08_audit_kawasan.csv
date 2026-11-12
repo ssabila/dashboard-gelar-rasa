@@ -1,0 +1,26 @@
+﻿station_id,provinsi,kota_kabupaten,karakteristik_wilayah,site_type,region_group,baseline_pm25
+BGL-01,Bengkulu,Kota Bengkulu,Kawasan Pesisir Pantai Barat Sumatra & Permukiman Urban,Urban Coastal Background,Bengkulu,25.0
+BGR-01,Jawa Barat,Kabupaten Bogor,"Dataran Tinggi Pegunungan Puncak, Agrowisata & Background Baseline",Regional / Clean Background,Bogor,13.5
+BGR-02,Jawa Barat,Kota Bogor,"Lembah Perkotaan Padat, Terminal Bus & Koridor Hujan",Traffic / Roadside,Bogor,26.0
+BJB-01,Kalimantan Selatan,Kota Banjarbaru,"Dataran Rendah Rawa Gambut, Sentra Agroklimat & Koridor Bandara Syamsudin Noor",Airport & Peatland Buffer,Kalimantan Selatan,35.0
+BTM-01,Kepulauan Riau,Kota Batam,"Kawasan Industri Manufaktur, Pelabuhan & Maritim Selat Malaka",Industrial Perimeter / Maritime,Kepulauan Riau,38.0
+IDP-01,Aceh,Kabupaten Aceh Besar,"Kawasan Lembah Seulawah, Agrikultur & Clean Background",Regional / Clean Background,Aceh,9.7
+JKT-01,DKI Jakarta,Kota Administrasi Jakarta Pusat,Pusat Pemerintahan & Komersial Padat,Urban Background,Jakarta,37.5
+JKT-02,DKI Jakarta,Kota Administrasi Jakarta Utara,"Kawasan Industri Berat, Pelabuhan & Pesisir",Industrial Perimeter,Jakarta,55.0
+JKT-03,DKI Jakarta,Kota Administrasi Jakarta Barat,Jalur Arteri Bandara & Permukiman Padat Penduduk,Traffic / Roadside,Jakarta,39.0
+JMB-01,Jambi,Kota Jambi,Kawasan Aglomerasi Perkotaan & Daerah Aliran Sungai Batanghari,Peatland Buffer / Urban,Jambi,32.0
+KTB-01,Sumatera Barat,Kabupaten Agam,"Dataran Tinggi Bukit Barisan, Hutan Lindung & Global Baseline",Regional / Clean Background,Sumatera Barat,12.0
+KTG-01,Kalimantan Tengah,Kota Palangka Raya,"Pusat Permukiman Kota, Koridor Hutan Tropis & Gambut",Urban Background,Kalimantan Tengah,22.0
+KTG-02,Kalimantan Tengah,Kabupaten Kotawaringin Timur,Sentra Logistik Kelapa Sawit & Lahan Gambut,Peatland Boundary,Kalimantan Tengah,35.0
+MDN-01,Sumatera Utara,Kota Medan,"Kawasan Metropolitan Sumatra Utara, Pusat Bisnis & Arteri Komersial",Urban Background,Sumatera Utara,42.8
+MLG-01,Jawa Timur,Kabupaten Malang,"Lembah Cekungan Dataran Tinggi, Pertanian & Agrowisata",Urban Background / Valley,Jawa Timur,30.0
+MRS-01,Sulawesi Selatan,Kabupaten Maros,"Kawasan Karst Maros-Pangkep, Industri Semen & Hinterland Urban",Industrial / Karst Perimeter,Sulawesi Selatan,36.0
+PKN-01,Kalimantan Tengah,Kabupaten Kotawaringin Barat,Kawasan Hutan Rawa Gambut Pesisir & Sentra Perkebunan Sawit,Peatland Boundary / Airport,Kalimantan Tengah,24.0
+PKU-01,Riau,Kota Pekanbaru,"Kawasan Penyangga Gambut, Koridor Urban & Lalu Lintas Udara",Peatland Buffer / Urban,Riau,35.0
+PLB-01,Sumatera Selatan,Kota Palembang,"Kawasan Sentra Logistik, Pesisir Rawa Gambut & Koridor Sungai Musi",Peatland Buffer / Urban Artery,Sumatera Selatan,42.0
+PLU-01,Sulawesi Tengah,Kabupaten Poso,Hutan Hujan Tropis Pegunungan Primer (Pristine Control Group),Regional / Clean Background,Sulawesi Tengah,11.0
+PSW-01,Lampung,Kabupaten Pesawaran,"Koridor Agroklimat, Perkebunan & Jalur Arteri Lintas Sumatra",Urban Background / Highway Corridor,Lampung,54.3
+SM2-01,Kalimantan Timur,Kota Samarinda,"Lembah Sungai Mahakam, Koridor Hutan Tropis-Tambang Batubara & Penyangga IKN",Industrial & Deforestation Buffer,Kalimantan Timur,32.5
+SRG-01,Papua Barat Daya,Kota Sorong,"Pesisir Kepulauan Tropis, Pelabuhan & Coastal Background",Coastal / Regional Background,Papua Barat Daya,18.0
+STG-01,Kalimantan Barat,Kabupaten Sintang,Pedalaman Lembah Sungai Kapuas & Lahan Gambut Inland,Peatland Boundary / Inland,Kalimantan Barat,22.0
+YKY-01,D.I. Yogyakarta,Kabupaten Sleman,"Pusat Pendidikan, Komersial & Aglomerasi Urban Yogyakarta",Urban Background,Yogyakarta,38.6
