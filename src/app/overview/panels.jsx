@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { EChart } from '@/components/charts/EChart'
-import { ISPU_CATEGORIES, POLLUTANTS } from '@/lib/constants'
+import { POLLUTANTS } from '@/lib/constants'
 import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
 
 const NAVY = '#18314F'
@@ -82,16 +82,8 @@ export function StationRanking({ stations, limit = 6, className = '' }) {
   )
 }
 
-/* ─── Donut kategori ISPU ─────────────────────────────────────────────── */
-export function IspuDonut({ stations, className = '' }) {
-  const counts = useMemo(
-    () =>
-      ISPU_CATEGORIES.map((c) => ({
-        ...c,
-        count: stations.filter((s) => getIspuFromPm25(s.avg_pm25)?.id === c.id).length,
-      })),
-    [stations]
-  )
+/* ─── Donut kategori ISPU (jumlah diterima dari luar, sumber sama dengan tab Kualitas Udara) ─── */
+export function IspuDonut({ counts = [], unit = 'observasi', className = '' }) {
   const total = counts.reduce((s, c) => s + c.count, 0)
 
   const option = useMemo(
@@ -102,7 +94,7 @@ export function IspuDonut({ stations, className = '' }) {
         backgroundColor: '#fff',
         borderColor: 'rgba(24,49,79,0.15)',
         textStyle: { color: NAVY, fontFamily: FONT, fontSize: 12 },
-        formatter: (p) => `<strong>${p.name}</strong><br/>${p.value} stasiun (${p.percent}%)`,
+        formatter: (p) => `<strong>${p.name}</strong><br/>${p.value} ${unit} (${p.percent}%)`,
       },
       series: [{
         type: 'pie',
@@ -112,9 +104,9 @@ export function IspuDonut({ stations, className = '' }) {
         label: {
           show: true,
           position: 'center',
-          formatter: `{a|${total}}\n{b|stasiun}`,
+          formatter: `{a|${total.toLocaleString('id-ID')}}\n{b|${unit}}`,
           rich: {
-            a: { fontSize: 36, fontWeight: 800, color: NAVY, fontFamily: FONT, lineHeight: 40 },
+            a: { fontSize: 30, fontWeight: 800, color: NAVY, fontFamily: FONT, lineHeight: 36 },
             b: { fontSize: 12, color: '#55706E', fontFamily: FONT },
           },
         },
@@ -125,14 +117,14 @@ export function IspuDonut({ stations, className = '' }) {
           .map((c) => ({ name: c.label, value: c.count, itemStyle: { color: c.color } })),
       }],
     }),
-    [counts, total]
+    [counts, total, unit]
   )
 
   return (
     <Card className={`ov-ispu-card ${className}`.trim()}>
       <CardHeader
         title="Sebaran kategori ISPU"
-        subtitle="Jumlah stasiun per kategori ISPU, dihitung dari rata-rata PM2.5 seluruh periode."
+        subtitle="Jumlah observasi harian per kategori ISPU, sesuai tab Kualitas Udara."
       />
       <div className="ov-ispu-donut">
         <EChart option={option} height={240} />
@@ -144,7 +136,7 @@ export function IspuDonut({ stations, className = '' }) {
               <i className="legend-dot" style={{ background: c.color }} />
               {c.label}
             </span>
-            <strong>{c.count}</strong>
+            <strong>{c.count.toLocaleString('id-ID')}</strong>
           </li>
         ))}
       </ul>

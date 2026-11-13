@@ -22,9 +22,9 @@ import { Card, CardHeader } from '@/components/ui/Card'
 import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
 import { FilterBar } from '@/components/shared/FilterBar'
 import { IspuLegend } from '@/components/shared/IspuLegend'
-import { useOverviewAnalytics, useOverviewSummary, useStations } from '@/hooks/useAqmsData'
+import { useOverviewAnalytics, useOverviewSummary, useStations, useIspuDaily } from '@/hooks/useAqmsData'
 import { useFilter } from '@/hooks/useFilter'
-import { POLLUTANTS } from '@/lib/constants'
+import { POLLUTANTS, ISPU_CATEGORIES } from '@/lib/constants'
 import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
 import { IspuDonut, StationRanking, shortName } from './panels'
 
@@ -162,7 +162,7 @@ function KpiCard({ label, icon: Icon, value, unit, note, href, color }) {
 }
 
 /* ─── KPI: baris 1 (kondisi umum) dan baris 2 (angka tiap modul) ───────── */
-function KpiSection({ k, health, avgCompleteness, topStation, rho, maxDist }) {
+function KpiSection({ k, health, avgCompleteness, topProvince, rho, maxDist }) {
   const { who } = POLLUTANTS.pm25
   const valid = k.scoped.filter((s) => Number.isFinite(s.avg_pm25))
   const exceedAnnual = valid.filter((s) => s.avg_pm25 > NAAQS_ANNUAL).length
@@ -229,9 +229,9 @@ function KpiSection({ k, health, avgCompleteness, topStation, rho, maxDist }) {
           icon={Wind}
           color="#FB923C"
           href="/kualitas-udara"
-          value={topStation ? formatNumber(topStation.avg_pm25, 1) : '—'}
+          value={topProvince ? formatNumber(topProvince.value, 1) : '—'}
           unit="µg/m³"
-          note={topStation ? `Tertinggi: ${shortName(topStation)}` : 'Stasiun PM2.5 tertinggi'}
+          note={topProvince ? `Tertinggi: ${topProvince.name}` : 'Provinsi PM2.5 tertinggi'}
         />
         <KpiCard
           label="Faktor PM2.5"
@@ -265,7 +265,7 @@ function KpiSection({ k, health, avgCompleteness, topStation, rho, maxDist }) {
 }
 
 /* ─── Peta + panel samping ─────────────────────────────────────────────── */
-function MapSection({ scoped, onSelect }) {
+function MapSection({ scoped, onSelect, ispuCounts }) {
   return (
     <Section
       title="Lokasi dan kondisi rata-rata PM2.5"
@@ -282,7 +282,7 @@ function MapSection({ scoped, onSelect }) {
         </Card>
 
         <div className="ov-map-side">
-          <IspuDonut stations={scoped} />
+          <IspuDonut counts={ispuCounts} unit="observasi" />
         </div>
         <StationRanking stations={scoped} className="ov-rank-full" />
       </div>
@@ -299,12 +299,11 @@ const NAV_LINKS = [
   { question: 'Apa rekomendasinya?',                       href: '/insight',           icon: Lightbulb,       color: '#E6F9AF' },
 ]
 
-function FindingsSection({ scoped, avgPm25, summary, analytics }) {
+function FindingsSection({ scoped, avgPm25, summary, analytics, topProvince }) {
   const { who } = POLLUTANTS.pm25
   const valid = scoped.filter((s) => Number.isFinite(s.avg_pm25))
   const exceed = valid.filter((s) => s.avg_pm25 > NAAQS_ANNUAL).length
   const sorted = [...valid].sort((a, b) => b.avg_pm25 - a.avg_pm25)
-  const top = sorted[0]
   const bot = sorted[sorted.length - 1]
   const trafficRho = summary?.factors?.traffic?.rho
   const maxDistKm = analytics.nearest.data?.overall?.max_km
@@ -312,8 +311,8 @@ function FindingsSection({ scoped, avgPm25, summary, analytics }) {
   const findings = [
     {
       icon: Wind, color: '#FB923C', href: '/kualitas-udara', cta: 'Lihat pola waktu & wilayah',
-      title: top
-        ? `${shortName(top)} mencatat PM2.5 tertinggi (${formatNumber(top.avg_pm25, 1)} µg/m³)`
+      title: topProvince
+        ? `${topProvince.name} mencatat PM2.5 tertinggi (${formatNumber(topProvince.value, 1)} µg/m³)`
         : 'Pelajari kondisi kualitas udara per wilayah',
       text: avgPm25 != null
         ? `Rata-rata nasional ${formatNumber(avgPm25, 1)} µg/m³ — ${formatNumber(avgPm25 / who, 1)}× di atas pedoman WHO (${who} µg/m³). Ambang baku mutu tahunan: ${NAAQS_ANNUAL} µg/m³ (PP No. 22/2021).`
@@ -427,6 +426,7 @@ function MethodologyPanel() {
 export default function OverviewPage() {
   const { data: stations, loading: stationLoading, error: stationError } = useStations()
   const { data: summary } = useOverviewSummary()
+  const { data: ispuDaily } = useIspuDaily()
   const analytics = useOverviewAnalytics()
   const { filters, setDateRange, setStation, setRegion, resetFilters } = useFilter()
   const [subTab, setSubTab] = useState('overview')
@@ -492,6 +492,55 @@ export default function OverviewPage() {
 
   const handleSelect = useCallback((s) => setStation(s.location_id), [setStation])
 
+  // Provinsi yang masuk filter wilayah (untuk menyaring observasi harian)
+  const regionProvinces = useMemo(
+    () => (filters.regionGroup ? new Set(scoped.map((s) => s.provinsi)) : null),
+    [scoped, filters.regionGroup]
+  )
+
+  // Observasi harian dengan filter yang sama seperti tab Kualitas Udara
+  const dailyScoped = useMemo(
+    () =>
+      (ispuDaily ?? EMPTY).filter((row) => {
+        const d = String(row.tanggal ?? '').slice(0, 10)
+        return (
+          d >= filters.dateStart &&
+          d <= filters.dateEnd &&
+          (!regionProvinces || regionProvinces.has(row.provinsi))
+        )
+      }),
+    [ispuDaily, filters.dateStart, filters.dateEnd, regionProvinces]
+  )
+
+  // Sebaran kategori ISPU: jumlah observasi harian per kategori (sama dengan tab Kualitas Udara)
+  const ispuCounts = useMemo(
+    () =>
+      ISPU_CATEGORIES.map((c) => ({
+        ...c,
+        count: dailyScoped.filter((r) => r.kategori_ispu === c.label).length,
+      })),
+    [dailyScoped]
+  )
+
+  // Wilayah dengan PM2.5 tertinggi: rata-rata PM2.5 harian per provinsi (sama dengan tab Kualitas Udara)
+  const topProvince = useMemo(() => {
+    const groups = new Map()
+    dailyScoped.forEach((r) => {
+      const v = Number(r.pm25)
+      if (!r.provinsi || !Number.isFinite(v)) return
+      const g = groups.get(r.provinsi) ?? { values: [], stations: new Set() }
+      g.values.push(v)
+      if (r.station_id) g.stations.add(r.station_id)
+      groups.set(r.provinsi, g)
+    })
+    let best = null
+    for (const [name, g] of groups) {
+      const value = g.values.reduce((a, b) => a + b, 0) / g.values.length
+      if (!best || value > best.value) best = { name, value, stationCount: g.stations.size }
+    }
+    return best
+  }, [dailyScoped])
+
   return (
     <ModuleLayout
       eyebrow="Gambaran besar"
@@ -525,12 +574,18 @@ export default function OverviewPage() {
                 k={k}
                 health={health}
                 avgCompleteness={avgCompleteness}
-                topStation={topStation}
+                topProvince={topProvince}
                 rho={rho}
                 maxDist={maxDist}
               />
-              <MapSection scoped={scoped} onSelect={handleSelect} />
-              <FindingsSection scoped={scoped} avgPm25={k.avg} summary={summary} analytics={analytics} />
+              <MapSection scoped={scoped} onSelect={handleSelect} ispuCounts={ispuCounts} />
+              <FindingsSection
+                scoped={scoped}
+                avgPm25={k.avg}
+                summary={summary}
+                analytics={analytics}
+                topProvince={topProvince}
+              />
             </>
           )}
         </>
