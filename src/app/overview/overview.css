@@ -1,0 +1,468 @@
+/* ═══ Overview — tampilan ═══════════════════════════════════════════════ */
+
+.ov-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Hero ── */
+.ov-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem 2.25rem;
+  border-radius: 1.5rem;
+  color: #F0F4FF;
+  background:
+    radial-gradient(38rem 20rem at 100% 0%, rgba(230, 249, 175, 0.2), transparent 60%),
+    linear-gradient(150deg, #18314F 0%, #172A55 60%, #0D0630 140%);
+  box-shadow: 0 18px 40px rgba(24, 49, 79, 0.18);
+}
+.ov-hero::after {
+  content: '';
+  position: absolute;
+  right: -4rem;
+  bottom: -5rem;
+  width: 16rem;
+  height: 16rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 249, 175, 0.14), transparent 70%);
+  pointer-events: none;
+}
+
+.ov-kicker {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(230, 249, 175, 0.12);
+  color: var(--color-accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.ov-hero-title {
+  margin-top: 1rem;
+  font-size: clamp(1.35rem, 2.3vw, 1.95rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #fff;
+}
+.ov-hero-title em {
+  font-style: normal;
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.ov-hero-sub {
+  margin-top: 0.8rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: rgba(240, 244, 255, 0.78);
+}
+
+.ov-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1.25rem;
+}
+.ov-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(240, 244, 255, 0.08);
+  border: 1px solid rgba(240, 244, 255, 0.14);
+  color: rgba(240, 244, 255, 0.8);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.ov-chip svg { opacity: 0.7; }
+
+/* Panel meter di kanan hero */
+.ov-hero-panel {
+  position: relative;
+  z-index: 1;
+  padding: 1.35rem 1.35rem 1.2rem;
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+}
+.ov-hero-panel-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(240, 244, 255, 0.7);
+}
+.ov-hero-panel-note {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: rgba(240, 244, 255, 0.78);
+}
+.ov-hero-panel-note strong { color: #fff; }
+
+/* Meter: posisi PM2.5 dibanding acuan */
+.ov-meter { margin-top: 1.4rem; padding-bottom: 1.6rem; position: relative; }
+.ov-meter-track {
+  position: relative;
+  height: 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.ov-meter-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #FACC15, #FB923C, #EF4444);
+  transition: width 500ms ease;
+}
+.ov-meter-mark {
+  position: absolute;
+  top: -0.3rem;
+  bottom: -0.3rem;
+  width: 2px;
+  border-radius: 2px;
+  background: #fff;
+  transform: translateX(-1px);
+}
+.ov-meter-labels {
+  position: absolute;
+  top: 1.1rem;
+  left: 0;
+  right: 0;
+  height: 1rem;
+}
+.ov-meter-labels span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: rgba(240, 244, 255, 0.78);
+}
+.ov-meter-labels span:first-child { transform: translateX(-30%); }
+
+/* ── KPI ── */
+.ov-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.ov-kpis.is-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* KPI: putih polos, tanpa aksen warna di atas */
+.ov-kpi {
+  position: relative;
+  padding: 1.25rem 1.3rem 1.2rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 1.1rem;
+  box-shadow: var(--shadow-card);
+  min-width: 0;
+}
+.ov-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.ov-kpi-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  line-height: 1.35;
+}
+.ov-kpi-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+}
+.ov-kpi-val {
+  margin-top: 0.9rem;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.ov-kpi-val small {
+  margin-left: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--color-text-secondary);
+}
+.ov-kpi-note {
+  margin-top: 0.5rem;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+/* ── Section ── */
+.ov-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.ov-sec-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+.ov-sec-no {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 0.8rem;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.ov-sec-head h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ov-sec-head p {
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+/* Kesimpulan */
+.ov-takeaway {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  padding: 1rem 1.2rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(24, 49, 79, 0.08);
+  background: linear-gradient(90deg, rgba(230, 249, 175, 0.55), rgba(230, 249, 175, 0.12));
+}
+.ov-takeaway-label {
+  flex: none;
+  margin-top: 0.1rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-surface);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ov-takeaway p {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--color-text-primary);
+}
+
+/* Panel umum */
+.ov-panel {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 1.1rem;
+  box-shadow: var(--shadow-card);
+}
+
+/* Tombol tautan */
+.ov-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  background: #fff;
+  color: var(--color-surface);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.ov-link:hover {
+  background: var(--color-surface);
+  border-color: var(--color-surface);
+  color: #fff;
+}
+
+/* Kepercayaan data */
+.ov-trust {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.ov-trust-item {
+  padding: 1.1rem 1.15rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+}
+.ov-trust-item h3 {
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.ov-trust-item p {
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* Navigasi ubin */
+.ov-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.85rem;
+}
+.ov-nav-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+.ov-nav-tile:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--nc) 60%, transparent);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--nc) 25%, transparent);
+}
+.ov-nav-tile:focus-visible {
+  outline: 2px solid var(--nc);
+  outline-offset: 3px;
+}
+.ov-nav-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 0.8rem;
+  background: var(--nc);
+  color: var(--color-surface);
+}
+.ov-nav-text {
+  flex: 1;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.ov-nav-arrow {
+  flex: none;
+  color: var(--color-text-disabled);
+  transition: transform 150ms ease, color 150ms ease;
+}
+.ov-nav-tile:hover .ov-nav-arrow {
+  transform: translateX(3px);
+  color: var(--color-surface);
+}
+
+/* ── Responsif ── */
+@media (max-width: 960px) {
+  .ov-hero { grid-template-columns: minmax(0, 1fr); padding: 1.6rem; }
+  .ov-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ov-trust { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .ov-kpis,
+  .ov-kpis.is-2 { grid-template-columns: minmax(0, 1fr); }
+  .ov-hero-title { font-size: 1.3rem; }
+  .ov-kpi-val { font-size: 1.7rem; }
+}
+
+/* ── Sub-tab Overview ── */
+.ov-tabbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+  align-self: flex-start;
+}
+
+.ov-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1.05rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.ov-tab:hover {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.ov-tab:focus-visible {
+  outline: 2px solid var(--color-elevated);
+  outline-offset: 2px;
+}
+
+.ov-tab.is-active {
+  background: var(--color-surface);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(24, 49, 79, 0.18);
+}
+
+.ov-tab-ico {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.5rem;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.ov-tab.is-active .ov-tab-ico {
+  background: rgba(230, 249, 175, 0.16);
+  color: var(--color-accent);
+}
+
+@media (max-width: 600px) {
+  .ov-tabbar { width: 100%; }
+  .ov-tab { flex: 1; justify-content: center; padding: 0.55rem 0.6rem; }
+}
