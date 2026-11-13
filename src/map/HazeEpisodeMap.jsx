@@ -182,94 +182,95 @@ export function HazeEpisodeMap({
 
   return (
     <div className="haze-map">
-      <MapContainer
-        center={INDONESIA.center}
-        zoom={INDONESIA.zoom}
-        scrollWheelZoom
-        style={{
-          height: '100%',
-          width: '100%',
-        }}
-      >
-        <MapResize />
-        <MapFocus stations={stationSummary} />
-
-        <TileLayer
-          attribution="&copy; OpenStreetMap contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-
-        {geo && (
-          <Pane
-            name="hazeIslandPane"
-            style={{ zIndex: 350 }}
-          >
-            <GeoJSON
-              data={geo}
-              style={getIslandStyle}
-              interactive={false}
-            />
-          </Pane>
-        )}
-
-        <Pane
-          name="hazeStationPane"
-          style={{ zIndex: 650 }}
+      <div className="haze-map-canvas">
+        <MapContainer
+          center={INDONESIA.center}
+          zoom={INDONESIA.zoom}
+          scrollWheelZoom
+          style={{
+            height: '100%',
+            width: '100%',
+          }}
         >
-          {stationSummary.map((station) => {
-            const selected =
-              selectedStationId === station.station_id
+          <MapResize />
+          <MapFocus stations={stationSummary} />
 
-            const level = getLevel(station.peakIncrease)
-            const peak = station.peak
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-            return (
-              <CircleMarker
-                key={station.station_id}
-                pane="hazeStationPane"
-                center={[
-                  station.latitude,
-                  station.longitude,
-                ]}
-                radius={selected ? 10 : 7}
-                pathOptions={{
-                  color: selected ? '#18314F' : '#FFFFFF',
-                  weight: selected ? 3 : 1.5,
-                  fillColor: level.color,
-                  fillOpacity: 0.96,
-                }}
-                eventHandlers={{
-                  click: () => onSelectStation?.(station),
-                }}
-              >
-<Popup
-  autoPan
-  maxWidth={210}
-  minWidth={170}
-  className="haze-map-leaflet-popup"
->
-  <div className="haze-map-popup">
-    <strong>{station.station_id}</strong>
+          {geo && (
+            <Pane
+              name="hazeIslandPane"
+              style={{ zIndex: 350 }}
+            >
+              <GeoJSON
+                data={geo}
+                style={getIslandStyle}
+                interactive={false}
+              />
+            </Pane>
+          )}
 
-    <div className="haze-popup-name">
-      {station.nama_sensor || 'Stasiun pemantauan'}
-    </div>
+          <Pane
+            name="hazeStationPane"
+            style={{ zIndex: 600 }}
+          >
+            {stationSummary.map((station) => {
+              const selected =
+                selectedStationId === station.station_id
 
-    <div className="haze-popup-region">
-      {peak?.city || station.kota_kabupaten || '--'}
-      {', '}
-      {peak?.province || station.provinsi || '--'}
-    </div>
-  </div>
-</Popup>
-              </CircleMarker>
-            )
-          })}
-        </Pane>
-      </MapContainer>
+              const level = getLevel(station.peakIncrease)
+              const peak = station.peak
+
+              return (
+                <CircleMarker
+                  key={station.station_id}
+                  pane="hazeStationPane"
+                  center={[
+                    station.latitude,
+                    station.longitude,
+                  ]}
+                  radius={selected ? 10 : 7}
+                  pathOptions={{
+                    color: selected ? '#18314F' : '#FFFFFF',
+                    weight: selected ? 3 : 1.5,
+                    fillColor: level.color,
+                    fillOpacity: 0.96,
+                  }}
+                  eventHandlers={{
+                    click: () => onSelectStation?.(station),
+                  }}
+                >
+                  <Popup
+                    autoPan
+                    maxWidth={210}
+                    minWidth={170}
+                    className="haze-map-leaflet-popup"
+                  >
+                    <div className="haze-map-popup">
+                      <strong>{station.station_id}</strong>
+
+                      <div className="haze-popup-name">
+                        {station.nama_sensor || 'Stasiun pemantauan'}
+                      </div>
+
+                      <div className="haze-popup-region">
+                        {peak?.city || station.kota_kabupaten || '--'}
+                        {', '}
+                        {peak?.province || station.provinsi || '--'}
+                      </div>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              )
+            })}
+          </Pane>
+        </MapContainer>
+      </div>
 
       <div className="haze-map-legend">
-        <strong>Tingkat peningkatan konsentrasi</strong>
 
         {LEVELS.map((level) => (
           <span key={level.label}>
