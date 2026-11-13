@@ -306,7 +306,7 @@ export default function KecukupanStasiunPage() {
   }, [m])
 
   const layout = {
-    eyebrow:     'Kecukupan jaringan',
+    eyebrow:     'Tujuan 5',
     title:       'Kecukupan Stasiun',
     description: 'Apakah 27 stasiun sudah tersebar merata, dan wilayah mana yang paling butuh tambahan titik pemantauan?',
   }

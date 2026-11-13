@@ -333,11 +333,11 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
             PM2.5 nasional {avgPm25 != null ? `${formatNumber(avgPm25 / WHO_ANNUAL, 1)}×` : '—'} di atas pedoman WHO
           </h3>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <FindingPoint icon={AlertTriangle} color="#EF4444" text={`Rata-rata nasional ${avgPm25 != null ? formatNumber(avgPm25, 1) : '—'} µg/m³ — melampaui PP 22/2021 (${NAAQS_ANNUAL} µg/m³) maupun WHO AQG (${WHO_ANNUAL} µg/m³).`} />
-            <FindingPoint icon={Wind} color="#8BBEB2" text="Polutan tertinggi terkonsentrasi di stasiun perkotaan padat dan wilayah lahan gambut saat musim kemarau." />
-            <FindingPoint icon={Zap} color="#FACC15" text="Pola musiman jelas: musim kemarau (Juni–Oktober) secara konsisten memperburuk kualitas udara di sebagian besar lokasi." />
-            <FindingPoint icon={AlertTriangle} color="#FB923C" text="Episode haze teridentifikasi di beberapa stasiun Kalimantan dan Sumatera dengan nilai PM2.5 sangat tinggi." />
-            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Stasiun di pesisir dan dataran tinggi umumnya menunjukkan kualitas udara lebih baik dibanding perkotaan." />
+            <FindingPoint icon={AlertTriangle} color="#EF4444" text={`Rata-rata nilai PM2.5 tahunan secara nasional sebesar ${avgPm25 != null ? formatNumber(avgPm25, 1) : '—'} µg/m³. Angka ini melampaui nilai acuan yang diatur pada PP 22/2021 (${NAAQS_ANNUAL} µg/m³) maupun WHO AQG (${WHO_ANNUAL} µg/m³).`} />
+            <FindingPoint icon={Wind} color="#8BBEB2" text="Polutan tertinggi terkonsentrasi di stasiun yang berada pada kawasan industri dan kawasan lahan gambut saat musim kemarau." />
+            <FindingPoint icon={Zap} color="#FACC15" text="Pola musiman menunjukkan bahwa konsentrasi polutan cenderung meningkat selama musim kemarau (Juni–Oktober), sehingga kualitas udara di sebagian besar wilayah mengalami penurunan." />
+            <FindingPoint icon={AlertTriangle} color="#FB923C" text="Episode kabut asap terindikasi terjadi di beberapa stasiun pada wilayah Kalimantan dan Sumatera dengan nilai lonjakan PM2.5 sangat tinggi." />
+            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Stasiun yang terletak di kawasan pesisir dan dataran tinggi umumnya menunjukkan kualitas udara lebih baik dibanding kawasan perkotaan." />
           </ul>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -371,10 +371,10 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
             Faktor penentu PM2.5 bersifat multi-dimensi
           </h3>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <FindingPoint icon={Zap} color="#384E77" text="Lalu lintas kendaraan bermotor menunjukkan korelasi sedang–kuat dengan PM2.5, terutama di perkotaan dan jam sibuk." />
-            <FindingPoint icon={Wind} color="#8BBEB2" text="Suhu tinggi berkorelasi negatif dengan PM2.5 — kondisi panas mendukung dispersi polutan secara vertikal." />
-            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Kelembapan tinggi umumnya berkorelasi negatif: polutan 'menempel' ke partikel air dan mengendap lebih cepat." />
-            <FindingPoint icon={AlertTriangle} color="#FB923C" text="Lokasi gambut dan kawasan industri secara konsisten menunjukkan median PM2.5 lebih tinggi dari rata-rata." />
+            <FindingPoint icon={Zap} color="#384E77" text="Lalu lintas kendaraan bermotor menunjukkan korelasi sedang hingga kuat dengan PM2.5, terutama di perkotaan dan jam sibuk. Artinya, peningkatan aktivitas kendaraan cenderung diikuti kenaikan PM2.5." />
+            <FindingPoint icon={Wind} color="#8BBEB2" text="Suhu udara menunjukkan korelasi negatif dengan PM2.5. Artinya, semakin tinggi suhu, konsentrasi PM2.5 cenderung menurun karena polutan lebih mudah menyebar." />
+            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Kelembapan tinggi umumnya berkorelasi negatif dengan PM2.5 karena partikel dapat berinteraksi dengan uap air dan mengalami pengendapan." />
+            <FindingPoint icon={AlertTriangle} color="#FB923C" text="Wilayah yang berada di lokasi gambut dan kawasan industri secara konsisten menunjukkan median PM2.5 lebih tinggi dari rata-rata." />
             <FindingPoint icon={Zap} color="#FACC15" text="Arah angin tenggara berkorelasi dengan konsentrasi PM2.5 relatif lebih tinggi di beberapa lokasi." />
           </ul>
         </div>
@@ -648,9 +648,9 @@ export default function InsightPage() {
 
   return (
     <ModuleLayout
-      eyebrow="Sintesis & Rekomendasi"
+      eyebrow="Tujuan 6"
       title="Insight & Rekomendasi"
-      description="Sintesis temuan lintas empat tujuan analisis: kualitas udara, korelasi polutan, dampak kesehatan, dan kecukupan jaringan."
+      description="Rangkuman hasil analisis kualitas udara, hubungan antarpolutan, dampaknya terhadap kesehatan, serta kondisi jaringan pemantauan AQMS untuk menghasilkan rekomendasi perbaikan."
     >
       <div className="ov-subtabs" role="tablist" aria-label="Bagian insight">
         {[

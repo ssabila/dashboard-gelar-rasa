@@ -1094,10 +1094,10 @@ return (
 }
 
 const HOURLY_COLORS = [
-  '#4CAF50', // Rendah
-  '#FACC15', // Sedang
-  '#FB923C', // Tinggi
-  '#EF4444', // Sangat tinggi
+  '#4CAF50',
+  '#FACC15',
+  '#FB923C',
+  '#EF4444',
 ]
 
 const HOURLY_LEVELS = [
@@ -1216,7 +1216,6 @@ function HourlyLegend({ min, max }) {
 
   return (
     <div className="aq-hourly-legend">
-      <strong>Legenda konsentrasi relatif</strong>
 
       <div className="aq-hourly-legend-items">
         {ranges.map((item) => (
@@ -1335,7 +1334,7 @@ function HourlyInterpretation({ rows, parameter }) {
       </div>
 
 <p>
-  Berdasarkan hasil penyaringan data, konsentrasi rata-rata{' '}
+  Berdasarkan data pada periode yang dipilih, konsentrasi rata-rata{' '}
   {parameterLabel} tertinggi tercatat pada pukul{' '}
   <strong>{peakHour}</strong>, yaitu sebesar{' '}
   <strong>{formatValue(summary.peak.value, 2)} µg/m³</strong>.
@@ -1533,15 +1532,23 @@ function WeekendInterpretation({ rows, parameter }) {
     )
   }
 
-  let comparisonText = ''
+  const comparisonText =
+    summary.higher === 'Akhir Pekan'
+      ? 'lebih tinggi'
+      : summary.higher === 'Hari Kerja'
+        ? 'lebih rendah'
+        : 'tidak berbeda'
 
-  if (summary.higher === 'Hari Kerja') {
-    comparisonText = 'lebih tinggi pada hari kerja'
-  } else if (summary.higher === 'Akhir Pekan') {
-    comparisonText = 'lebih tinggi pada akhir pekan'
-  } else {
-    comparisonText = 'sama pada kedua kelompok hari'
-  }
+  const percentageText = summary.percentage === null
+    ? 'tidak dapat dihitung'
+    : `${formatValue(Math.abs(summary.percentage), 1)}%`
+
+  const higherGroup =
+    summary.higher === 'Akhir Pekan'
+      ? 'akhir pekan'
+      : summary.higher === 'Hari Kerja'
+        ? 'hari kerja'
+        : null
 
   return (
     <div className="aq-time-interpretation">
@@ -1563,25 +1570,26 @@ function WeekendInterpretation({ rows, parameter }) {
         </div>
       </div>
 
-<p>
-  Rata-rata konsentrasi {parameterLabel} tercatat{' '}
-  <strong>{comparisonText}</strong>.
-  Selisih kedua kelompok adalah{' '}
-  <strong>{formatValue(summary.difference, 2)} µg/m³</strong>.
-  {summary.percentage !== null && (
-    <>
-      {' '}Dibandingkan dengan rata-rata hari kerja,
-      konsentrasi pada akhir pekan{' '}
-      <strong>
-        {summary.percentage > 0
-          ? `lebih tinggi ${formatValue(summary.percentage, 1)}%`
-          : summary.percentage < 0
-            ? `lebih rendah ${formatValue(Math.abs(summary.percentage), 1)}%`
-            : 'tidak menunjukkan perbedaan'}
-      </strong>.
-    </>
-  )}
-</p>
+     <p>
+       Berdasarkan hasil perbandingan, rata-rata konsentrasi{' '}
+       <strong>{parameterLabel}</strong> pada hari kerja sebesar{' '}
+       <strong>{formatValue(summary.weekday, 2)} µg/m³</strong>, sedangkan
+       pada akhir pekan sebesar{' '}
+       <strong>{formatValue(summary.weekend, 2)} µg/m³</strong>. Hasil tersebut
+       menunjukkan bahwa konsentrasi {parameterLabel} pada akhir pekan{' '}
+       <strong>{comparisonText}</strong> dibandingkan hari kerja, dengan selisih
+       sebesar <strong>{formatValue(summary.difference, 2)} µg/m³</strong> atau
+       sekitar <strong>{percentageText}</strong>.
+       {higherGroup && (
+         <>
+           {' '}Kondisi ini dapat berkaitan dengan lebih tingginya intensitas
+           aktivitas masyarakat pada <strong>{higherGroup}</strong> pada periode
+           rentang pengamatan yang dipilih, seperti mobilitas kendaraan, kegiatan
+           perkantoran, dan aktivitas ekonomi yang berpotensi meningkatkan emisi
+           partikulat.
+         </>
+       )}
+     </p>
 
       <div className="aq-distribusi-footer">
         <strong>Catatan analisis: </strong>
@@ -2500,21 +2508,15 @@ function classifyAreaType(siteType = '') {
   if (value.includes('peatland')) {
     return 'Penyangga Gambut'
   }
-
-  // Kawasan industri
   if (value.includes('industrial')) {
     return 'Industri'
   }
-
-  // Kawasan latar bersih
   if (
     value.includes('clean background') ||
     value.includes('regional')
   ) {
     return 'Latar Bersih'
   }
-
-  // Kawasan perkotaan dan lalu lintas
   if (
     value.includes('urban') ||
     value.includes('traffic') ||
@@ -2600,9 +2602,13 @@ const overviewInsight = useMemo(() => {
       Number.isFinite(Number(row.pm25))
   )
 
-  const criticalHour = [...hourlyRows].sort(
-    (a, b) => Number(b.pm25) - Number(a.pm25)
-  )[0] ?? null
+  const hourlySummary = getHourlySummary(hourlyRows, 'pm25')
+  const criticalHour = hourlySummary.peak
+    ? {
+        jam: hourlySummary.peak.hour,
+        pm25: hourlySummary.peak.value,
+      }
+    : null
 
   const annualRows = (data.tahunan || []).filter(
     (row) =>
@@ -2658,8 +2664,6 @@ const overviewInsight = useMemo(() => {
   const [loading, setLoading] = useState(true)
 const [error, setError] = useState('')
 const [activeSection, setActiveSection] = useState('02')
-
-// FILTER SECTION 03 - TREN
 const [trendFilter, setTrendFilter] = useState({
   dariTanggal: '2024-01-01',
   sampaiTanggal: '2026-10-14',
@@ -2675,23 +2679,17 @@ const [trendDateDraft, setTrendDateDraft] = useState({
   dariTanggal: '2024-01-01',
   sampaiTanggal: '2026-10-14',
 })
-
-// FILTER SECTION 04A - RANKING PROVINSI
 const [rankingFilter, setRankingFilter] = useState({
   dariTanggal: '2024-01-01',
   sampaiTanggal: '2026-10-14',
   parameter: 'pm25',
 })
-
-// FILTER SECTION 04B - DISTRIBUSI ISPU
 const [ispuFilter, setIspuFilter] = useState({
   dariTanggal: '2024-01-01',
   sampaiTanggal: '2026-10-14',
   pulau: 'Semua',
   provinsi: 'Semua',
 })
-
-// FILTER SECTION 04 - RANKING POLUTAN
 const [pollutantFilter, setPollutantFilter] = useState({
   tahun: 'Semua',
   bulan: 'Semua',
@@ -2703,15 +2701,11 @@ const [boxplotFilter, setBoxplotFilter] = useState({
   sampaiTanggal: '2026-10-14',
   parameter: 'pm25',
 });
-
-// FILTER SECTION 04 - PERBANDINGAN ANTARPULAU
 const [islandFilter, setIslandFilter] = useState({
   tahun: 'Semua',
   bulan: 'Semua',
   parameter: 'pm25',
 })
-
-// FILTER SECTION 04 - TABEL PROVINSI
 const [tableFilter, setTableFilter] = useState({
   dariTanggal: '',
   sampaiTanggal: '',
@@ -4495,10 +4489,6 @@ const resetCritical = () => setCriticalFilter({
       title="Kualitas Udara"
       description="Bagaimana kondisi kualitas udara di berbagai wilayah Indonesia, kapan pencemaran paling tinggi, dan daerah mana yang paling terdampak?"
     >
-
-
-{/* 01 — OVERVIEW KUALITAS UDARA */}
-
 <section className="aq-overview">
 
   <div className="aq-overview-hero">
@@ -4593,9 +4583,6 @@ const resetCritical = () => setCriticalFilter({
     </button>
   ))}
 </nav>
-
-      {/* 02 — TREN KUALITAS UDARA */}
-
       {activeSection === '02' && (
       <section className="aq-section">
         <SectionTitle
@@ -4610,8 +4597,6 @@ const resetCritical = () => setCriticalFilter({
     title={`Perubahan konsentrasi ${PARAMETERS[trendFilter.parameter].label}`}
     subtitle={`Tren ${trendFilter.mode} · ${PARAMETERS[trendFilter.parameter].unit}`}
   />
-
-  {/* FILTER TREN */}
   <div className="aq-trend-filter">
 
     <div className="aq-trend-date-row">
@@ -4788,8 +4773,6 @@ const resetCritical = () => setCriticalFilter({
       </button>
 
     </div>
-
-    {/* FILTER LAINNYA */}
     <div className="aq-filter-fields">
 
       <FilterScope
@@ -4844,8 +4827,6 @@ const resetCritical = () => setCriticalFilter({
   ) : (
     <EmptyData message="Tidak ada data tren untuk kombinasi filter ini." />
   )}
-
-{/* RINGKASAN DAN INTERPRETASI TREN */}
 {trendInsight.available && (
   <div className="aq-trend-insight">
 
@@ -4905,9 +4886,7 @@ const resetCritical = () => setCriticalFilter({
     *Analisis menggunakan data stasiun bersatuan µg/m³.
     Stasiun bersatuan ppm tidak disertakan. Perbedaan jumlah
     dan kelengkapan data antarstasiun dapat memengaruhi
-    keterwakilan tren. Interpretasi menggambarkan kecenderungan
-    konsentrasi parameter terpilih, bukan keseluruhan kualitas
-    udara Indonesia.
+    keterwakilan wilayah pada grafik tren.
   </p>
 </div>
 
@@ -5199,7 +5178,7 @@ const resetCritical = () => setCriticalFilter({
 <Card className="aq-card">
  <CardHeader
   title="Evaluasi Konsentrasi Polutan terhadap Standar Kualitas Udara Antarwilayah"
-  subtitle="Perbandingan rata-rata konsentrasi harian (24 jam) dengan acuan BMUA PP No. 22 Tahun 2021 atau WHO Air Quality Guidelines 2021."
+  subtitle="Perbandingan rata-rata konsentrasi harian (24 jam) selama periode pengamatan dengan acuan BMUA PP No. 22 Tahun 2021 atau WHO Air Quality Guidelines 2021."
 />
 
   <FilterBar onReset={resetBmua} className="aq-filter-bar--grid">
@@ -5585,7 +5564,7 @@ const resetCritical = () => setCriticalFilter({
 <div className="aq-distribusi-footer aq-section-footer">
   <p>
     *Stasiun bersatuan ppm dan stasiun dengan data tidak mencukupi
-    tidak disertakan pada section ini.
+    tidak disertakan.
   </p>
 </div>
 
@@ -5705,15 +5684,11 @@ const resetCritical = () => setCriticalFilter({
       *Analisis menggunakan data dari stasiun bersatuan
       µg/m³. Stasiun bersatuan ppm dan data yang tidak
       memenuhi kriteria kecukupan pengamatan tidak
-      disertakan. Interpretasi menunjukkan pola berdasarkan
-      data yang tersedia dan tidak secara langsung
-      mengidentifikasi sumber pencemaran.
+      disertakan.
     </p>
   </div>
 </section>
 )}
-
-{/* 06 — ANALISIS MUSIMAN */}
 {activeSection === '06' && (
 
 <section className="aq-section">
@@ -5728,13 +5703,8 @@ const resetCritical = () => setCriticalFilter({
       title="Perbandingan Kualitas Udara Berdasarkan Musim"
       subtitle={`Konsentrasi rata-rata ${PARAMETERS[seasonFilter.parameter].label} pada musim hujan dan kemarau · ${seasonScopeLabel(seasonFilter)}${seasonFilter.kawasan !== 'Semua' ? ` · Kawasan ${seasonFilter.kawasan}` : ''}`}
    />
-
-{/* FILTER MUSIMAN */}
-
 <FilterBar onReset={resetSeason} className="aq-filter-bar--grid">
 <div className="aq-season-filter-grid">
-
-  {/* RENTANG PENGAMATAN */}
   <div className="aq-season-filter-item aq-season-date">
     <span>Rentang pengamatan</span>
     <DateRangePicker
@@ -5752,8 +5722,6 @@ const resetCritical = () => setCriticalFilter({
       }
     />
   </div>
-
-{/* CAKUPAN WILAYAH */}
 <div className="aq-season-filter-item">
   <span>Cakupan wilayah</span>
 
@@ -5772,8 +5740,6 @@ const resetCritical = () => setCriticalFilter({
     }
   />
 </div>
-
-  {/* KARAKTERISTIK KAWASAN */}
   <div className="aq-season-filter-item">
     <FilterSelect
       label="Karakteristik kawasan"
@@ -5787,8 +5753,6 @@ const resetCritical = () => setCriticalFilter({
       }
     />
   </div>
-
-  {/* PARAMETER */}
   <div className="aq-season-filter-item">
     <FilterSelect
       label="Parameter"
@@ -5806,8 +5770,6 @@ const resetCritical = () => setCriticalFilter({
 </div>
 
  </FilterBar>
-
-    {/* RINGKASAN DATA */}
     <div className="aq-season-data-summary">
       Menampilkan{' '}
       <strong>
@@ -5843,18 +5805,14 @@ const resetCritical = () => setCriticalFilter({
     <p>
       *Musim hujan ditetapkan pada November–April,
       sedangkan musim kemarau pada Mei–Oktober.
-      Analisis menggunakan data stasiun bersatuan µg/m³;
+      Analisis menggunakan data stasiun bersatuan µg/m³ dan
       stasiun bersatuan ppm tidak disertakan.
       Rata-rata dihitung dari seluruh catatan pengamatan
-      yang memenuhi filter. Hasil menunjukkan pola
-      musiman berdasarkan data yang tersedia dan tidak
-      secara langsung mengidentifikasi sumber pencemaran.
+      yang memenuhi filter yang dipilih.
     </p>
   </div>
 </section>
 )}
-
-      {/* SECTION 07*/}
       {activeSection === '07' && (
       <section className="aq-section">
 
@@ -5870,9 +5828,6 @@ const resetCritical = () => setCriticalFilter({
             title="Analisis Konsentrasi Berdasarkan Karakteristik Kawasan"
             subtitle={`Perbandingan rata-rata ${areaParameterLabel} pada empat kelompok karakteristik lokasi pengamatan · ${filterScopeText(areaFilter)}`}
           />
-
-          {/* FILTER SECTION 07 */}
-
           <LocalFilter
             onReset={resetArea}
             className="aq-area-filter-toolbar"
@@ -5905,10 +5860,6 @@ const resetCritical = () => setCriticalFilter({
             />
 
           </LocalFilter>
-
-
-          {/* GRAFIK PERBANDINGAN */}
-
           <div className="aq-area-chart-wrap">
 
             <div className="aq-area-chart-heading">
@@ -5929,9 +5880,6 @@ const resetCritical = () => setCriticalFilter({
             )}
 
           </div>
-
-          {/* INTERPRETASI */}
-
           <div className="aq-area-interpretation">
 
             <div className="aq-area-interpretation-heading">
@@ -5992,18 +5940,13 @@ const resetCritical = () => setCriticalFilter({
             pada stasiun pemantauan. Perhitungan rata-rata
             menggunakan pembobotan jumlah hari pengamatan
             dari data bulanan bersatuan µg/m³; stasiun bersatuan ppm
-            tidak disertakan. Hasil analisis
-            menggambarkan perbedaan konsentrasi antar kelompok
-            lokasi, bukan bukti langsung mengenai penyebab
-            pencemaran.
+            tidak disertakan.
           </p>
 
         </Card>
 
       </section>
       )}
-
-{/* 08 — ANALISIS PERIODE KRITIS */}
 {activeSection === '08' && (
 <section className="aq-section">
   <SectionTitle
@@ -6066,8 +6009,6 @@ const resetCritical = () => setCriticalFilter({
   </div>
 </section>
 )}
-
-      {/* 09 — ANALISIS INDIKASI EPISODE KABUT ASAP */}
       {activeSection === '09' && (
       <section className="aq-section">
         <SectionTitle
@@ -6094,9 +6035,6 @@ const resetCritical = () => setCriticalFilter({
             onChange={(scope) => setHazeFilter((state) => ({ ...state, ...scope }))}
           />
         </LocalFilter>
-
-
-        {/* POLA KEJADIAN ANTARSTASIUN */}
         <Card className="aq-card">
           <CardHeader
             title="Pola Kejadian Antarstasiun"
@@ -6143,8 +6081,6 @@ const resetCritical = () => setCriticalFilter({
             <EmptyData message="Data pola kejadian antarstasiun belum tersedia." />
           )}
         </Card>
-
-        {/* PERSEBARAN WILAYAH DAN KONDISI ANGIN */}
         <Card className="aq-card">
           <CardHeader
             title="Persebaran Wilayah dan Kondisi Angin"
@@ -6156,8 +6092,6 @@ const resetCritical = () => setCriticalFilter({
 <div className="haze-analysis-layout">
 
   <div className="haze-analysis-top">
-
-    {/* PETA */}
     <div className="haze-map-column">
       <HazeEpisodeMap
         geo={geo.data}
@@ -6168,8 +6102,6 @@ const resetCritical = () => setCriticalFilter({
       />
 
     </div>
-
-    {/* DETAIL STASIUN */}
     <div className="aq-haze-wind">
 
       {(() => {
@@ -6312,8 +6244,6 @@ const resetCritical = () => setCriticalFilter({
             <EmptyData message="Tidak terdapat lokasi stasiun dengan catatan lonjakan pada filter ini." />
           )}
         </Card>
-
-        {/* INTERPRETASI HASIL */}
         <Card className="aq-card">
           <CardHeader
             title="Kesimpulan Analisis Gabungan"
@@ -6389,7 +6319,7 @@ const resetCritical = () => setCriticalFilter({
         <div className="aq-distribusi-footer aq-section-footer">
   <p>
     *Stasiun bersatuan ppm dan stasiun dengan data tidak mencukupi
-    tidak disertakan pada section ini.
+    tidak disertakan.
   </p>
 </div>
       </section>
