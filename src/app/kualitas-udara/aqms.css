@@ -1,8 +1,4 @@
 
-/* =========================================
-   AIR QUALITY DASHBOARD — DESIGN REFINEMENT
-========================================= */
-
 .aq-section-heading {
   display: flex;
   align-items: flex-start;
@@ -159,8 +155,6 @@
   line-height: 1.5;
 }
 
-/* KPI cards */
-
 .aq-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -200,8 +194,6 @@
   font-size: 10px;
   line-height: 1.45;
 }
-
-/* Chart layout */
 
 .aq-chart-grid {
   display: grid;
@@ -263,8 +255,6 @@
   text-align: center;
   font-size: 12px;
 }
-
-/* Responsive */
 
 @media (max-width: 1050px) {
   .aq-kpi-grid {
@@ -453,8 +443,7 @@
   }
 }
 
-   /* Warna badge kategori ISPU */
-.aq-category-pill.ispu-baik {
+   .aq-category-pill.ispu-baik {
   background: #DCFCE7;
   color: #15803D;
 }
@@ -491,8 +480,6 @@
     grid-template-columns: 1fr;
   }
 }
-
-/* Detail stasiun */
 
 .aq-station-detail {
   display: flex;
@@ -625,8 +612,6 @@
   color: var(--color-text-primary);
 }
 
-/* Peta */
-
 .aq-map-legend {
   display: flex;
   flex-wrap: wrap;
@@ -647,8 +632,6 @@
   height: 9px;
   border-radius: 50%;
 }
-
-/* Grafik polutan */
 
 .aq-pollutant-grid {
   display: grid;
@@ -681,8 +664,6 @@
   color: var(--color-text-secondary);
 }
 
-/* Distribusi ISPU */
-
 .aq-progress {
   height: 9px;
   border-radius: 20px;
@@ -694,8 +675,6 @@
   height: 100%;
   border-radius: 20px;
 }
-
-/* Tabel */
 
 .aq-comparison-table {
   width: 100%;
@@ -740,8 +719,6 @@
   color: var(--color-text-secondary);
 }
 
-/* Heatmap jam */
-
 .aq-hourly-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -766,8 +743,6 @@
   color: var(--color-text-primary);
 }
 
-/* Insight */
-
 .aq-insight,
 .aq-note {
   display: flex;
@@ -788,8 +763,6 @@
   font-size: .8rem;
   line-height: 1.6;
 }
-
-/* Responsive */
 
 @media (max-width: 650px) {
   .aq-filter-toolbar {
@@ -836,7 +809,6 @@
   font-size: 13px;
 }
 
-/* Tablet */
 @media (max-width: 700px) {
   .aq-filter-grid{
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -859,14 +831,12 @@
   margin: 12px 0 16px;
 }
 
-/* Layar setengah / tablet */
 @media (max-width: 700px) {
   .aq-distribusi-filter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* HP kecil */
 @media (max-width: 420px) {
   .aq-distribusi-filter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -874,7 +844,6 @@
   }
 }
 
-/* HP */
 @media (max-width: 420px) {
   .aq-filter-grid,
   .aq-ranking-filter-grid {
@@ -884,14 +853,12 @@
 }
 
 
-/* Tablet */
 @media (max-width: 768px) {
   .aq-filter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* HP */
 @media (max-width: 480px) {
   .aq-filter-grid {
     grid-template-columns: 1fr;
@@ -1092,7 +1059,6 @@
   font-style: italic;
 }
 
-/* boxplot */
 .aq-boxplot-wrapper {
   width: 100%;
   min-width: 0;
@@ -1152,7 +1118,6 @@
   font-weight: 700;
 }
 
-/* FILTER BOXPLOT */
 .aq-boxplot-filter-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1169,14 +1134,12 @@
   gap: 5px;
 }
 
-/* Tablet */
 @media (max-width: 700px) {
   .aq-boxplot-filter-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-/* HP */
 @media (max-width: 420px) {
   .aq-boxplot-filter-grid {
     grid-template-columns: 1fr;
@@ -1184,8 +1147,7 @@
 }
 
 
-   /* trend filter */
-.aq-trend-filter {
+   .aq-trend-filter {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1474,7 +1436,6 @@
   min-width: 0;
 }
 
-/* TOMBOL RENTANG TANGGAL BMUA */
 .aq-bmua-date .aq-date-range-trigger {
   display: flex;
   align-items: center;
@@ -1515,7 +1476,6 @@ max-height: 40px !important;
   white-space: nowrap;
 }
 
-/* LABEL */
 .aq-bmua-date > span,
 .aq-bmua-toolbar .aq-filter-select > span {
   display: block;
@@ -1731,7 +1691,6 @@ max-height: 40px !important;
   min-width: 0;
 }
 
-/* Filter periode */
 .aq-table-toolbar > .aq-filter-field {
   display: flex;
   flex-direction: column;
@@ -1747,12 +1706,10 @@ max-height: 40px !important;
   max-width: 100%;
 }
 
-/* Filter tampilan */
 .aq-table-toolbar > * {
   min-width: 0;
 }
 
-/* Tombol reset kecil */
 .aq-table-toolbar .aq-filter-reset-compact {
   display: inline-flex;
   align-items: center;
@@ -1769,7 +1726,6 @@ max-height: 40px !important;
   flex-wrap: nowrap;
 }
 
-/* Layar setengah */
 @media (max-width: 900px) {
   .aq-table-toolbar {
     grid-template-columns: minmax(200px, 260px) minmax(180px, 240px) auto;
@@ -1782,7 +1738,6 @@ max-height: 40px !important;
   }
 }
 
-/* Layar HP */
 @media (max-width: 480px) {
   .aq-table-toolbar {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1958,7 +1913,6 @@ max-height: 40px !important;
   scrollbar-color: #B8C5D6 #F1F5F9;
 }
 
-/* UKURAN DAN LAYOUT TABEL */
 .aq-bmua-table-wrap .aq-comparison-table {
   width: 100%;
   min-width: 760px;
@@ -1974,7 +1928,6 @@ max-height: 40px !important;
   background: #F1F5F9;
 }
 
-/* UKURAN SEL TABEL */
 .aq-bmua-table-wrap th,
 .aq-bmua-table-wrap td {
   padding: 12px 10px;
@@ -2003,7 +1956,6 @@ max-height: 40px !important;
   border-radius: 10px;
 }
 
-/* TABLET DAN LAYAR KECIL */
 @media (max-width: 1100px) {
   .aq-bmua-table-wrap th,
   .aq-bmua-table-wrap td {
@@ -2288,8 +2240,6 @@ max-height: 40px !important;
   font-size: 0.65rem;
   color: var(--color-text-secondary);
 }
-
-/* RESPONSIVE */
 
 @media (max-width: 640px) {
   .aq-hourly-grid {
@@ -3988,14 +3938,12 @@ max-height: 40px !important;
   margin-top: 2px !important;
 }
 
-/* Tablet */
 @media (max-width: 1050px) {
   .aq-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* Mobile */
 @media (max-width: 600px) {
   .aq-summary-grid {
     grid-template-columns: 1fr;
@@ -4240,7 +4188,6 @@ max-height: 40px !important;
   margin-top: 18px;
 }
 
-/* Shared filter bar treatment */
 .aq-filter-toolbar,
 .aq-trend-filter,
 .aq-filter-with-reset {
@@ -4449,7 +4396,6 @@ max-height: 40px !important;
   }
 }
 
-/* Global filter control normalization */
 .aq-filter-toolbar,
 .aq-trend-filter,
 .aq-filter-bar,
@@ -4811,7 +4757,6 @@ max-height: 40px !important;
   }
 }
 
-/* Unified date-picker popovers */
 .aq-date-range-popover,
 .aq-date-dropdown {
   z-index: 10000 !important;
