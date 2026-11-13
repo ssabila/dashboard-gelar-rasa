@@ -1,0 +1,122 @@
+/* Gaya tambahan modul Korelasi Polutan — hanya memakai token dari globals.css */
+
+.kor-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); align-items: stretch; }
+.kor-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+.kor-stack { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+@media (max-width: 1100px) { .kor-grid-2, .kor-grid-3 { grid-template-columns: minmax(0, 1fr); } }
+
+/* Navigasi bertingkat memakai .filter-bar + .fpill dari globals.css */
+.kor-nav { row-gap: 0.4rem; }
+.kor-nav .fpill { gap: 0.4rem; }
+.kor-nav .fpill.is-current { border-color: var(--color-elevated); background: rgba(56, 78, 119, 0.08); font-weight: 700; }
+.kor-nav-sep { width: 1px; align-self: stretch; margin: 0.25rem 0.2rem; background: var(--color-border-strong); }
+.kor-nav-level2 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.kor-nav .fpill.is-sub { height: 1.9rem; font-size: 0.72rem; background: transparent; border-style: dashed; }
+.kor-nav .fpill.is-sub.is-current { border-style: solid; background: rgba(56, 78, 119, 0.08); }
+@media (max-width: 720px) { .kor-nav-sep { display: none; } }
+
+/* Filter */
+.kor-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem 1.5rem; padding: 0.9rem 1.1rem; }
+.kor-field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.kor-field-label { font-size: 0.68rem; font-weight: 700; color: var(--color-text-secondary); }
+.kor-field .seg { flex-wrap: wrap; }
+.kor-field select.input { min-width: 13rem; max-width: 100%; }
+.kor-check { display: inline-flex; align-items: center; gap: 0.4rem; height: 2.2rem; font-size: 0.76rem; font-weight: 600; color: var(--color-text-primary); cursor: pointer; }
+
+/* Callout */
+.kor-callout { display: flex; gap: 0.75rem; padding: 0.8rem 1rem; border-radius: 0.8rem; border: 1px solid; font-size: 0.8rem; line-height: 1.5; color: var(--color-text-primary); }
+.kor-callout svg { flex: none; margin-top: 0.15rem; }
+.kor-callout strong { display: block; margin-bottom: 0.1rem; }
+.kor-callout--info { background: rgba(56, 78, 119, 0.07); border-color: rgba(56, 78, 119, 0.22); }
+.kor-callout--info svg, .kor-callout--info strong { color: var(--color-elevated); }
+.kor-callout--warn { background: rgba(251, 146, 60, 0.1); border-color: rgba(251, 146, 60, 0.35); }
+.kor-callout--warn svg, .kor-callout--warn strong { color: #C2410C; }
+
+.kor-insights { display: flex; flex-direction: column; gap: 0.7rem; margin: 0; padding: 0 0 0 1.1rem; font-size: 0.82rem; line-height: 1.55; color: var(--color-text-primary); }
+.kor-insights li::marker { color: var(--color-elevated); }
+.kor-note { margin-top: 0.7rem; font-size: 0.72rem; line-height: 1.5; color: var(--color-text-secondary); }
+.kor-note strong { color: var(--color-text-primary); }
+
+/* Tabel */
+.kor-table-wrap { overflow: auto; border: 1px solid var(--color-border); border-radius: 0.8rem; }
+.kor-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+.kor-table th { position: sticky; top: 0; z-index: 1; padding: 0.5rem 0.7rem; background: #fff; border-bottom: 1px solid var(--color-border-strong); white-space: nowrap; }
+.kor-table th button { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0; border: 0; background: transparent; font: inherit; font-size: 0.68rem; font-weight: 700; color: var(--color-text-secondary); cursor: pointer; }
+.kor-table th button:hover { color: var(--color-text-primary); }
+.kor-table td { padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--color-border); color: var(--color-text-primary); white-space: nowrap; }
+.kor-table tbody tr:last-child td { border-bottom: 0; }
+.kor-table tr.is-clickable { cursor: pointer; }
+.kor-table tr.is-clickable:hover td { background: rgba(24, 49, 79, 0.03); }
+.kor-table tr.is-selected td { background: rgba(56, 78, 119, 0.1); font-weight: 700; }
+.kor-table .is-na { color: var(--color-text-disabled); font-style: italic; }
+.kor-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.kor-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.6rem; font-size: 0.72rem; color: var(--color-text-secondary); }
+.kor-pager-btns { display: inline-flex; align-items: center; gap: 0.5rem; }
+.kor-pager .btn { height: 1.9rem; padding: 0 0.55rem; }
+.kor-pager .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.kor-empty { display: grid; place-items: center; align-content: center; gap: 0.4rem; min-height: 14rem; padding: 1.5rem; text-align: center; border: 1px dashed var(--color-border-strong); border-radius: 0.8rem; }
+.kor-empty strong { color: var(--color-text-primary); }
+.kor-empty p { max-width: 30rem; font-size: 0.8rem; }
+
+.kor-meta { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: 0.72rem; color: var(--color-text-secondary); }
+.kor-meta strong { color: var(--color-text-primary); }
+
+/* Kartu faktor di Overview */
+.kor-factor-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+@media (max-width: 1100px) { .kor-factor-list { grid-template-columns: minmax(0, 1fr); } }
+.kor-factor { display: flex; flex-direction: column; gap: 0.6rem; padding: 1rem 1.1rem; }
+.kor-factor h4 { font-size: 0.9rem; font-weight: 700; }
+.kor-factor p { font-size: 0.78rem; line-height: 1.5; }
+.kor-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; }
+.kor-chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid var(--color-border-strong); background: #fff; color: var(--color-text-primary); font-size: 0.72rem; font-weight: 600; cursor: pointer; }
+.kor-chip:hover { border-color: var(--color-elevated); background: rgba(56, 78, 119, 0.06); }
+
+.card-head .btn { flex: none; white-space: nowrap; }
+
+/* Overview Numerik: kotak polutan, insight, heatmap + top 3, legenda, footer */
+.kor-top-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+@media (max-width: 640px) { .kor-top-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kor-topcard { display: flex; flex-direction: column; gap: 0.35rem; padding: 1rem 1.2rem; border: 0; }
+.kor-topcard-label { font-size: 0.78rem; font-weight: 700; opacity: 0.85; }
+.kor-topcard-value { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.4rem; }
+.kor-topcard-value strong { font-size: clamp(1.5rem, 2vw, 1.9rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kor-topcard-value span { font-size: 0.78rem; font-weight: 600; opacity: 0.85; }
+.kor-topcard-factor { font-size: 0.78rem; font-weight: 600; }
+.kor-insight-text { font-size: 0.84rem; line-height: 1.7; color: var(--color-text-primary); text-align: justify; }
+.kor-insight-text ul { margin: 0 0 0.9rem; padding-left: 1.2rem; list-style: disc outside; }
+.kor-insight-text li + li { margin-top: 0.5rem; }
+.kor-insight-text li { display: list-item; }
+.kor-insight-text li::marker { color: var(--color-elevated); }
+.kor-insight-text p { margin: 0; }
+.kor-insight-text strong { font-weight: 700; }
+.kor-heat-split { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); gap: var(--gap); align-items: start; }
+@media (max-width: 1100px) { .kor-heat-split { grid-template-columns: minmax(0, 1fr); } }
+.kor-subhead { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.4rem; }
+.kor-strength { margin-top: 0.9rem; max-width: 30rem; }
+.kor-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 0.4rem; padding-top: 1rem; border-top: 1px solid var(--color-border); }
+.kor-th { font-size: 0.68rem; font-weight: 700; color: var(--color-text-secondary); }
+.kor-callout li strong { display: inline; margin: 0; color: var(--color-text-primary); }
+.kor-callout ol { margin: 0.35rem 0 0; padding-left: 1.2rem; list-style: decimal outside; }
+.kor-callout ol li + li { margin-top: 0.6rem; }
+.kor-callout ol li { display: list-item; padding-left: 0.2rem; }
+.kor-callout ol li::marker { font-weight: 700; color: var(--color-text-primary); }
+.kor-split-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--gap); align-items: stretch; }
+@media (max-width: 1100px) { .kor-split-2 { grid-template-columns: minmax(0, 1fr); } }
+.kor-card-stack { display: flex; flex-direction: column; gap: var(--gap); }
+.kor-card-stack > .kor-topcard { flex: 1; justify-content: center; }
+
+
+/* Arah Angin: grafik jumlah observasi (kiri) + tabel deskriptif (kanan, lebih lebar) */
+.kor-split-arah { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--gap); align-items: stretch; }
+@media (max-width: 1100px) { .kor-split-arah { grid-template-columns: minmax(0, 1fr); } }
+.kor-pair-list { margin: 0; padding: 0 0 0 1.1rem; display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.82rem; line-height: 1.55; }
+.kor-pair-list li::marker { color: var(--color-elevated); }
+
+.kor-note--em { font-size: 0.8rem; color: var(--color-text-primary); }
+
+/* Overview Kategorik */
+.kor-split-tipe { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--gap); align-items: stretch; }
+@media (max-width: 1100px) { .kor-split-tipe { grid-template-columns: minmax(0, 1fr); } }
+.kor-compass-card { display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.kor-compass { width: 100%; max-width: 360px; height: auto; font-family: inherit; }

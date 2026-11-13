@@ -80,5 +80,5 @@ export function useStationPriority() {
 
 /** Polygon administrasi kabupaten/kota untuk layer peta jaringan. */
 export function useCoverageKabupatenGeoJSON() {
-  return useJson('/data/aqms/coverage_kabupaten.geojson')
+  return useJson('/data/geo/indonesia_pulau.geojson')
 }
