@@ -3313,6 +3313,38 @@ max-height: 40px !important;
   margin: 11px 13px;
 }
 
+.haze-map .leaflet-popup-pane {
+  z-index: 2000 !important;
+}
+
+.haze-map .leaflet-popup {
+  z-index: 2000 !important;
+}
+
+.haze-map {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.haze-map-canvas {
+  height: 440px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+  .haze-map-canvas {
+    height: 360px;
+  }
+}
+
+@media (max-width: 600px) {
+  .haze-map-canvas {
+    height: 310px;
+  }
+}
+
 .haze-map-popup {
   min-width: 180px;
   color: #526b86;
@@ -3418,7 +3450,6 @@ max-height: 40px !important;
   display: block;
   margin-bottom: 8px;
   color: #203d5d;
-  font-size: 13px;
 }
 
 .haze-map-interpretation p {

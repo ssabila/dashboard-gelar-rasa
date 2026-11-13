@@ -82,11 +82,11 @@ const AIR_QUALITY_STANDARDS = {
 
 
 const ISPU_COLORS = {
-  Baik: '#4ADE80',
-  Sedang: '#FACC15',
-  'Tidak Sehat': '#FB923C',
-  'Sangat Tidak Sehat': '#F87171',
-  Berbahaya: '#C026D3',
+  Baik: 'var(--ispu-baik)',
+  Sedang: 'var(--ispu-sedang)',
+  'Tidak Sehat': 'var(--ispu-tidak-sehat)',
+  'Sangat Tidak Sehat': 'var(--ispu-sangat-tidak)',
+  Berbahaya: 'var(--ispu-berbahaya)',
 }
 
 const MONTHS = [
@@ -4247,6 +4247,16 @@ const formatHazeHeatmapDate = (time) => {
     : date
 }
 
+const formatHazeEpisodeTime = (time) => {
+  const match = String(time ?? '').match(
+    /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2})(?::(\d{2}))?/
+  )
+
+  return match
+    ? `${match[3]}-${match[2]}-${match[1]} ${match[4]}.${match[5] ?? '00'} WIB`
+    : '--'
+}
+
 const hazeHeatmapOption = {
   tooltip: {
     position: 'top',
@@ -5659,7 +5669,7 @@ const resetCritical = () => setCriticalFilter({
 <div className="aq-distribusi-footer aq-section-footer">
   <p>
     *Stasiun bersatuan ppm dan stasiun dengan data tidak mencukupi
-    tidak disertakan pada seluruh analisis section ini.
+    tidak disertakan pada section ini.
   </p>
 </div>
 
@@ -6228,7 +6238,7 @@ const resetCritical = () => setCriticalFilter({
           />
 
           {hazeMapStations.length ? (
-
+            <>
 <div className="haze-analysis-layout">
 
   <div className="haze-analysis-top">
@@ -6243,10 +6253,6 @@ const resetCritical = () => setCriticalFilter({
         onSelectStation={setSelectedHazeStation}
       />
 
-      <p className="haze-map-hint">
-        Pilih titik pada peta untuk melihat informasi stasiun
-        dan kondisi pengukurannya.
-      </p>
     </div>
 
     {/* DETAIL STASIUN */}
@@ -6300,7 +6306,7 @@ const resetCritical = () => setCriticalFilter({
                 )}%
               </strong>
               <span>
-                peningkatan konsentrasi terhadap nilai ambang acuan dataset
+                peningkatan terhadap persentil ke-95 stasiun dan parameter
               </span>
             </div>
 
@@ -6356,7 +6362,7 @@ const resetCritical = () => setCriticalFilter({
   </div>
 
   <div className="haze-map-interpretation">
-    <strong>Interpretasi Persebaran Wilayah dan Kondisi Angin</strong>
+    <strong>Interpretasi</strong>
 
     <p>
       Peta menunjukkan lokasi stasiun yang mencatat lonjakan partikulat,
@@ -6373,10 +6379,21 @@ const resetCritical = () => setCriticalFilter({
       waktu belum cukup untuk menentukan arah sebaran atau membuktikan
       sumber pencemar tertentu.
     </p>
+
   </div>
 
 </div>
 
+          <div className="aq-distribusi-footer">
+            <p>
+              *Catatan warna marker: persentase peningkatan dihitung dengan
+              membandingkan konsentrasi terhadap persentil ke-95 pada kombinasi
+              stasiun dan parameter di dataset. Nilai ini merupakan ambang
+              analisis untuk menandai lonjakan relatif, bukan baku mutu
+              nasional dan bukan ukuran langsung tingkat bahaya kesehatan.
+            </p>
+          </div>
+            </>
           ) : (
             <EmptyData message="Tidak terdapat lokasi stasiun dengan catatan lonjakan pada filter ini." />
           )}
@@ -6421,7 +6438,7 @@ const resetCritical = () => setCriticalFilter({
           pada <strong>{stationCount} stasiun</strong> dalam waktu
           berdekatan, dengan jumlah kejadian terbanyak pada{' '}
           <strong>
-            {hazeMainEpisode?.time.replace('T', ' ') || '--'} WIB
+            {formatHazeEpisodeTime(hazeMainEpisode?.time)}
           </strong>.
           Kondisi ini menunjukkan adanya pola lonjakan partikulat
           yang terjadi hampir bersamaan di beberapa lokasi.
@@ -6442,7 +6459,7 @@ const resetCritical = () => setCriticalFilter({
         <p>
           Kesamaan waktu kejadian dan perbedaan karakteristik kawasan
           menjadi petunjuk awal untuk menelusuri kemungkinan episode
-          pencemaran partikulat, termasuk potensi keterkaitannya dengan
+          kabut asap, termasuk potensi keterkaitannya lonjakan tersebut dengan
           kebakaran hutan dan lahan gambut. Namun, pola ini belum
           membuktikan sumber pencemaran. Diperlukan data pendukung,
           seperti titik panas (hotspot), arah sebaran asap, dan informasi
@@ -6454,14 +6471,13 @@ const resetCritical = () => setCriticalFilter({
 </div>
           )}
         </Card>
-        <div className="aq-distribusi-footer">
-          <p>
-            *Indikasi episode ditentukan dari lonjakan PM2.5 dan PM10
-            di atas persentil ke-95 stasiun, bukan konfirmasi kabut
-            asap. Analisis menggunakan data stasiun bersatuan µg/m³;
-            stasiun bersatuan ppm tidak disertakan.
-          </p>
-        </div>
+
+        <div className="aq-distribusi-footer aq-section-footer">
+  <p>
+    *Stasiun bersatuan ppm dan stasiun dengan data tidak mencukupi
+    tidak disertakan pada section ini.
+  </p>
+</div>
       </section>
       )}
 
