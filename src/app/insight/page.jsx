@@ -17,14 +17,18 @@ import {
   Zap,
 } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
-import { Card } from '@/components/ui/Card'
+import { Card, CardHeader } from '@/components/ui/Card'
+import { EChart } from '@/components/charts/EChart'
+import { GROUP_COLORS, GROUP_ORDER, SECTORS, quantile } from '@/lib/korelasi'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useStations, useOverviewSummary, useOverviewAnalytics } from '@/hooks/useAqmsData'
 import { useT4Data } from '@/hooks/usePm25KesehatanData'
 import { useT3Tables } from '@/hooks/useKorelasiData'
 import { useMonitoringNetworkSummary } from '@/hooks/useKecukupanData'
 import { formatNumber } from '@/lib/formatters'
-import { POLLUTANTS } from '@/lib/constants'
+import { ccfRows } from '@/lib/pm25kesehatan'
+import { useStationMaster, useStationCompleteness, useStationNearestNeighbor } from '@/hooks/useKecukupanData'
+import { buildJaringanStats, COMP_THRESHOLD, FAR_KM } from '@/lib/jaringan'
 
 const NAAQS_ANNUAL = 15
 const WHO_ANNUAL = 5
@@ -37,10 +41,8 @@ const STATUS_CARDS = [
     label: 'Kualitas Udara',
     status: 'kritis',
     statusColor: '#EF4444',
-    statusBg: 'rgba(239,68,68,0.08)',
-    statusBorder: 'rgba(239,68,68,0.2)',
-    statusLabel: 'Melampaui WHO AQG',
-    desc: 'PM2.5 nasional jauh di atas pedoman internasional.',
+    statusLabel: 'Di atas pedoman WHO',
+    desc: 'Rata-rata PM2.5 nasional di atas pedoman WHO dan naik pada 2025 dibanding 2024.',
     href: '/kualitas-udara',
     dot: '#EF4444',
   },
@@ -50,10 +52,8 @@ const STATUS_CARDS = [
     label: 'Korelasi Faktor',
     status: 'perhatian',
     statusColor: '#FACC15',
-    statusBg: 'rgba(250,204,21,0.08)',
-    statusBorder: 'rgba(250,204,21,0.25)',
-    statusLabel: 'Faktor kompleks teridentifikasi',
-    desc: 'Lalu lintas, suhu, kelembapan & tipe lokasi berperan.',
+    statusLabel: 'Lalu lintas paling berkaitan',
+    desc: 'Intensitas lalu lintas berkaitan dengan PM2.5 secara positif, sedangkan faktor meteorologi cenderung lemah.',
     href: '/korelasi',
     dot: '#FACC15',
   },
@@ -63,10 +63,8 @@ const STATUS_CARDS = [
     label: 'Dampak Kesehatan',
     status: 'kritis',
     statusColor: '#EF4444',
-    statusBg: 'rgba(239,68,68,0.08)',
-    statusBorder: 'rgba(239,68,68,0.2)',
-    statusLabel: 'Lag 2–5 hari signifikan',
-    desc: 'PM2.5 meningkatkan kasus ISPA dengan jeda beberapa hari.',
+    statusLabel: 'Tanpa bukti efek jeda',
+    desc: 'Kasus ISPA, asma, PPOK, kardiovaskular, dan kematian bergerak searah dengan PM2.5. Efek jeda belum terbukti.',
     href: '/pm25-kesehatan',
     dot: '#EF4444',
   },
@@ -76,16 +74,18 @@ const STATUS_CARDS = [
     label: 'Jaringan Stasiun',
     status: 'perhatian',
     statusColor: '#FACC15',
-    statusBg: 'rgba(250,204,21,0.08)',
-    statusBorder: 'rgba(250,204,21,0.25)',
-    statusLabel: 'Coverage terbatas',
-    desc: '27 stasiun tidak cukup untuk merepresentasikan Indonesia.',
+    statusLabel: 'Ada stasiun terisolasi',
+    desc: null, // diisi dari data jaringan di ScorecardSection
     href: '/kecukupan-stasiun',
     dot: '#FACC15',
   },
 ]
 
-function ScorecardSection() {
+function ScorecardSection({ jaringan }) {
+  const jaringanDesc = jaringan
+    ? `${jaringan.farCount} stasiun berjarak lebih dari ${FAR_KM} km dari tetangga terdekat, dan ${jaringan.belowCount} stasiun kelengkapannya di bawah ${COMP_THRESHOLD}%.`
+    : 'Data jaringan sedang dimuat.'
+
   return (
     <Section
       title="Status dashboard"
@@ -93,7 +93,12 @@ function ScorecardSection() {
     >
       <div className="ins-scorecard-grid">
         {STATUS_CARDS.map(({ id, icon: Icon, label, status, statusColor, statusLabel, desc, href, dot }) => (
-          <Link key={id} href={href} className="card kpi ins-scorecard-card" style={{ '--ins-color': statusColor, '--ins-text': statusColor === '#FACC15' ? '#78350F' : statusColor }}>
+          <Link
+            key={id}
+            href={href}
+            className="card kpi ins-scorecard-card"
+            style={{ '--ins-color': statusColor, '--ins-text': statusColor === '#FACC15' ? '#78350F' : statusColor }}
+          >
             <div className="ins-scorecard-top">
               <span className="ins-scorecard-icon">
                 <Icon size={15} />
@@ -106,7 +111,7 @@ function ScorecardSection() {
             <div>
               <p className="ins-scorecard-label">{label}</p>
               <p className="ins-scorecard-value">{status === 'kritis' ? 'Perlu perhatian' : 'Perlu penguatan'}</p>
-              <p className="ins-scorecard-desc">{desc}</p>
+              <p className="ins-scorecard-desc">{id === 'jaringan' ? jaringanDesc : desc}</p>
             </div>
             <div className="ins-scorecard-link">
               Detail <ChevronRight size={12} />
@@ -154,24 +159,98 @@ function FindingPoint({ icon: Icon = CheckCircle2, color = '#8BBEB2', text }) {
   )
 }
 
-function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
+const LANSIA_LAGS = [0, 3, 5, 7]
+
+function LansiaLagChart({ t4 }) {
+  const picked = useMemo(() => {
+    const rows = ccfRows(t4?.ccf ?? [], 'ISPA lansia')
+    return LANSIA_LAGS
+      .map((lag) => rows.find((r) => r.lag === lag))
+      .filter(Boolean)
+  }, [t4])
+
+  const option = useMemo(() => {
+    const fmt = (v) => Number(v).toFixed(3).replace('.', ',')
+    return {
+      textStyle: { fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", fontSize: 11 },
+      grid: { left: 52, right: 16, top: 24, bottom: 36 },
+      tooltip: {
+        trigger: 'axis',
+        formatter: (ps) => {
+          const r = picked[ps[0].dataIndex]
+          return `<strong>Lag ${r.lag} hari</strong><br/>` +
+            `Koefisien CCF: <strong>${fmt(r.koef_ccf)}</strong><br/>` +
+            `CI 95%: ${fmt(r.ci95_bawah)} s.d. ${fmt(r.ci95_atas)}<br/>` +
+            `Status: ${r.di_luar_ci95 ? 'di luar CI 95%' : 'di dalam CI 95%'}`
+        },
+      },
+      xAxis: {
+        type: 'category',
+        data: picked.map((r) => `Lag ${r.lag}`),
+        axisLabel: { color: '#18314F', fontWeight: 600 },
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Koefisien CCF',
+        nameTextStyle: { color: '#55706E' },
+        splitLine: { lineStyle: { color: 'rgba(24,49,79,0.08)' } },
+        axisLabel: { color: '#55706E', formatter: (v) => fmt(v) },
+      },
+      series: [{
+        type: 'bar',
+        barMaxWidth: 46,
+        data: picked.map((r) => ({
+          value: r.koef_ccf,
+          itemStyle: {
+            color: r.koef_ccf >= 0 ? '#EA580C' : '#384E77',
+            opacity: r.di_luar_ci95 ? 1 : 0.45,
+            borderRadius: r.koef_ccf >= 0 ? [6, 6, 0, 0] : [0, 0, 6, 6],
+          },
+        })),
+        label: { show: true, position: 'top', formatter: (p) => fmt(p.value), fontWeight: 700, color: '#18314F' },
+        markLine: {
+          silent: true,
+          symbol: 'none',
+          lineStyle: { color: 'rgba(24,49,79,0.45)', type: 'dashed' },
+          label: { show: false },
+          data: [{ yAxis: 0 }],
+        },
+      }],
+    }
+  }, [picked])
+
+  if (!picked.length) {
+    return <p style={{ fontSize: '0.8rem' }}>Data CCF ISPA lansia belum tersedia.</p>
+  }
+
+  return <EChart option={option} height={260} />
+}
+
+function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary, jaringan }) {
   const [activeTab, setActiveTab] = useState('kualitas')
 
-  const korelasiRows = t3?.korelasi_spearman ?? []
-  const top5Korelasi = [...korelasiRows]
-    .filter((r) => r.faktor && r.rho != null)
-    .sort((a, b) => Math.abs(Number(b.rho)) - Math.abs(Number(a.rho)))
-    .slice(0, 5)
-  const maxRho = top5Korelasi.length > 0 ? Math.abs(Number(top5Korelasi[0]?.rho ?? 1)) : 1
+  const pm = buildPm25Stats(t3)
+  const top5Korelasi = (pm?.faktor ?? []).slice(0, 5)
+  const maxRho = top5Korelasi.length ? Math.abs(top5Korelasi[0].rho) : 1
+  const utara = pm?.arah.find((r) => r.name === 'Utara')
+  const arahTop = pm?.arah.reduce((b, r) => (!b || r.med > b.med ? r : b), null)
+  const arahRep = pm?.arah
+    .filter((r) => r.nStasiun >= ARAH_MIN_STASIUN)
+    .reduce((b, r) => (!b || r.med > b.med ? r : b), null)
 
+  const tipeOption = pm?.tipe.length
+    ? barOption(pm.tipe, {
+        colorOf: (r) => GROUP_COLORS[r.name] ?? '#384E77',
+        tipOf: (r) =>
+          `<strong>${r.name}</strong><br/>Median PM2.5: ${fmt2(r.med)} µg/m³<br/>${r.n} stasiun`,
+      })
+    : null
+  const industri = pm?.tipe.find((r) => r.name === 'Industri')
   const ccf = t4?.ringkasan_ccf ?? []
-  const ispaRingkasan = t4?.ringkasan_ispa_periode ?? {}
   const bestLag = ccf.length > 0
     ? ccf.reduce((best, r) => (!best || Math.abs(Number(r.max_ccf ?? 0)) > Math.abs(Number(best.max_ccf ?? 0)) ? r : best), null)
     : null
-  const lagValue = bestLag?.lag_at_max_ccf ?? bestLag?.lag ?? null
-
-  const networkKpi = networkSummary?.kpi ?? {}
+  
   const maxDistKm = analytics.nearest.data?.overall?.max_km
 
   const TAB_CONTENT = {
@@ -220,37 +299,65 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
             Faktor penentu PM2.5 bersifat multi-dimensi
           </h3>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <FindingPoint icon={Zap} color="#384E77" text="Lalu lintas kendaraan bermotor menunjukkan korelasi sedang–kuat dengan PM2.5, terutama di perkotaan dan jam sibuk." />
-            <FindingPoint icon={Wind} color="#8BBEB2" text="Suhu tinggi berkorelasi negatif dengan PM2.5 — kondisi panas mendukung dispersi polutan secara vertikal." />
-            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Kelembapan tinggi umumnya berkorelasi negatif: polutan 'menempel' ke partikel air dan mengendap lebih cepat." />
-            <FindingPoint icon={AlertTriangle} color="#FB923C" text="Lokasi gambut dan kawasan industri secara konsisten menunjukkan median PM2.5 lebih tinggi dari rata-rata." />
-            <FindingPoint icon={Zap} color="#FACC15" text="Arah angin tenggara berkorelasi dengan konsentrasi PM2.5 relatif lebih tinggi di beberapa lokasi." />
+            <FindingPoint
+              icon={Zap}
+              color="#384E77"
+              text="Intensitas lalu lintas yang lebih tinggi cenderung berkaitan dengan peningkatan konsentrasi PM2.5."
+            />
+            <FindingPoint
+              icon={MapPin}
+              color="#FB923C"
+              text="Jarak ke jalan raya menunjukkan hubungan negatif dengan konsentrasi PM2.5, sehingga stasiun yang lebih dekat dengan jalan raya cenderung memiliki konsentrasi PM2.5 lebih tinggi."
+            />
+            <FindingPoint
+              icon={Wind}
+              color="#8BBEB2"
+              text="Faktor meteorologi, seperti suhu, kelembapan, dan kecepatan angin, cenderung menunjukkan hubungan yang lemah dengan konsentrasi PM2.5."
+            />
+            <FindingPoint
+              icon={AlertTriangle}
+              color="#EF4444"
+              text={`Tipe lokasi industri memiliki median konsentrasi PM2.5 tertinggi dibandingkan kelompok lokasi lainnya, yaitu ${industri ? fmt2(industri.med) : '—'} µg/m³.`}
+            />
+            <FindingPoint
+              icon={Zap}
+              color="#FACC15"
+              text={
+                arahTop && arahRep && arahTop.name !== arahRep.name
+                  ? `Median PM2.5 tertinggi secara keseluruhan tercatat saat angin dari arah ${arahTop.name} (${fmt2(arahTop.med)} µg/m³), tetapi hanya didukung ${arahTop.nStasiun} stasiun. Arah yang lebih representatif adalah ${arahRep.name} (${fmt2(arahRep.med)} µg/m³) dengan ${arahRep.nStasiun} stasiun.`
+                  : arahRep
+                    ? `Median PM2.5 tertinggi tercatat saat angin dari arah ${arahRep.name} (${fmt2(arahRep.med)} µg/m³), didukung ${arahRep.nStasiun} stasiun.`
+                    : 'Data arah angin belum tersedia.'
+              }
+            />
           </ul>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
           <p style={{ fontSize: '0.72rem', fontWeight: 700, color: '#55706E', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Top faktor (Spearman ρ)</p>
-          {top5Korelasi.length > 0 ? (
-            top5Korelasi.map((r, i) => {
-              const rho = Number(r.rho ?? 0)
-              const color = rho > 0.3 ? '#384E77' : rho < -0.3 ? '#8BBEB2' : '#7C9693'
-              return (
-                <MiniBar
-                  key={r.faktor ?? i}
-                  value={Math.abs(rho)}
-                  max={maxRho}
-                  color={color}
-                  label={r.faktor_label ?? r.faktor ?? '—'}
-                  valueLabel={`${rho > 0 ? '+' : ''}${formatNumber(rho, 2)}`}
-                />
-              )
-            })
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {['Lalu lintas', 'Suhu', 'Kelembapan', 'Kecepatan angin', 'Radiasi surya'].map((f, i) => (
-                <MiniBar key={f} value={[0.52, -0.38, -0.31, -0.28, 0.19][i]} max={0.6} color={[0.52, -0.38, -0.31, -0.28, 0.19][i] > 0 ? '#384E77' : '#8BBEB2'} label={f} valueLabel={['+0.52', '−0.38', '−0.31', '−0.28', '+0.19'][i]} />
-              ))}
-            </div>
-          )}
+          {top5Korelasi.map((r) => {
+            const rho = Number(r.rho)
+            const color = rho > 0.3 ? '#384E77' : rho < -0.3 ? '#8BBEB2' : '#7C9693'
+            return (
+              <MiniBar
+                key={r.key}
+                value={Math.abs(rho)}
+                max={maxRho}
+                color={color}
+                label={r.label}
+                valueLabel={`${rho > 0 ? '+' : ''}${formatNumber(rho, 2)}`}
+              />
+            )
+          })}
+          <div style={{ marginTop: '0.75rem', padding: '0.9rem', borderRadius: '0.75rem', background: 'rgba(56,78,119,0.05)', border: '1px solid rgba(56,78,119,0.14)' }}>
+            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#384E77', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
+              Median PM2.5 per tipe lokasi
+            </p>
+            {tipeOption ? (
+              <EChart option={tipeOption} height={190} />
+            ) : (
+              <LoadingSpinner label="Memuat data..." />
+            )}
+          </div>
           <Link href="/korelasi" style={{ textDecoration: 'none', marginTop: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', borderRadius: '0.65rem', background: '#384E77', color: '#E6F9AF', fontSize: '0.78rem', fontWeight: 700 }}>
               <GitCompareArrows size={14} />
@@ -265,42 +372,25 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr)', gap: '2rem', paddingTop: '1.25rem' }} className="ins-tab-grid">
         <div>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#18314F', marginBottom: '1rem', lineHeight: 1.3 }}>
-            PM2.5 berdampak pada kasus ISPA dengan jeda {lagValue != null ? `${lagValue} hari` : '2–5 hari'}
+            Kesimpulan kesehatan
           </h3>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <FindingPoint icon={Timer} color="#FB923C" text={`Efek jeda (lag effect) PM2.5 → ISPA dan asma terdeteksi sekitar ${lagValue != null ? `${lagValue} hari` : '2–5 hari'} setelah paparan. Ini penting untuk sistem peringatan dini.`} />
-            <FindingPoint icon={AlertTriangle} color="#EF4444" text="Balita (< 5 tahun) menunjukkan kerentanan jauh lebih tinggi dibanding kelompok usia lain dalam insiden ISPA." />
-            <FindingPoint icon={Stethoscope} color="#8BBEB2" text="PPOK merespons paparan PM2.5 dengan lag lebih panjang — perlu analisis time-series mingguan hingga bulanan." />
-            <FindingPoint icon={HeartPulse} color="#FB923C" text="Dampak kardiovaskular (hipertensi, gagal jantung) muncul lebih lambat namun signifikan secara statistik." />
-            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Penurunan PM2.5 pada musim hujan berkorelasi dengan pengurangan kasus rawat inap pernapasan." />
+            <FindingPoint icon={HeartPulse} color="#FB923C" text="PM2.5 menunjukkan korelasi positif dengan kasus ISPA balita, ISPA lansia, asma, dan PPOK, terutama pada hari yang sama dengan paparan." />
+            <FindingPoint icon={Timer} color="#EF4444" text="Hubungan PM2.5 dengan sebagian besar indikator kesehatan cenderung paling kuat pada hari yang sama (lag 0), tanpa pola efek jeda yang konsisten hingga 14 hari." />
+            <FindingPoint icon={AlertTriangle} color="#94A3B8" text="Penyakit kardiovaskular dan kematian tidak menunjukkan hubungan yang jelas dengan PM2.5 pada sebagian besar periode jeda yang dianalisis." />
+            <FindingPoint icon={Stethoscope} color="#8BBEB2" text="Rata-rata kasus ISPA per rumah sakit per hari, baik pada balita maupun lansia, cenderung meningkat dari tahun 2024 hingga 2026. Kasus ISPA lansia juga secara konsisten lebih tinggi dibandingkan ISPA balita." />
+            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Meskipun jumlah kasus ISPA lansia lebih tinggi, hal tersebut belum cukup untuk menyimpulkan bahwa lansia lebih rentan, karena data jumlah populasi masing-masing kelompok tidak tersedia." />
           </ul>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {(ispaRingkasan.total_balita != null || ispaRingkasan.total_lansia != null) && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
-              <div style={{ textAlign: 'center', padding: '0.9rem', borderRadius: '0.75rem', background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.2)' }}>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#18314F' }}>{formatNumber(ispaRingkasan.total_balita)}</div>
-                <div style={{ fontSize: '0.68rem', color: '#55706E', marginTop: '0.2rem' }}>kasus balita</div>
-              </div>
-              <div style={{ textAlign: 'center', padding: '0.9rem', borderRadius: '0.75rem', background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)' }}>
-                <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#18314F' }}>{formatNumber(ispaRingkasan.total_lansia)}</div>
-                <div style={{ fontSize: '0.68rem', color: '#55706E', marginTop: '0.2rem' }}>kasus lansia</div>
-              </div>
-            </div>
-          )}
           <div style={{ padding: '0.9rem', borderRadius: '0.75rem', background: 'rgba(251,146,60,0.06)', border: '1px solid rgba(251,146,60,0.15)' }}>
-            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#FB923C', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>Lag Effect</p>
-            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-              {[0, 1, 2, 3, 4, 5, 6, 7].map((lag) => (
-                <div key={lag} style={{
-                  flex: 1, height: `${[0.3, 0.5, 0.75, 1, 0.9, 0.7, 0.4, 0.2][lag] * 3}rem`,
-                  borderRadius: '0.25rem',
-                  background: lag >= 2 && lag <= 5 ? '#FB923C' : 'rgba(24,49,79,0.12)',
-                  transition: 'height 300ms ease',
-                }} />
-              ))}
-            </div>
-            <p style={{ fontSize: '0.68rem', color: '#55706E', marginTop: '0.4rem' }}>Lag 0–7 hari · oranye = puncak efek</p>
+            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#FB923C', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>
+              ISPA lansia · koefisien CCF pada lag terpilih
+            </p>
+            <p style={{ fontSize: '0.7rem', color: '#55706E', marginBottom: '0.5rem' }}>
+              Nilai dibaca langsung dari hasil CCF (dengan penghapusan tren). Batang pekat berada di luar CI 95%.
+            </p>
+            <LansiaLagChart t4={t4} />
           </div>
           <Link href="/pm25-kesehatan" style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', borderRadius: '0.65rem', background: '#FB923C', color: '#fff', fontSize: '0.78rem', fontWeight: 700 }}>
@@ -312,34 +402,72 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
         </div>
       </div>
     ),
-    jaringan: (
+    jaringan: !jaringan ? (
+      <LoadingSpinner label="Memuat data jaringan..." />
+    ) : (
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr)', gap: '2rem', paddingTop: '1.25rem' }} className="ins-tab-grid">
         <div>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#18314F', marginBottom: '1rem', lineHeight: 1.3 }}>
-            27 stasiun tidak mencukupi untuk Indonesia
+            {jaringan.total} stasiun, {jaringan.farCount} berjarak jauh dari tetangga, dan {jaringan.belowCount} di bawah {COMP_THRESHOLD}% kelengkapan
           </h3>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <FindingPoint icon={Network} color="#60A5FA" text="27 stasiun untuk seluruh Indonesia yang luasnya > 1,9 juta km² menciptakan titik buta pemantauan yang besar." />
-            <FindingPoint icon={MapPin} color="#FACC15" text={`Beberapa wilayah tanpa stasiun dalam radius ${maxDistKm != null ? `>${formatNumber(maxDistKm, 0)} km` : '>400 km'} — terutama Papua, Maluku, dan Kalimantan pedalaman.`} />
-            <FindingPoint icon={AlertTriangle} color="#FB923C" text="Kelengkapan data rata-rata < 85% di sejumlah stasiun akibat gangguan sensor atau konektivitas." />
-            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Distribusi tidak merata: Jawa terpantau relatif baik, namun Papua dan pulau-pulau terpencil sangat minim." />
-            <FindingPoint icon={Zap} color="#8BBEB2" text="Kalibrasi silang antarstasiun perlu distandardisasi untuk memastikan komparabilitas data nasional." />
+            <FindingPoint
+              icon={Network}
+              color="#60A5FA"
+              text={`Median jarak ke tetangga terdekat ${jaringan.medianJarak != null ? formatNumber(jaringan.medianJarak, 1) : '—'} km. ${jaringan.isolatedCount} stasiun tergolong terisolasi (tanpa tetangga atau jarak di atas ${FAR_KM} km).`}
+            />
+            <FindingPoint
+              icon={MapPin}
+              color="#FACC15"
+              text={jaringan.farCount > 0
+                ? `${jaringan.farCount} stasiun berjarak lebih dari ${FAR_KM} km dari tetangga terdekatnya: ${jaringan.far.map((s) => s.code).join(', ')}.`
+                : `Tidak ada stasiun yang berjarak lebih dari ${FAR_KM} km dari tetangga terdekatnya.`}
+            />
+            <FindingPoint
+              icon={AlertTriangle}
+              color="#FB923C"
+              text={jaringan.belowCount > 0
+                ? `${jaringan.belowCount} stasiun memiliki kelengkapan data di bawah ${COMP_THRESHOLD}%: ${jaringan.belowComp.map((s) => `${s.code} (${formatNumber(s.completeness, 1)}%)`).join(', ')}.`
+                : `Semua stasiun memiliki kelengkapan data di atas ${COMP_THRESHOLD}%.`}
+            />
+            <FindingPoint
+              icon={Zap}
+              color={jaringan.intermittent + jaringan.defective > 0 ? '#EF4444' : '#22C55E'}
+              text={`${jaringan.active} dari ${jaringan.totalSensors ?? '—'} sensor berstatus Active. ${jaringan.intermittent} Intermittent dan ${jaringan.defective} Defective perlu diperiksa.`}
+            />
+            <FindingPoint
+              icon={CheckCircle2}
+              color="#8BBEB2"
+              text={jaringan.lowest
+                ? `Kelengkapan rata-rata seluruh stasiun ${jaringan.avgComp != null ? formatNumber(jaringan.avgComp, 1) : '—'}%. Nilai terendah tercatat di ${jaringan.lowest.code} (${formatNumber(jaringan.lowest.completeness, 1)}%).`
+                : 'Data kelengkapan belum tersedia.'}
+            />
           </ul>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ padding: '1rem', borderRadius: '0.75rem', background: 'rgba(96,165,250,0.07)', border: '1px solid rgba(96,165,250,0.18)' }}>
-            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>Distribusi per pulau</p>
-            {[
-              { name: 'Jawa', pct: 48, count: 13 },
-              { name: 'Sumatera', pct: 26, count: 7 },
-              { name: 'Kalimantan', pct: 11, count: 3 },
-              { name: 'Sulawesi', pct: 7, count: 2 },
-              { name: 'Papua & lainnya', pct: 7, count: 2 },
-            ].map((p) => (
+            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
+              Jumlah stasiun per pulau
+            </p>
+            {jaringan.islands.map((p) => (
               <div key={p.name} style={{ marginBottom: '0.5rem' }}>
-                <MiniBar value={p.pct} max={100} color="#60A5FA" label={p.name} valueLabel={`${p.count} stasiun`} />
+                <MiniBar
+                  value={p.count}
+                  max={jaringan.total || 1}
+                  color="#60A5FA"
+                  label={p.name}
+                  valueLabel={`${p.count} stasiun`}
+                />
               </div>
             ))}
+          </div>
+          <div style={{ padding: '0.9rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)' }}>
+            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+              Stasiun perlu perhatian ({jaringan.attention.length})
+            </p>
+            <p style={{ fontSize: '0.76rem', color: '#18314F', lineHeight: 1.6 }}>
+              {jaringan.attention.map((s) => s.code).join(', ') || 'Tidak ada.'}
+            </p>
           </div>
           <Link href="/kecukupan-stasiun" style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', borderRadius: '0.65rem', background: '#384E77', color: '#E6F9AF', fontSize: '0.78rem', fontWeight: 700 }}>
@@ -518,6 +646,104 @@ function TimelineSection() {
   )
 }
 
+/* ─── Data PM2.5 dari tabel T3 (sumber sama dengan halaman Korelasi) ──── */
+const MIN_JAM_ARAH = 30
+const FACTOR_LABEL = {
+  temperature: 'Suhu',
+  humidity: 'Kelembapan',
+  wind_speed: 'Kecepatan angin',
+  lalu_lintas: 'Intensitas lalu lintas',
+  jarak_jalan: 'Jarak ke jalan raya',
+}
+
+const ARAH_MIN_STASIUN = 10 // arah dengan jumlah stasiun di bawah ini dianggap kurang terwakili
+function buildPm25Stats(t) {
+  if (!t) return null
+
+  // Median PM2.5 per arah angin: median dari median stasiun (stasiun dengan >= 30 jam valid)
+  const arah = SECTORS.map((s) => {
+    const all = (t.arah_angin ?? []).filter(
+      (r) => r.polutan === 'pm25' && r.arah_angin === s.name
+    )
+    const used = all.filter((r) => r.n_valid >= MIN_JAM_ARAH)
+    const meds = used.map((r) => r.median)
+    return {
+      name: s.name,
+      med: meds.length ? quantile(meds, 0.5) : null,
+      nStasiun: used.length,
+    }
+  }).filter((x) => x.med != null)
+
+  // Median PM2.5 per tipe lokasi
+  const tipe = GROUP_ORDER.map((g) => {
+    const row = (t.tipe_ringkasan ?? []).find(
+      (r) => r.tipe_lokasi === g && r.polutan === 'pm25'
+    )
+    return row ? { name: g, med: row.median, n: row.jumlah_stasiun } : null
+  })
+    .filter(Boolean)
+    .sort((a, b) => b.med - a.med)
+
+  // Korelasi Spearman PM2.5 dengan tiap faktor
+  const faktor = [
+    ...(t.median_korelasi ?? [])
+      .filter((r) => r.polutan === 'pm25')
+      .map((r) => ({ key: r.variabel, rho: r.median_spearman })),
+    ...(t.korelasi_karakteristik ?? [])
+      .filter((r) => r.polutan === 'pm25')
+      .map((r) => ({ key: r.variabel_karakteristik, rho: r.spearman_rho })),
+  ]
+    .filter((r) => r.rho != null)
+    .map((r) => ({ ...r, label: FACTOR_LABEL[r.key] ?? r.key }))
+    .sort((a, b) => Math.abs(b.rho) - Math.abs(a.rho))
+
+  return { arah, tipe }
+}
+
+const fmt2 = (v) => Number(v).toFixed(2).replace('.', ',')
+
+function barOption(items, { colorOf, tipOf }) {
+  return {
+    textStyle: { fontFamily: 'inherit', fontSize: 11 },
+    grid: { left: 8, right: 64, top: 12, bottom: 8, containLabel: true },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: (ps) => tipOf(items[ps[0].dataIndex]),
+    },
+    xAxis: {
+      type: 'value',
+      name: 'µg/m³',
+      nameLocation: 'end',
+      nameTextStyle: { fontSize: 11 },
+      splitLine: { lineStyle: { type: 'dashed', color: '#E2E8F0' } },
+    },
+    yAxis: {
+      type: 'category',
+      inverse: true,
+      data: items.map((i) => i.name),
+      axisLine: { lineStyle: { color: '#CBD5E1' } },
+      axisTick: { show: false },
+    },
+    series: [{
+      type: 'bar',
+      barMaxWidth: 22,
+      data: items.map((i) => ({
+        value: i.med,
+        itemStyle: { color: colorOf(i), borderRadius: [0, 6, 6, 0] },
+      })),
+      label: {
+        show: true,
+        position: 'right',
+        formatter: (p) => fmt2(p.value),
+        fontWeight: 'bold',
+        fontSize: 11,
+      },
+    }],
+  }
+}
+
+
 /* ═══ PAGE ══════════════════════════════════════════════════════════════════ */
 export default function InsightPage() {
   const { data: stations } = useStations()
@@ -526,6 +752,19 @@ export default function InsightPage() {
   const { data: t4 } = useT4Data()
   const { data: t3 } = useT3Tables()
   const { data: networkSummary } = useMonitoringNetworkSummary()
+  const { data: stationMaster } = useStationMaster()
+  const { data: stationComp } = useStationCompleteness()
+  const { data: stationNearest } = useStationNearestNeighbor()
+
+  const jaringan = useMemo(
+    () => buildJaringanStats({
+      summary: networkSummary,
+      stationsRaw: stationMaster,
+      comp: stationComp,
+      nearest: stationNearest,
+    }),
+    [networkSummary, stationMaster, stationComp, stationNearest]
+  )
 
   const all = stations ?? []
 
@@ -563,13 +802,14 @@ export default function InsightPage() {
 
       {subTab === 'insight' && (
         <>
-          <ScorecardSection />
+          <ScorecardSection jaringan={jaringan} />
           <FindingsTabsSection
             avgPm25={avgPm25}
             t3={t3}
             t4={t4}
             analytics={analytics}
             networkSummary={networkSummary}
+            jaringan={jaringan}
           />
         </>
       )}

@@ -149,3 +149,11 @@ export function useStationTimeseries(stationCode) {
 export function useHourlyPattern() {
   return useFetch('/data/aqms/hourly_pattern.json')
 }
+
+/**
+ * Observasi harian per stasiun (sumber yang sama dengan tab Kualitas Udara).
+ * File: public/data/kualitas-udara/aqms_ispu_harian.json
+ */
+export function useIspuDaily() {
+  return useFetch('/data/kualitas-udara/aqms_ispu_harian.json')
+}
