@@ -157,3 +157,18 @@ export function useHourlyPattern() {
 export function useIspuDaily() {
   return useFetch('/data/kualitas-udara/aqms_ispu_harian.json')
 }
+
+/** Rekap tahunan per stasiun (perubahan 2025 vs 2024). */
+export function useAnnualRows() {
+  return useFetch('/data/kualitas-udara/aqms_tahunan.json')
+}
+
+/** Rata-rata PM2.5 per musim (hujan dan kemarau). */
+export function useSeasonalRows() {
+  return useFetch('/data/kualitas-udara/aqms_musim.json')
+}
+
+/** Pola rata-rata PM2.5 per jam. */
+export function useHourlyRows() {
+  return useFetch('/data/kualitas-udara/aqms_pola_jam.json')
+}
