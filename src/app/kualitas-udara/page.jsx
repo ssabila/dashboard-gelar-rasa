@@ -292,9 +292,9 @@ function FilterSelect({ label, value, options, onChange }) {
   )
 }
 
-function LocalFilter({ children, onReset }) {
+function LocalFilter({ children, onReset, className = '' }) {
   return (
-    <div className="aq-filter-toolbar">
+    <div className={`aq-filter-toolbar ${className}`.trim()}>
       <div className="aq-filter-fields">{children}</div>
 
       <button
@@ -908,6 +908,19 @@ function PollutantBoxplot({ rows, parameter }) {
     );
   }
 
+  const parameterLabel = PARAMETERS[parameter]?.label || parameter
+  const highestMedian = [...boxData].sort(
+    (a, b) => b.value[2] - a.value[2]
+  )[0]
+  const widestDistribution = [...boxData].sort(
+    (a, b) =>
+      (b.value[3] - b.value[1]) -
+      (a.value[3] - a.value[1])
+  )[0]
+  const outlierIslandCount = new Set(
+    outliers.map(([, island]) => island)
+  ).size
+
   return (
   <div className="aq-boxplot-wrapper">
     <EChart
@@ -921,6 +934,40 @@ function PollutantBoxplot({ rows, parameter }) {
         Geser slider di bawah grafik untuk memperbesar
         atau memperkecil rentang konsentrasi polutan.
       </span>
+    </div>
+
+    <div className="aq-boxplot-interpretation">
+      <strong>Interpretasi</strong>
+      <p>
+        Boxplot diatas membandingkan sebaran konsentrasi {parameterLabel} antarwilayah
+        pada periode yang dipilih. Garis di tengah kotak menunjukkan{' '}
+        <strong>median</strong>, kotak menunjukkan 50% data di bagian tengah
+        (Q1–Q3), sedangkan garis yang memanjang dari kotak menunjukkan rentang
+        data utama di luar pencilan. Titik berwarna oranye menandai{' '}
+        <strong>outlier</strong>.
+      </p>
+      <p>
+        Pada boxplot saat ini, median tertinggi terlihat di{' '}
+        <strong>{highestMedian.name}</strong> sebesar{' '}
+        <strong>{formatValue(highestMedian.value[2])} µg/m³</strong>.
+        Sebaran 50% data paling lebar terdapat di{' '}
+        <strong>{widestDistribution.name}</strong>, dari{' '}
+        <strong>
+          {formatValue(widestDistribution.value[1])}–{formatValue(widestDistribution.value[3])} µg/m³
+        </strong>
+        , yang menunjukkan variasi konsentrasi harian lebih besar pada wilayah
+        tersebut.{' '}
+        {outliers.length ? (
+          <>
+            Terdapat <strong>{outliers.length} pencilan</strong> pada{' '}
+            <strong>{outlierIslandCount} wilayah</strong>, pencilan ini
+            dibaca sebagai kejadian yang berbeda dari pola umum, bukan langsung
+            sebagai bukti kondisi pencemaran.
+          </>
+        ) : (
+          'Tidak terdapat pencilan berdasarkan batas distribusi yang digunakan.'
+        )}
+      </p>
     </div>
 
   </div>
@@ -1727,7 +1774,7 @@ function SeasonalInterpretation({
 
   return (
     <div className="aq-season-interpretation">
-      <strong>Interpretasi Musiman</strong>
+      <strong>Interpretasi</strong>
       <p>
         Berdasarkan data pengamatan pada rentang waktu{' '}
         <strong>{period}</strong>, konsentrasi rata-rata{' '}
@@ -1974,7 +2021,7 @@ function CriticalPeriods({ items }) {
 
 
 <div className="aq-critical-interpretation">
-  <strong>Interpretasi Periode Kritis</strong>
+  <strong>Interpretasi</strong>
   <p>
     {highestStation ? (
       <>
@@ -4908,7 +4955,7 @@ const resetCritical = () => setCriticalFilter({
     </div>
 
     <div className="aq-trend-interpretation">
-      <strong>Interpretasi Tren Kualitas Udara</strong>
+      <strong>Interpretasi</strong>
       <p>{trendInsight.interpretation}</p>
     </div>
 
@@ -5372,7 +5419,7 @@ const resetCritical = () => setCriticalFilter({
 
 {/* INTERPRETASI HASIL EVALUASI */}
 <div className="aq-bmua-interpretation">
-  <strong>Interpretasi Hasil Perbandingan</strong>
+  <strong>Interpretasi</strong>
 
   {bmuaResult.rows.length > 0 && (
     <p>
@@ -5630,7 +5677,10 @@ const resetCritical = () => setCriticalFilter({
   />
 
   {/* FILTER GLOBAL */}
-  <LocalFilter onReset={resetTime}>
+  <LocalFilter
+    onReset={resetTime}
+    className="aq-time-filter-toolbar"
+  >
     <FilterDateRange
       value={timeFilter}
       bounds={tableDateBounds}
@@ -5686,7 +5736,7 @@ const resetCritical = () => setCriticalFilter({
 
     <Card className="aq-card">
       <CardHeader
-        title="Interpretasi Pola Per Jam"
+        title="Interpretasi"
         subtitle="Identifikasi waktu dengan konsentrasi tertinggi."
       />
 
@@ -5714,7 +5764,7 @@ const resetCritical = () => setCriticalFilter({
 
     <Card className="aq-card">
       <CardHeader
-        title="Interpretasi Hari Pengamatan"
+        title="Interpretasi"
         subtitle="Perbedaan konsentrasi pada hari kerja dan akhir pekan."
       />
 
@@ -5899,7 +5949,10 @@ const resetCritical = () => setCriticalFilter({
 
           {/* FILTER SECTION 07 */}
 
-          <LocalFilter onReset={resetArea}>
+          <LocalFilter
+            onReset={resetArea}
+            className="aq-area-filter-toolbar"
+          >
 
             <FilterDateRange
               value={areaFilter}
@@ -5960,7 +6013,7 @@ const resetCritical = () => setCriticalFilter({
             <div className="aq-area-interpretation-heading">
 
               <strong>
-                Interpretasi Perbandingan Kawasan
+                Interpretasi
               </strong>
             </div>
 
@@ -6035,7 +6088,10 @@ const resetCritical = () => setCriticalFilter({
     description="Mengidentifikasi waktu, lokasi, dan parameter yang mengalami peningkatan konsentrasi secara signifikan."
   />
 
-  <LocalFilter onReset={resetCritical}>
+  <LocalFilter
+    onReset={resetCritical}
+    className="aq-critical-filter-toolbar"
+  >
     <FilterDateRange
       value={criticalFilter}
       bounds={tableDateBounds}
@@ -6096,7 +6152,10 @@ const resetCritical = () => setCriticalFilter({
           description="Mengidentifikasi kesamaan waktu lonjakan partikulat antarstasiun, persebaran wilayah, dan kondisi angin."
         />
 
-        <LocalFilter onReset={resetHaze}>
+        <LocalFilter
+          onReset={resetHaze}
+          className="aq-haze-filter-toolbar"
+        >
           <FilterDateRange
             value={hazeFilter}
             bounds={tableDateBounds}
@@ -6130,7 +6189,7 @@ const resetCritical = () => setCriticalFilter({
                 )}
               />
 <div className="haze-heatmap-interpretation">
-  <strong>Interpretasi Pola Kejadian</strong>
+  <strong>Interpretasi</strong>
 
   <p>
     Heatmap memperlihatkan waktu dan stasiun yang mengalami peningkatan

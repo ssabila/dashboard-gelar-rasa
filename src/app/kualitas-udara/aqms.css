@@ -1119,6 +1119,39 @@
   flex-shrink: 0;
 }
 
+.aq-boxplot-interpretation {
+  margin-top: 14px;
+  padding: 15px 17px;
+  border: 1px solid #DCE6F0;
+  border-left: 4px solid #7898BE;
+  border-radius: 12px;
+  background: #F5F8FC;
+  color: #526B86;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.aq-boxplot-interpretation > strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #20344F;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.aq-boxplot-interpretation p {
+  margin: 0 0 8px;
+}
+
+.aq-boxplot-interpretation p:last-child {
+  margin-bottom: 0;
+}
+
+.aq-boxplot-interpretation p strong {
+  color: #20344F;
+  font-weight: 700;
+}
+
 /* FILTER BOXPLOT */
 .aq-boxplot-filter-grid {
   display: grid;
@@ -3488,6 +3521,7 @@ max-height: 40px !important;
 .aq-area-interpretation,
 .aq-season-interpretation,
 .aq-critical-interpretation,
+.aq-boxplot-interpretation,
 .haze-heatmap-interpretation,
 .haze-map-interpretation {
   box-sizing: border-box;
@@ -3504,7 +3538,8 @@ max-height: 40px !important;
   color: #526B86;
   font-size: 12px;
   line-height: 1.8;
-  text-align: left;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .aq-trend-interpretation > strong,
@@ -3543,14 +3578,15 @@ max-height: 40px !important;
 .aq-area-interpretation p,
 .aq-season-interpretation p,
 .aq-critical-interpretation p,
+.aq-boxplot-interpretation p,
 .haze-heatmap-interpretation p,
 .haze-map-interpretation p {
   margin: 0 0 8px;
   color: inherit;
   font-size: inherit;
   line-height: inherit;
-  text-align: left;
-  text-justify: auto;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .aq-trend-interpretation p:last-child,
@@ -3583,6 +3619,8 @@ max-height: 40px !important;
   color: #526B86;
   font-size: 12px;
   line-height: 1.8;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .aq-time-interpretation p,
@@ -3591,6 +3629,8 @@ max-height: 40px !important;
   color: inherit;
   font-size: inherit;
   line-height: inherit;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .aq-haze-summary p + p {
@@ -3681,6 +3721,7 @@ max-height: 40px !important;
   .aq-area-interpretation,
   .aq-season-interpretation,
   .aq-critical-interpretation,
+  .aq-boxplot-interpretation,
   .haze-heatmap-interpretation,
   .haze-map-interpretation {
     padding: 14px 15px;
@@ -4640,4 +4681,126 @@ max-height: 40px !important;
     min-height: 36px;
     padding: 0 11px;
   }
+}
+
+@media (max-width: 900px) {
+  .aq-time-filter-toolbar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+  }
+
+  .aq-time-filter-toolbar .aq-filter-fields {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+  }
+
+  .aq-time-filter-toolbar > .aq-filter-reset {
+    grid-column: 1;
+    width: 100%;
+  }
+}
+
+@media (min-width: 521px) and (max-width: 900px) {
+  .aq-hourly-legend-items {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .aq-time-filter-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aq-time-filter-toolbar .aq-filter-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aq-time-filter-toolbar > .aq-filter-reset {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .aq-area-filter-toolbar,
+  .aq-critical-filter-toolbar,
+  .aq-haze-filter-toolbar {
+    display: grid;
+    align-items: end;
+  }
+
+  .aq-area-filter-toolbar,
+  .aq-critical-filter-toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aq-area-filter-toolbar .aq-filter-fields,
+  .aq-critical-filter-toolbar .aq-filter-fields {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .aq-haze-filter-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aq-haze-filter-toolbar .aq-filter-fields {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+  }
+
+  .aq-area-filter-toolbar > .aq-filter-reset,
+  .aq-critical-filter-toolbar > .aq-filter-reset,
+  .aq-haze-filter-toolbar > .aq-filter-reset {
+    grid-column: 1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .aq-area-filter-toolbar,
+  .aq-critical-filter-toolbar,
+  .aq-haze-filter-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aq-area-filter-toolbar .aq-filter-fields,
+  .aq-critical-filter-toolbar .aq-filter-fields,
+  .aq-haze-filter-toolbar .aq-filter-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Unified date-picker popovers */
+.aq-date-range-popover,
+.aq-date-dropdown {
+  z-index: 10000 !important;
+  width: 300px !important;
+  max-width: min(360px, calc(100vw - 40px)) !important;
+  box-sizing: border-box;
+  padding: 12px !important;
+  border: 1px solid #E1E7EF;
+  border-radius: 14px;
+  background: #FFFFFF;
+  box-shadow: 0 12px 30px rgba(24, 49, 79, .14);
+}
+
+.aq-date-range-popover .aq-date-range-presets,
+.aq-date-dropdown .aq-date-presets {
+  gap: 8px;
+  margin-top: 12px;
+  padding: 0;
+}
+
+.aq-trend-filter .aq-date-dropdown {
+  z-index: 11000 !important;
 }
