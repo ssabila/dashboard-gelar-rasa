@@ -4,7 +4,8 @@
   "sensor_status": {
     "Active": 23,
     "Intermittent": 3,
-    "Defective": 1
+    "Defective": 1,
+    "Unknown": 0
   },
   "pm25_unit_groups": {
     "ug_m3_stations": 24,
@@ -13,11 +14,81 @@
     "conversion_applied": false,
     "pm25_comparison_scope": "Stasiun µg/m³ saja"
   },
+  "nearest_distance_km": {
+    "median": 186.47,
+    "min": 0.87,
+    "max": 1318.66
+  },
   "median_nearest_distance_km": 186.47,
-  "radius_representative_km": null,
-  "observed_period": {
-    "start": "2024-01-01T00:00:00",
-    "end": "2026-10-14T23:00:00"
+  "nearest_distance_histogram": [
+    {
+      "bin": "(-0.001, 50.0]",
+      "n": 7
+    },
+    {
+      "bin": "(50.0, 100.0]",
+      "n": 0
+    },
+    {
+      "bin": "(100.0, 200.0]",
+      "n": 7
+    },
+    {
+      "bin": "(200.0, 400.0]",
+      "n": 9
+    },
+    {
+      "bin": "(400.0, 800.0]",
+      "n": 2
+    },
+    {
+      "bin": "(800.0, 1600.0]",
+      "n": 2
+    },
+    {
+      "bin": "(1600.0, 3200.0]",
+      "n": 0
+    }
+  ],
+  "observation_completeness": {
+    "avg_completeness_pct": 89.61,
+    "reference_pct": 75.0,
+    "reference_source": "Acuan EPA 40 CFR 50 dan EEA. Verifikasi kutipan sebelum dipublikasikan.",
+    "total_expected_hours": 659664
+  },
+  "radius_exploration": {
+    "threshold_main": 0.5,
+    "radius_main_km": null,
+    "sensitivity": [
+      {
+        "threshold": 0.4,
+        "fit": {
+          "a": 0.4879642124515291,
+          "L_km": 28815.50244422305,
+          "n_pairs": 207
+        },
+        "radius_km": null
+      },
+      {
+        "threshold": 0.5,
+        "fit": {
+          "a": 0.4879642124515291,
+          "L_km": 28815.50244422305,
+          "n_pairs": 207
+        },
+        "radius_km": null
+      },
+      {
+        "threshold": 0.6,
+        "fit": {
+          "a": 0.4879642124515291,
+          "L_km": 28815.50244422305,
+          "n_pairs": 207
+        },
+        "radius_km": null
+      }
+    ],
+    "status": "tidak_teridentifikasi"
   },
   "quality_audit": {
     "raw_aqms_rows": 667981,
@@ -25,160 +96,15 @@
     "duplicate_rows_removed": 223,
     "valid_qc_rows": 599182
   },
-  "scoring": {
-    "weights": {
-      "D": 0.4,
-      "P": 0.35,
-      "R": 0.25
-    },
-    "definition": "Skor relatif eksploratif, bukan standar resmi.",
-    "sensitivity": [
-      {
-        "scenario": "default",
-        "weights": {
-          "D": 0.4,
-          "P": 0.35,
-          "R": 0.25
-        },
-        "ranking": [
-          {
-            "location_id": "LOC-SM2-01",
-            "station_code": "AQMS-SM2-01",
-            "score": 83.28595317725751
-          },
-          {
-            "location_id": "LOC-PLB-01",
-            "station_code": "AQMS-PLB-01",
-            "score": 73.26923076923077
-          },
-          {
-            "location_id": "LOC-BTM-01",
-            "station_code": "AQMS-BTM-01",
-            "score": 68.7876254180602
-          },
-          {
-            "location_id": "LOC-MRS-01",
-            "station_code": "AQMS-MRS-01",
-            "score": 65.81103678929765
-          },
-          {
-            "location_id": "LOC-MER-01",
-            "station_code": "AQMS-MER-01",
-            "score": 62.83444816053511
-          }
-        ]
-      },
-      {
-        "scenario": "geographic_focus",
-        "weights": {
-          "D": 0.55,
-          "P": 0.25,
-          "R": 0.2
-        },
-        "ranking": [
-          {
-            "location_id": "LOC-SM2-01",
-            "station_code": "AQMS-SM2-01",
-            "score": 81.8938127090301
-          },
-          {
-            "location_id": "LOC-MER-01",
-            "station_code": "AQMS-MER-01",
-            "score": 72.87625418060202
-          },
-          {
-            "location_id": "LOC-SRG-01",
-            "station_code": "AQMS-SRG-01",
-            "score": 71.84782608695653
-          },
-          {
-            "location_id": "LOC-MRS-01",
-            "station_code": "AQMS-MRS-01",
-            "score": 70.93645484949832
-          },
-          {
-            "location_id": "LOC-MDN-01",
-            "station_code": "AQMS-MDN-01",
-            "score": 69.87179487179488
-          }
-        ]
-      },
-      {
-        "scenario": "pollution_focus",
-        "weights": {
-          "D": 0.25,
-          "P": 0.55,
-          "R": 0.2
-        },
-        "ranking": [
-          {
-            "location_id": "LOC-SM2-01",
-            "station_code": "AQMS-SM2-01",
-            "score": 86.935618729097
-          },
-          {
-            "location_id": "LOC-PLB-01",
-            "station_code": "AQMS-PLB-01",
-            "score": 82.11538461538461
-          },
-          {
-            "location_id": "LOC-BTM-01",
-            "station_code": "AQMS-BTM-01",
-            "score": 67.79264214046823
-          },
-          {
-            "location_id": "LOC-KTG-02",
-            "station_code": "AQMS-KTG-02",
-            "score": 67.26170568561872
-          },
-          {
-            "location_id": "LOC-JMB-02",
-            "station_code": "AQMS-JMB-02",
-            "score": 65.31354515050168
-          }
-        ]
-      },
-      {
-        "scenario": "representation_focus",
-        "weights": {
-          "D": 0.25,
-          "P": 0.25,
-          "R": 0.5
-        },
-        "ranking": [
-          {
-            "location_id": "LOC-SM2-01",
-            "station_code": "AQMS-SM2-01",
-            "score": 80.16304347826086
-          },
-          {
-            "location_id": "LOC-PLB-01",
-            "station_code": "AQMS-PLB-01",
-            "score": 74.03846153846153
-          },
-          {
-            "location_id": "LOC-BTM-01",
-            "station_code": "AQMS-BTM-01",
-            "score": 70.1505016722408
-          },
-          {
-            "location_id": "LOC-MRS-01",
-            "station_code": "AQMS-MRS-01",
-            "score": 67.47491638795987
-          },
-          {
-            "location_id": "LOC-PSW-01",
-            "station_code": "AQMS-PSW-01",
-            "score": 66.66666666666666
-          }
-        ]
-      }
-    ]
+  "definitions": {
+    "sensor_status": "Hitungan sensor per status_operasional dari sensors.csv.",
+    "completeness_pct": "Jam valid dibagi jam seharusnya, per polutan; rata-rata antarpolutan per stasiun.",
+    "nearest_distance_km": "Jarak geodesik Haversine ke stasiun terdekat."
   },
   "limitations": [
     "Dataset tidak menyediakan populasi, inventaris emisi, atau standar radius cakupan.",
-    "Jarak adalah jarak geodesik, bukan bukti cakupan area.",
+    "Jarak adalah jarak geodesik antarstasiun, bukan bukti area yang tidak terpantau.",
     "Baseline PM2.5 adalah metadata, bukan pengukuran.",
-    "Korelasi antarstasiun bersifat indikatif; ppm hanya tiga stasiun."
+    "Korelasi antarstasiun bersifat indikatif; stasiun ppm hanya tiga."
   ]
 }

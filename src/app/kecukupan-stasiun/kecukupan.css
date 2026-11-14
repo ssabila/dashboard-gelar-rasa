@@ -1,0 +1,242 @@
+/* Gaya halaman Kecukupan Stasiun. Hanya memakai token dari globals.css. */
+
+.kc-stack { display: flex; flex-direction: column; gap: var(--gap-lg); min-width: 0; }
+
+/* Hero */
+.kc-hero {
+  position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0.9rem;
+  border: 0; color: var(--color-text-on-surface);
+  background: linear-gradient(150deg, #18314F 0%, #172A55 60%, #0D0630 140%);
+}
+.kc-hero::after {
+  content: ''; position: absolute; right: -3rem; bottom: -4rem; width: 14rem; height: 14rem; border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 249, 175, 0.18), transparent 70%); pointer-events: none;
+}
+.kc-hero h2 { color: #fff; font-size: clamp(1.15rem, 1.8vw, 1.45rem); font-weight: 700; line-height: 1.4; max-width: 56rem; }
+.kc-hero h2 strong { color: var(--color-accent); font-weight: 800; }
+.kc-hero p { color: rgba(240, 244, 255, 0.78); font-size: 0.86rem; max-width: 60rem; }
+.kc-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.kc-chip {
+  display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.7rem; border-radius: 999px;
+  background: rgba(240, 244, 255, 0.08); border: 1px solid rgba(240, 244, 255, 0.16);
+  color: rgba(240, 244, 255, 0.85); font-size: 0.72rem; font-weight: 600;
+}
+
+/* KPI */
+.kc-kpi-sub { display: flex; flex-wrap: wrap; gap: 0.35rem 0.6rem; font-size: 0.7rem; color: var(--color-text-secondary); }
+.kc-kpi-sub span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.kc-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; display: inline-block; flex: none; }
+
+/* Layout dua kolom */
+.kc-map-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+.kc-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+.kc-grid-heat { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+@media (max-width: 1100px) {
+  .kc-map-grid, .kc-grid-2, .kc-grid-heat { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Panel detail */
+.kc-detail { display: flex; flex-direction: column; gap: 0.9rem; }
+.kc-detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+.kc-detail-head h3 { font-size: 1.25rem; margin-top: 0.15rem; }
+.kc-detail-head p { font-size: 0.78rem; margin-top: 0.15rem; }
+.kc-eyebrow { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-disabled); }
+.kc-icon-btn {
+  display: grid; place-items: center; width: 2rem; height: 2rem; flex: none; border-radius: 0.6rem;
+  border: 1px solid var(--color-border-strong); background: #fff; color: var(--color-text-secondary); cursor: pointer;
+}
+.kc-icon-btn:hover { color: var(--color-text-primary); background: var(--color-bg); }
+.kc-dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0; }
+.kc-dl > div { padding: 0.6rem 0.7rem; border-radius: 0.7rem; background: #F8FAFC; border: 1px solid var(--color-border); min-width: 0; }
+.kc-dl dt { font-size: 0.66rem; color: var(--color-text-secondary); }
+.kc-dl dd { margin: 0.15rem 0 0; font-size: 0.8rem; font-weight: 700; color: var(--color-text-primary); overflow-wrap: anywhere; }
+.kc-detail h4 { font-size: 0.8rem; margin-top: 0.2rem; }
+.kc-bars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.kc-bar-row { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) 3.4rem; align-items: center; gap: 0.5rem; font-size: 0.74rem; }
+.kc-bar-row strong { text-align: right; font-variant-numeric: tabular-nums; }
+.kc-track { height: 0.5rem; border-radius: 999px; background: rgba(24, 49, 79, 0.07); overflow: hidden; }
+.kc-track > span { display: block; height: 100%; border-radius: inherit; }
+
+.kc-empty {
+  display: grid; place-items: center; align-content: center; gap: 0.4rem; min-height: 16rem; padding: 1.25rem;
+  text-align: center; color: var(--color-text-secondary); border: 1px dashed var(--color-border-strong); border-radius: 0.9rem;
+}
+.kc-empty strong { color: var(--color-text-primary); }
+.kc-empty span { font-size: 0.8rem; max-width: 22rem; }
+
+/* Pill status */
+.kc-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.65rem; border-radius: 999px;
+  font-size: 0.7rem; font-weight: 700; white-space: nowrap;
+  background: color-mix(in srgb, var(--c) 16%, #fff); color: var(--ct); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+}
+.kc-pill i { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--c); }
+
+/* Legenda status */
+.kc-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.72rem; color: var(--color-text-secondary); }
+.kc-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+/* Tabel */
+.kc-toolbar { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 0.9rem; }
+.kc-search { position: relative; flex: 1 1 14rem; min-width: 12rem; }
+.kc-search svg { position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); color: var(--color-text-disabled); }
+.kc-search input { width: 100%; height: 2.2rem; padding: 0 0.7rem 0 2.1rem; border-radius: var(--radius-btn); border: 1px solid var(--color-border-strong); background: #fff; font-size: 0.78rem; color: var(--color-text-primary); outline: 0; }
+.kc-search input:focus { border-color: var(--color-elevated); box-shadow: 0 0 0 3px rgba(56, 78, 119, 0.12); }
+.kc-select { height: 2.2rem; padding: 0 0.6rem; border-radius: var(--radius-btn); border: 1px solid var(--color-border-strong); background: #fff; font-size: 0.78rem; color: var(--color-text-primary); }
+.kc-count { font-size: 0.72rem; color: var(--color-text-secondary); margin-left: auto; }
+.kc-table-wrap { overflow: auto; max-height: 460px; border: 1px solid var(--color-border); border-radius: 0.8rem; }
+.kc-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+.kc-table th { position: sticky; top: 0; z-index: 1; background: #fff; border-bottom: 1px solid var(--color-border-strong); padding: 0; }
+.kc-table th button { width: 100%; display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.6rem 0.7rem; border: 0; background: transparent; font: inherit; font-size: 0.68rem; font-weight: 700; color: var(--color-text-secondary); cursor: pointer; text-align: left; white-space: nowrap; }
+.kc-table th button:hover { color: var(--color-text-primary); }
+.kc-table td { padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--color-border); color: var(--color-text-primary); white-space: nowrap; }
+.kc-table tbody tr { cursor: pointer; }
+.kc-table tbody tr:hover td { background: rgba(24, 49, 79, 0.03); }
+.kc-table tbody tr.is-selected td { background: rgba(56, 78, 119, 0.1); font-weight: 600; }
+.kc-table .kc-num { text-align: right; }
+.kc-table .kc-na { color: var(--color-text-disabled); font-style: italic; }
+.kc-mini { display: inline-flex; align-items: center; gap: 0.5rem; }
+.kc-mini .kc-track { width: 4.5rem; height: 0.4rem; }
+
+/* Eksplorasi korelasi */
+.kc-sens { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+.kc-sens th, .kc-sens td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--color-border); text-align: left; }
+.kc-sens th { font-size: 0.68rem; color: var(--color-text-secondary); font-weight: 700; }
+.kc-sens td:last-child, .kc-sens th:last-child { text-align: right; }
+.kc-sens .is-main td { font-weight: 700; background: rgba(56, 78, 119, 0.06); }
+
+/* Catatan */
+.kc-note { font-size: 0.78rem; line-height: 1.6; color: var(--color-text-secondary); }
+.kc-note ul { margin: 0.4rem 0 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.kc-note li::marker { color: var(--color-elevated); }
+.kc-note-src { margin-top: 0.7rem; font-size: 0.72rem; color: var(--color-text-disabled); }
+.kc-callout {
+  display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.85rem 1rem; border-radius: 0.8rem;
+  background: rgba(56, 78, 119, 0.07); border: 1px solid rgba(56, 78, 119, 0.2); font-size: 0.78rem; line-height: 1.55; color: var(--color-text-primary);
+}
+.kc-callout svg { color: var(--color-elevated); flex: none; margin-top: 0.1rem; }
+
+/* Layout jarak vs kelengkapan + daftar perlu diperhatikan */
+.kc-grid-attn { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--gap); align-items: stretch; }
+@media (max-width: 1100px) { .kc-grid-attn { grid-template-columns: minmax(0, 1fr); } }
+.kc-attn-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; max-height: 330px; overflow: auto; }
+.kc-attn-item {
+  width: 100%; text-align: left; padding: 0.7rem 0.8rem; border-radius: 0.75rem; cursor: pointer;
+  border: 1px solid rgba(220, 38, 38, 0.2); border-left: 3px solid #DC2626; background: #FFF5F5;
+}
+.kc-attn-item:hover, .kc-attn-item.is-selected { background: #FEE2E2; }
+.kc-attn-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.kc-attn-top strong { font-size: 0.85rem; color: var(--color-text-primary); }
+.kc-attn-meta { font-size: 0.7rem; color: var(--color-text-secondary); margin-top: 0.15rem; }
+.kc-attn-stats { display: flex; flex-wrap: wrap; gap: 0.2rem 1rem; margin-top: 0.45rem; font-size: 0.72rem; color: var(--color-text-secondary); }
+.kc-attn-stats strong { color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
+.kc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ═══ Penyegaran tampilan ═══════════════════════════════════════════════ */
+
+/* Hero: lebih ringkas, dengan aksen garis di sisi kiri */
+.kc-hero {
+  padding: 1.5rem 1.75rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 14px 34px rgba(24, 49, 79, 0.18);
+}
+.kc-hero::before {
+  content: ''; position: absolute; left: 0; top: 1.25rem; bottom: 1.25rem; width: 4px;
+  border-radius: 0 4px 4px 0; background: var(--color-accent);
+}
+.kc-hero h2 { font-size: clamp(1.1rem, 1.7vw, 1.35rem); }
+.kc-hero p { font-size: 0.84rem; }
+
+/* Kartu umum: bayangan lebih lembut, sudut lebih membulat */
+.kc-stack .card { border-radius: 1.1rem; }
+.kc-stack .card-head { margin-bottom: 0.9rem; }
+.kc-stack .card-title { font-size: 0.98rem; }
+
+/* Peta: frame rounded agar menyatu dengan kartu */
+.kc-map-grid > .card:first-child { display: flex; flex-direction: column; }
+.kc-map-grid > .card:first-child > div:nth-child(2) {
+  border-radius: 0.9rem; overflow: hidden; border: 1px solid var(--color-border);
+}
+.kc-map-grid > .card:last-child { position: relative; overflow: hidden; }
+.kc-map-grid > .card:last-child::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px;
+  background: linear-gradient(90deg, #384E77, #8BBEB2, #E6F9AF);
+}
+
+/* Panel detail: kotak metrik dengan latar lembut */
+.kc-dl > div { background: #F7F9FC; transition: background 150ms ease; }
+.kc-dl > div:hover { background: #EEF3F9; }
+.kc-detail-head h3 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; }
+
+/* Pill status: lebih tegas */
+.kc-pill { padding: 0.28rem 0.7rem; font-size: 0.7rem; letter-spacing: 0.01em; }
+
+/* Legenda sebagai chip */
+.kc-legend { gap: 0.45rem; }
+.kc-legend span {
+  padding: 0.3rem 0.65rem; border-radius: 999px; background: #F4F7FB;
+  border: 1px solid var(--color-border); color: var(--color-text-primary);
+}
+
+/* Daftar perlu diperhatikan: kartu dengan aksen merah */
+.kc-attn-list { gap: 0.6rem; padding-right: 0.25rem; }
+.kc-attn-item {
+  border-radius: 0.9rem; padding: 0.8rem 0.9rem;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+.kc-attn-item:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(220, 38, 38, 0.12); }
+.kc-attn-item.is-selected { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.35); }
+.kc-attn-stats span {
+  background: #fff; border: 1px solid rgba(220, 38, 38, 0.12); border-radius: 0.5rem; padding: 0.2rem 0.5rem;
+}
+
+/* Tabel: baris bergantian dan header dengan latar blur */
+.kc-table-wrap { border-radius: 0.9rem; max-height: 480px; }
+.kc-table th { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(6px); }
+.kc-table tbody tr:nth-child(even) td { background: #FAFBFD; }
+.kc-table tbody tr:hover td { background: #EEF3F9 !important; }
+.kc-table tbody tr.is-selected td { background: rgba(56, 78, 119, 0.12) !important; }
+.kc-table td { padding: 0.62rem 0.75rem; }
+.kc-table th button { padding: 0.7rem 0.75rem; }
+
+/* Search & filter: tinggi seragam */
+.kc-search input, .kc-select { height: 2.35rem; border-radius: 0.7rem; }
+.kc-count {
+  padding: 0.3rem 0.65rem; border-radius: 999px; background: rgba(56, 78, 119, 0.08);
+  color: var(--color-elevated); font-weight: 600; margin-left: auto;
+}
+
+/* Kartu KPI sedikit lebih lapang */
+.kc-stack .kpi-grid .card { padding: 1.15rem 1.25rem; }
+
+/* Spasi antar bagian */
+.kc-stack > section, .kc-stack > div > section { margin-top: 0.2rem; }
+
+/* Empty state: lebih ramah */
+.kc-empty { background: linear-gradient(180deg, #FFFFFF, #F7F9FC); }
+
+/* Responsif */
+@media (max-width: 720px) {
+  .kc-hero { padding: 1.2rem 1.25rem; }
+  .kc-dl { grid-template-columns: 1fr; }
+  .kc-table-wrap { max-height: 380px; }
+}
+
+/* Label prioritas pada daftar perlu diperhatikan */
+.kc-attn-badges { display: inline-flex; align-items: center; gap: 0.35rem; }
+.kc-attn-tag {
+  padding: 0.22rem 0.55rem; border-radius: 999px; font-size: 0.66rem; font-weight: 700;
+  background: #FEF3C7; color: #92400E; border: 1px solid rgba(245, 158, 11, 0.35); white-space: nowrap;
+}
+.kc-attn-tag.is-priority { background: #DC2626; color: #fff; border-color: #DC2626; }
+.kc-attn-item.is-priority { background: #FFF1F1; }
+
+/* Hero: pastikan latar gelap menang atas .card dari globals.css */
+.kc-stack .card.kc-hero {
+  background: linear-gradient(150deg, #18314F 0%, #172A55 60%, #0D0630 140%) !important;
+  color: var(--color-text-on-surface) !important;
+  border: 0 !important;
+}
+.kc-stack .card.kc-hero h2 { color: #fff !important; }
+.kc-stack .card.kc-hero h2 strong { color: var(--color-accent) !important; }
+.kc-stack .card.kc-hero p { color: rgba(240, 244, 255, 0.78) !important; }

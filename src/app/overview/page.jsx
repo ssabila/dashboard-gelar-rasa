@@ -18,6 +18,10 @@ import {
   TrendingDown,
   TrendingUp,
   Wind,
+  ShieldCheck,
+  Scale,
+  Eye,
+  RadioTower,
 } from 'lucide-react'
 import { ModuleLayout } from '@/components/layout/ModuleLayout'
 import './overview.css'
@@ -38,6 +42,7 @@ import { useFilter } from '@/hooks/useFilter'
 import { ISPU_CATEGORIES, POLLUTANTS } from '@/lib/constants'
 import { formatNumber, getIspuFromPm25 } from '@/lib/formatters'
 import { IspuDonut, StationRanking, shortName } from './panels'
+import { SubTabs } from '@/components/ui/SubTabs'
 
 const StationMap = dynamic(
   () => import('@/map/StationMap').then((m) => m.StationMap),
@@ -50,35 +55,6 @@ const WHO = POLLUTANTS.pm25.whoAnnual     // 5 µg/m³, WHO AQG 2021 tahunan
 const MONTHS_SPAN = 33.4                  // Jan 2024 – 14 Okt 2026, untuk normalisasi per bulan
 const UNHEALTHY = ['Tidak Sehat', 'Sangat Tidak Sehat', 'Berbahaya']
 
-const SUB_TABS = [
-  { id: 'overview', label: 'Ringkasan', icon: LayoutDashboard },
-  { id: 'metodologi', label: 'Metodologi & keterbatasan', icon: BookOpen },
-]
-
-function SubTabs({ value, onChange }) {
-  return (
-    <div className="ov-tabbar" role="tablist" aria-label="Bagian overview">
-      {SUB_TABS.map(({ id, label, icon: Icon }) => {
-        const active = id === value
-        return (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            className={`ov-tab${active ? ' is-active' : ''}`}
-            onClick={() => onChange(id)}
-          >
-            <span className="ov-tab-ico" aria-hidden="true">
-              <Icon size={15} />
-            </span>
-            {label}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
 
 /* ─── Helper ───────────────────────────────────────────────────────────── */
 const fmt = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : formatNumber(v, d))
@@ -210,7 +186,10 @@ const NAV_LINKS = [
 function MethodologyPanel() {
   const groups = [
     {
+      id: 'data',
       title: 'Data dan pengolahan',
+      icon: Database,
+      color: '#384E77',
       items: [
         'Dataset bersifat sintetis dan disediakan panitia Gelar Rasa 2026. Tidak ada data eksternal yang digunakan.',
         'Hanya observasi dengan qc_flag = VALID yang digunakan.',
@@ -219,7 +198,10 @@ function MethodologyPanel() {
       ],
     },
     {
+      id: 'baku',
       title: 'Baku mutu dan acuan',
+      icon: Scale,
+      color: '#8BBEB2',
       items: [
         'Baku mutu nasional: PP No. 22/2021, PM2.5 tahunan 15 µg/m³.',
         'Pedoman WHO AQG 2021, PM2.5 tahunan 5 µg/m³, sebagai pembanding kesehatan.',
@@ -227,7 +209,10 @@ function MethodologyPanel() {
       ],
     },
     {
+      id: 'batas',
       title: 'Batasan interpretasi',
+      icon: Eye,
+      color: '#FB923C',
       items: [
         'Korelasi menunjukkan keterkaitan, bukan hubungan sebab-akibat.',
         'Data kesehatan belum dipisah per stasiun dan tidak mewakili seluruh populasi.',
@@ -235,20 +220,69 @@ function MethodologyPanel() {
         'Hasil di setiap halaman mencerminkan stasiun yang tersedia, bukan kondisi seluruh wilayah Indonesia.',
       ],
     },
+    {
+      id: 'jaringan',
+      title: 'Kecukupan jaringan',
+      icon: RadioTower,
+      color: '#60A5FA',
+      items: [
+        'Kelengkapan dihitung sebagai jam valid dibagi jam yang seharusnya tercatat, per polutan. Nilai per stasiun adalah rata-rata antarpolutan.',
+        'Acuan kelengkapan 75% mengacu pada Permen LHK No. 7 Tahun 2020 (Lampiran I, kriteria validitas data) dan Permen LHK No. 14 Tahun 2020 (data valid ≥75% digunakan sebagai dasar kategori ISPU).',
+        'Status sensor dihitung per sensor dari status operasional di sensors.csv. Stasiun dengan lebih dari satu status ditampilkan menurut status terburuk.',
+        'Jarak ke tetangga terdekat dihitung dengan rumus Haversine. Median jarak seluruh stasiun dipakai sebagai pembanding, bukan sebagai standar.',
+        'Jarak antarstasiun menggambarkan kedekatan lokasi pemantauan, bukan bukti area yang tidak terpantau.',
+        'Stasiun dengan satuan ppm tidak dibandingkan dengan stasiun µg/m³.',
+      ],
+    },
   ]
 
+  const totalItems = groups.reduce((n, g) => n + g.items.length, 0)
+
   return (
-    <div className="ov-method-grid">
-      {groups.map((g) => (
-        <Card key={g.title} variant="tint" className="ov-method-card">
-          <h4>{g.title}</h4>
-          <ul>
-            {g.items.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </Card>
-      ))}
+    <div className="ov-method">
+      <header className="ov-method-hero">
+        <span className="ov-method-hero-icon" aria-hidden="true">
+          <ShieldCheck size={22} />
+        </span>
+        <div>
+          <h2>Bagaimana angka-angka ini dihasilkan</h2>
+          <p>
+            {totalItems} catatan metodologi yang perlu dipahami sebelum menafsirkan
+            setiap grafik dan kesimpulan di dashboard ini.
+          </p>
+        </div>
+      </header>
+
+      <div className="ov-method-grid">
+        {groups.map((g, i) => {
+          const Icon = g.icon
+          return (
+            <article
+              key={g.id}
+              className="ov-method-card"
+              style={{ '--mc': g.color }}
+            >
+              <div className="ov-method-card-head">
+                <span className="ov-method-card-icon" aria-hidden="true">
+                  <Icon size={18} />
+                </span>
+                <span className="ov-method-card-no">0{i + 1}</span>
+              </div>
+              <h3>{g.title}</h3>
+              <ol className="ov-method-list">
+                {g.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ol>
+            </article>
+          )
+        })}
+      </div>
+
+      <p className="ov-method-foot">
+        Catatan ini berlaku untuk seluruh halaman dashboard. Kesimpulan yang ditarik
+        dari data perlu dibaca bersama batasan di atas.
+      </p>
     </div>
   )
 }
@@ -392,7 +426,15 @@ export default function OverviewPage() {
       title="Overview"
       description="Seberapa buruk kualitas udara Indonesia, di mana dan kapan paling buruk, serta apa dampaknya bagi kesehatan."
     >
-      <SubTabs value={subTab} onChange={setSubTab} />
+      <SubTabs
+        label="Bagian overview"
+        tabs={[
+          { id: 'overview', label: 'Ringkasan', icon: LayoutDashboard },
+          { id: 'metodologi', label: 'Metodologi & keterbatasan', icon: BookOpen },
+        ]}
+        value={subTab}
+        onChange={setSubTab}
+      />
 
       {subTab === 'overview' && (
         <div className="ov-page">

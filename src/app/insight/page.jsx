@@ -15,6 +15,8 @@ import {
   Timer,
   Wind,
   Zap,
+  Lightbulb,
+  ListChecks,
 } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
 import { Card } from '@/components/ui/Card'
@@ -28,6 +30,7 @@ import { buildJaringanStats, COMP_THRESHOLD, FAR_KM } from '@/lib/jaringan'
 import { formatNumber } from '@/lib/formatters'
 import { POLLUTANTS } from '@/lib/constants'
 import { ccfRows } from '@/lib/pm25kesehatan'
+import { SubTabs } from '@/components/ui/SubTabs'
 
 const NAAQS_ANNUAL = 15
 const WHO_ANNUAL = 5
@@ -703,23 +706,15 @@ export default function InsightPage() {
       title="Insight & Rekomendasi"
       description="Rangkuman hasil analisis kualitas udara, hubungan antarpolutan, dampaknya terhadap kesehatan, serta kondisi jaringan pemantauan AQMS untuk menghasilkan rekomendasi perbaikan."
     >
-      <div className="ov-subtabs" role="tablist" aria-label="Bagian insight">
-        {[
-          { id: 'insight', label: 'Insight' },
-          { id: 'rekomendasi', label: 'Rekomendasi' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={subTab === tab.id}
-            className={`ov-subtab${subTab === tab.id ? ' is-active' : ''}`}
-            onClick={() => setSubTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <SubTabs
+        label="Bagian insight"
+        tabs={[
+          { id: 'insight', label: 'Insight', icon: Lightbulb },
+          { id: 'rekomendasi', label: 'Rekomendasi', icon: ListChecks },
+        ]}
+        value={subTab}
+        onChange={setSubTab}
+      />
 
       {subTab === 'insight' && (
         <>

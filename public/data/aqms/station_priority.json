@@ -1,5 +1,5 @@
 {
-  "methodology_note": "Dua peringkat terpisah. Tidak ada konversi satuan PM2.5.",
+  "methodology_note": "Dua peringkat terpisah dengan bobot PRD 6.F. Tidak ada konversi satuan PM2.5 dan tidak ada label keputusan.",
   "weights": {
     "distribution": {
       "dmin": 0.5,
@@ -23,13 +23,7 @@
       "completeness_pct": 20.01,
       "invalid_rate_pct": 79.98444599074945,
       "distribution_score": 84.23,
-      "distribution_rank": 1,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 1
     },
     {
       "location_id": "LOC-SRG-01",
@@ -41,13 +35,7 @@
       "completeness_pct": 99.36,
       "invalid_rate_pct": 0.634439851008961,
       "distribution_score": 82.31,
-      "distribution_rank": 2,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 2
     },
     {
       "location_id": "LOC-MRS-01",
@@ -59,13 +47,7 @@
       "completeness_pct": 99.31,
       "invalid_rate_pct": 0.6835577749580435,
       "distribution_score": 76.54,
-      "distribution_rank": 3,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 3
     },
     {
       "location_id": "LOC-SM2-01",
@@ -77,13 +59,7 @@
       "completeness_pct": 85.0,
       "invalid_rate_pct": 14.997339445786096,
       "distribution_score": 73.65,
-      "distribution_rank": 4,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 4
     },
     {
       "location_id": "LOC-STG-01",
@@ -95,13 +71,7 @@
       "completeness_pct": 99.45,
       "invalid_rate_pct": 0.544390323768984,
       "distribution_score": 70.77,
-      "distribution_rank": 5,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 5
     },
     {
       "location_id": "LOC-BTM-01",
@@ -113,13 +83,7 @@
       "completeness_pct": 99.37,
       "invalid_rate_pct": 0.6303466906798727,
       "distribution_score": 68.85,
-      "distribution_rank": 6,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 6
     },
     {
       "location_id": "LOC-IDP-01",
@@ -131,13 +95,7 @@
       "completeness_pct": 99.55,
       "invalid_rate_pct": 0.45022920759659746,
       "distribution_score": 67.5,
-      "distribution_rank": 7,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 7
     },
     {
       "location_id": "LOC-MDN-01",
@@ -149,13 +107,7 @@
       "completeness_pct": 68.1,
       "invalid_rate_pct": 20.000961584691566,
       "distribution_score": 67.5,
-      "distribution_rank": 7,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 7
     },
     {
       "location_id": "LOC-BGL-01",
@@ -167,13 +119,7 @@
       "completeness_pct": 99.48,
       "invalid_rate_pct": 0.5116450411362661,
       "distribution_score": 66.92,
-      "distribution_rank": 9,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 9
     },
     {
       "location_id": "LOC-MLG-01",
@@ -185,13 +131,7 @@
       "completeness_pct": 99.42,
       "invalid_rate_pct": 0.5771356064017019,
       "distribution_score": 64.04,
-      "distribution_rank": 10,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 10
     },
     {
       "location_id": "LOC-PLU-01",
@@ -203,13 +143,7 @@
       "completeness_pct": 99.41000000000001,
       "invalid_rate_pct": 0.5812287667307903,
       "distribution_score": 61.73,
-      "distribution_rank": 11,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 11
     },
     {
       "location_id": "LOC-PSW-01",
@@ -221,13 +155,7 @@
       "completeness_pct": 99.43,
       "invalid_rate_pct": 0.5648561254144369,
       "distribution_score": 61.15,
-      "distribution_rank": 12,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 12
     },
     {
       "location_id": "LOC-PLB-01",
@@ -239,13 +167,7 @@
       "completeness_pct": 79.53,
       "invalid_rate_pct": 24.556774140347983,
       "distribution_score": 59.23,
-      "distribution_rank": 13,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 13
     },
     {
       "location_id": "LOC-BJB-01",
@@ -257,13 +179,7 @@
       "completeness_pct": 100.0,
       "invalid_rate_pct": 0.0,
       "distribution_score": 57.31,
-      "distribution_rank": 14,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 14
     },
     {
       "location_id": "LOC-YKY-01",
@@ -275,13 +191,7 @@
       "completeness_pct": 99.42,
       "invalid_rate_pct": 0.5771119842829076,
       "distribution_score": 52.12,
-      "distribution_rank": 15,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 15
     },
     {
       "location_id": "LOC-PKU-01",
@@ -293,13 +203,7 @@
       "completeness_pct": 99.46,
       "invalid_rate_pct": 0.5402971634398956,
       "distribution_score": 47.12,
-      "distribution_rank": 16,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 16
     },
     {
       "location_id": "LOC-KTB-01",
@@ -311,13 +215,7 @@
       "completeness_pct": 99.48,
       "invalid_rate_pct": 0.5198313617944428,
       "distribution_score": 42.5,
-      "distribution_rank": 17,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 17
     },
     {
       "location_id": "LOC-JMB-02",
@@ -329,13 +227,7 @@
       "completeness_pct": 0.49,
       "invalid_rate_pct": 99.5084066592308,
       "distribution_score": 35.19,
-      "distribution_rank": 18,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 18
     },
     {
       "location_id": "LOC-PKN-01",
@@ -347,13 +239,7 @@
       "completeness_pct": 99.40000000000002,
       "invalid_rate_pct": 0.5976014080471548,
       "distribution_score": 34.81,
-      "distribution_rank": 19,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 19
     },
     {
       "location_id": "LOC-KTG-02",
@@ -365,13 +251,7 @@
       "completeness_pct": 96.28000000000002,
       "invalid_rate_pct": 3.7164374590700766,
       "distribution_score": 31.92,
-      "distribution_rank": 20,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 20
     },
     {
       "location_id": "LOC-JMB-01",
@@ -383,13 +263,7 @@
       "completeness_pct": 99.31,
       "invalid_rate_pct": 0.6876509352871318,
       "distribution_score": 27.88,
-      "distribution_rank": 21,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 21
     },
     {
       "location_id": "LOC-BGR-02",
@@ -401,13 +275,7 @@
       "completeness_pct": 96.98,
       "invalid_rate_pct": 3.016535690897182,
       "distribution_score": 25.38,
-      "distribution_rank": 22,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 22
     },
     {
       "location_id": "LOC-JKT-02",
@@ -419,13 +287,7 @@
       "completeness_pct": 96.09999999999998,
       "invalid_rate_pct": 3.8965291421087067,
       "distribution_score": 25.19,
-      "distribution_rank": 23,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 23
     },
     {
       "location_id": "LOC-BGR-01",
@@ -437,13 +299,7 @@
       "completeness_pct": 96.95,
       "invalid_rate_pct": 3.045186640471509,
       "distribution_score": 20.77,
-      "distribution_rank": 24,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 24
     },
     {
       "location_id": "LOC-KTG-01",
@@ -455,13 +311,7 @@
       "completeness_pct": 96.21,
       "invalid_rate_pct": 3.7901113294040556,
       "distribution_score": 20.0,
-      "distribution_rank": 25,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 25
     },
     {
       "location_id": "LOC-JKT-03",
@@ -473,13 +323,7 @@
       "completeness_pct": 96.06,
       "invalid_rate_pct": 3.9374590700720358,
       "distribution_score": 15.0,
-      "distribution_rank": 26,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 26
     },
     {
       "location_id": "LOC-JKT-01",
@@ -491,13 +335,7 @@
       "completeness_pct": 96.0,
       "invalid_rate_pct": 4.002946954813358,
       "distribution_score": 10.38,
-      "distribution_rank": 27,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "distribution_rank": 27
     }
   ],
   "operational_ranking": [
@@ -511,13 +349,7 @@
       "completeness_pct": 0.49,
       "invalid_rate_pct": 99.5084066592308,
       "operational_score": 99.7,
-      "operational_rank": 1,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 1
     },
     {
       "location_id": "LOC-MER-01",
@@ -529,13 +361,7 @@
       "completeness_pct": 20.01,
       "invalid_rate_pct": 79.98444599074945,
       "operational_score": 72.21,
-      "operational_rank": 2,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 2
     },
     {
       "location_id": "LOC-MDN-01",
@@ -547,13 +373,7 @@
       "completeness_pct": 68.1,
       "invalid_rate_pct": 20.000961584691566,
       "operational_score": 40.18,
-      "operational_rank": 3,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 3
     },
     {
       "location_id": "LOC-PLB-01",
@@ -565,13 +385,7 @@
       "completeness_pct": 79.53,
       "invalid_rate_pct": 24.556774140347983,
       "operational_score": 36.75,
-      "operational_rank": 4,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 4
     },
     {
       "location_id": "LOC-SM2-01",
@@ -583,13 +397,7 @@
       "completeness_pct": 85.0,
       "invalid_rate_pct": 14.997339445786096,
       "operational_score": 9.17,
-      "operational_rank": 5,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 5
     },
     {
       "location_id": "LOC-JKT-01",
@@ -601,13 +409,7 @@
       "completeness_pct": 96.0,
       "invalid_rate_pct": 4.002946954813358,
       "operational_score": 2.45,
-      "operational_rank": 6,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 6
     },
     {
       "location_id": "LOC-JKT-03",
@@ -619,13 +421,7 @@
       "completeness_pct": 96.06,
       "invalid_rate_pct": 3.9374590700720358,
       "operational_score": 2.41,
-      "operational_rank": 7,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 7
     },
     {
       "location_id": "LOC-JKT-02",
@@ -637,13 +433,7 @@
       "completeness_pct": 96.09999999999998,
       "invalid_rate_pct": 3.8965291421087067,
       "operational_score": 2.38,
-      "operational_rank": 8,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 8
     },
     {
       "location_id": "LOC-KTG-01",
@@ -655,13 +445,7 @@
       "completeness_pct": 96.21,
       "invalid_rate_pct": 3.7901113294040556,
       "operational_score": 2.32,
-      "operational_rank": 9,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 9
     },
     {
       "location_id": "LOC-KTG-02",
@@ -673,13 +457,7 @@
       "completeness_pct": 96.28000000000002,
       "invalid_rate_pct": 3.7164374590700766,
       "operational_score": 2.27,
-      "operational_rank": 10,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 10
     },
     {
       "location_id": "LOC-BGR-01",
@@ -691,13 +469,7 @@
       "completeness_pct": 96.95,
       "invalid_rate_pct": 3.045186640471509,
       "operational_score": 1.86,
-      "operational_rank": 11,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 11
     },
     {
       "location_id": "LOC-BGR-02",
@@ -709,13 +481,7 @@
       "completeness_pct": 96.98,
       "invalid_rate_pct": 3.016535690897182,
       "operational_score": 1.84,
-      "operational_rank": 12,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 12
     },
     {
       "location_id": "LOC-MRS-01",
@@ -727,13 +493,7 @@
       "completeness_pct": 99.31,
       "invalid_rate_pct": 0.6835577749580435,
       "operational_score": 0.42,
-      "operational_rank": 13,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 13
     },
     {
       "location_id": "LOC-JMB-01",
@@ -745,13 +505,7 @@
       "completeness_pct": 99.31,
       "invalid_rate_pct": 0.6876509352871318,
       "operational_score": 0.42,
-      "operational_rank": 13,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 13
     },
     {
       "location_id": "LOC-SRG-01",
@@ -763,13 +517,7 @@
       "completeness_pct": 99.36,
       "invalid_rate_pct": 0.634439851008961,
       "operational_score": 0.39,
-      "operational_rank": 15,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 15
     },
     {
       "location_id": "LOC-BTM-01",
@@ -781,13 +529,7 @@
       "completeness_pct": 99.37,
       "invalid_rate_pct": 0.6303466906798727,
       "operational_score": 0.39,
-      "operational_rank": 15,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 15
     },
     {
       "location_id": "LOC-PKN-01",
@@ -799,13 +541,7 @@
       "completeness_pct": 99.40000000000002,
       "invalid_rate_pct": 0.5976014080471548,
       "operational_score": 0.37,
-      "operational_rank": 17,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 17
     },
     {
       "location_id": "LOC-PLU-01",
@@ -817,13 +553,7 @@
       "completeness_pct": 99.41000000000001,
       "invalid_rate_pct": 0.5812287667307903,
       "operational_score": 0.36,
-      "operational_rank": 18,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 18
     },
     {
       "location_id": "LOC-PSW-01",
@@ -835,13 +565,7 @@
       "completeness_pct": 99.43,
       "invalid_rate_pct": 0.5648561254144369,
       "operational_score": 0.35,
-      "operational_rank": 19,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 19
     },
     {
       "location_id": "LOC-YKY-01",
@@ -853,13 +577,7 @@
       "completeness_pct": 99.42,
       "invalid_rate_pct": 0.5771119842829076,
       "operational_score": 0.35,
-      "operational_rank": 19,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 19
     },
     {
       "location_id": "LOC-MLG-01",
@@ -871,13 +589,7 @@
       "completeness_pct": 99.42,
       "invalid_rate_pct": 0.5771356064017019,
       "operational_score": 0.35,
-      "operational_rank": 19,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 19
     },
     {
       "location_id": "LOC-STG-01",
@@ -889,13 +601,7 @@
       "completeness_pct": 99.45,
       "invalid_rate_pct": 0.544390323768984,
       "operational_score": 0.33,
-      "operational_rank": 22,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 22
     },
     {
       "location_id": "LOC-PKU-01",
@@ -907,13 +613,7 @@
       "completeness_pct": 99.46,
       "invalid_rate_pct": 0.5402971634398956,
       "operational_score": 0.33,
-      "operational_rank": 22,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 22
     },
     {
       "location_id": "LOC-KTB-01",
@@ -925,13 +625,7 @@
       "completeness_pct": 99.48,
       "invalid_rate_pct": 0.5198313617944428,
       "operational_score": 0.32,
-      "operational_rank": 24,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 24
     },
     {
       "location_id": "LOC-BGL-01",
@@ -943,13 +637,7 @@
       "completeness_pct": 99.48,
       "invalid_rate_pct": 0.5116450411362661,
       "operational_score": 0.32,
-      "operational_rank": 24,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 24
     },
     {
       "location_id": "LOC-IDP-01",
@@ -961,13 +649,7 @@
       "completeness_pct": 99.55,
       "invalid_rate_pct": 0.45022920759659746,
       "operational_score": 0.28,
-      "operational_rank": 26,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 26
     },
     {
       "location_id": "LOC-BJB-01",
@@ -979,13 +661,7 @@
       "completeness_pct": 100.0,
       "invalid_rate_pct": 0.0,
       "operational_score": 0.0,
-      "operational_rank": 27,
-      "avail_distance": true,
-      "avail_region": true,
-      "avail_site": true,
-      "avail_status": true,
-      "avail_completeness": true,
-      "avail_invalid": true
+      "operational_rank": 27
     }
   ]
 }

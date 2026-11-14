@@ -466,3 +466,141 @@
   .ov-tabbar { width: 100%; }
   .ov-tab { flex: 1; justify-content: center; padding: 0.55rem 0.6rem; }
 }
+
+/* ── Subtab Metodologi ── */
+.ov-method {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ov-method-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: 1.25rem;
+  color: #F0F4FF;
+  background:
+    radial-gradient(28rem 12rem at 100% 0%, rgba(230, 249, 175, 0.16), transparent 60%),
+    linear-gradient(150deg, #18314F 0%, #172A55 60%, #0D0630 140%);
+  box-shadow: 0 12px 28px rgba(24, 49, 79, 0.16);
+}
+.ov-method-hero h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+}
+.ov-method-hero p {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: rgba(240, 244, 255, 0.75);
+}
+.ov-method-hero-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 0.9rem;
+  color: var(--color-accent);
+  background: rgba(230, 249, 175, 0.14);
+}
+
+.ov-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ov-method-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.3rem 1.25rem 1.25rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--mc);
+  border-radius: 1.1rem;
+  box-shadow: var(--shadow-card);
+  height: 100%;
+}
+
+.ov-method-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ov-method-card-icon {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.7rem;
+  color: var(--mc);
+  background: color-mix(in srgb, var(--mc) 14%, #fff);
+}
+.ov-method-card-no {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-text-disabled);
+  font-variant-numeric: tabular-nums;
+}
+
+.ov-method-card h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.ov-method-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  counter-reset: item;
+}
+.ov-method-list li {
+  position: relative;
+  padding-left: 1.6rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  counter-increment: item;
+}
+.ov-method-list li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--mc);
+  background: color-mix(in srgb, var(--mc) 14%, #fff);
+}
+
+.ov-method-foot {
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.9rem;
+  border: 1px dashed var(--color-border-strong);
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .ov-method-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .ov-method-hero { padding: 1.1rem; }
+}

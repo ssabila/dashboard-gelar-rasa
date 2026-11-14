@@ -1,0 +1,66 @@
+.subtabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 100%;
+  padding: 0.25rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.8rem;
+  box-shadow: var(--shadow-card);
+  align-self: flex-start;
+}
+
+.subtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.subtab:hover {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.subtab:focus-visible {
+  outline: 2px solid var(--color-elevated);
+  outline-offset: 2px;
+}
+
+.subtab.is-active {
+  background: var(--color-surface);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(24, 49, 79, 0.18);
+}
+
+.subtab-ico {
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 0.4rem;
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+}
+
+.subtab.is-active .subtab-ico {
+  background: rgba(230, 249, 175, 0.16);
+  color: var(--color-accent);
+}
+
+@media (max-width: 600px) {
+  .subtabs { width: 100%; }
+  .subtab { flex: 1; justify-content: center; padding: 0.4rem 0.5rem; }
+}
