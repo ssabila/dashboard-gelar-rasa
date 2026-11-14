@@ -12,6 +12,7 @@ import { HubunganView } from './hubungan'
 import { EfekJedaView } from './efek-jeda'
 import { RentanView } from './rentan'
 import './pm25.css'
+import { SubTabs } from '@/components/ui/SubTabs'
 
 /**
  * Modul PM2.5 & Kesehatan (Tujuan 4) — satu route, tiga halaman:
@@ -65,17 +66,12 @@ export default function Pm25KesehatanPage() {
         </span>
       }
     >
-      <nav className="filter-bar pk-nav" aria-label="Halaman Tujuan 4">
-        {Object.entries(VIEWS).map(([id, v]) => {
-          const Icon = v.icon
-          const active = view === id
-          return (
-            <button key={id} type="button" className={`fpill${active ? ' active is-current' : ''}`} aria-current={active ? 'page' : undefined} onClick={() => go(id)}>
-              <Icon size={14} aria-hidden="true" /> {v.label}
-            </button>
-          )
-        })}
-      </nav>
+      <SubTabs
+        label="Halaman Tujuan 4"
+        tabs={Object.entries(VIEWS).map(([id, v]) => ({ id, label: v.label, icon: v.icon }))}
+        value={view}
+        onChange={go}
+      />
 
       {error && <ErrorState message={`Data gagal dimuat: ${error}. Jalankan scripts/preprocess_t3_t4_web.py terlebih dahulu.`} />}
       {loading && <Card><LoadingSpinner label="Memuat data PM2.5 dan kesehatan..." /></Card>}

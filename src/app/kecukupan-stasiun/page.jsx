@@ -1,536 +1,536 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useMemo, useEffect, useState, useCallback } from 'react'
-import { Activity, Gauge, Radio, Ruler } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
+import { ArrowDown, ArrowUp, Gauge, Info, MapPin, Radio, Ruler, Search, X } from 'lucide-react'
 import { ModuleLayout, Section } from '@/components/layout/ModuleLayout'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { MetricCard } from '@/components/ui/MetricCard'
-import { LoadingSpinner, ErrorState } from '@/components/ui/LoadingSpinner'
+import { ErrorState, LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { formatNumber } from '@/lib/formatters'
 import { EChart } from './EChart'
 import {
   useMonitoringNetworkSummary,
-  useStationMaster,
   useStationCompleteness,
+  useStationMaster,
   useStationNearestNeighbor,
-  useCoverageKabupatenGeoJSON,
 } from '@/hooks/useKecukupanData'
+import './kecukupan.css'
+
 const NetworkMap = dynamic(
   () => import('./NetworkMap').then((m) => m.NetworkMap),
   { ssr: false, loading: () => <LoadingSpinner label="Memuat peta..." /> }
 )
 
-/* ─── Konstanta ────────────────────────────────────────────────────────── */
-const COMP_THRESHOLD = 85
-const FAR_KM        = 400
-
-const NAVY = 'var(--color-text-primary)'
-const SOFT = 'var(--color-text-secondary)'
-
-const STATUS_COLOR = {
-  Active:       '#16A34A',
-  Intermittent: '#F59E0B',
-  Defective:    '#EF4444',
-   Unknown: '#94A3B8',
+/* ─── Konstanta tampilan ───────────────────────────────────────────────── */
+const STATUS_ORDER = ['Active', 'Intermittent', 'Defective', 'Unknown']
+const STATUS_INFO = {
+  Active: { color: '#16A34A', text: '#166534' },
+  Intermittent: { color: '#F59E0B', text: '#92400E' },
+  Defective: { color: '#EF4444', text: '#991B1B' },
+  Unknown: { color: '#94A3B8', text: '#475569' },
+}
+const STATUS_RANK = { Defective: 3, Intermittent: 2, Active: 1, Unknown: 0 }
+const ATTENTION_COLOR = '#DC2626'
+const AXIS_TXT = { color: '#55706E', fontSize: 11 }
+const GRID_LINE = { lineStyle: { color: 'rgba(24,49,79,0.08)' } }
+const FONT = "'Plus Jakarta Sans', system-ui, sans-serif"
+const tooltipBase = {
+  backgroundColor: '#FFFFFF',
+  borderColor: 'rgba(24,49,79,0.15)',
+  borderWidth: 1,
+  textStyle: { color: '#18314F', fontFamily: FONT, fontSize: 12 },
 }
 
-const STATUS_BG = {
-  Active: '#DCFCE7',
-  Intermittent: '#FEF3C7',
-  Defective: '#FEE2E2',
-  Unknown: '#F1F5F9',
+/* ─── Helper ───────────────────────────────────────────────────────────── */
+const pct = (v, d = 1) => (v == null || !Number.isFinite(Number(v)) ? '—' : `${formatNumber(Number(v), d)}%`)
+const km = (v, d = 1) => (v == null || !Number.isFinite(Number(v)) ? '—' : `${formatNumber(Number(v), d)} km`)
+
+/** Status terburuk dari daftar status sensor stasiun, mis. "Active, Defective" → Defective. */
+function worstStatus(str) {
+  const tokens = String(str ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+  if (!tokens.length) return 'Unknown'
+  return tokens.reduce((best, t) => ((STATUS_RANK[t] ?? 0) > (STATUS_RANK[best] ?? 0) ? t : best), tokens[0])
 }
 
-/* ─── Helpers ──────────────────────────────────────────────────────────── */
-const pct = (v) => (v == null ? '—' : `${formatNumber(v, 1)}%`)
-
-function groupCount(items, key, valueKey) {
-  const map = new Map()
-  for (const it of items) {
-    const k = it[key] || 'Tidak diketahui'
-    map.set(k, (map.get(k) ?? 0) + (valueKey ? Number(it[valueKey] ?? 0) : 1))
-  }
-  return [...map.entries()]
-    .map(([label, value]) => ({ label, value }))
-    .sort((a, b) => b.value - a.value)
-}
-
-function sensorStatusOf(s) {
-  const statuses = String(s.sensor_status ?? '')
-    .split(',')
-    .map((status) => status.trim())
-
-  if (statuses.includes('Defective')) return 'Defective'
-  if (statuses.includes('Intermittent')) return 'Intermittent'
-  if (statuses.includes('Active')) return 'Active'
-
-  return 'Unknown'
-}
-
-function buildTrigger(status, comp, dist) {
-  const reasons = []
-  if (status !== 'Active')                   reasons.push(`Sensor ${status}`)
-  if (comp != null && comp < COMP_THRESHOLD) reasons.push(`Kelengkapan ${formatNumber(comp, 1)}%`)
-  if (dist != null && dist > FAR_KM)        reasons.push(`Tetangga terdekat ${formatNumber(dist, 0)} km`)
-  return reasons.length ? reasons.slice(0, 2).join('; ') : null
-}
-
-
-function buildModel({ summary, stationsRaw, comp, nearest, geo }) {
+/** Gabungkan metadata dan tetangga terdekat menjadi satu baris per stasiun. */
+function buildRows(master, nearest) {
   const nnBy = new Map(nearest.map((n) => [n.location_id, n]))
-
-  // Rata-rata completeness per lokasi dari seluruh baris parameter.
-  // Interpretasikan sebagai rata-rata antarparameter, bukan completeness
-  // gabungan berbobot berdasarkan jumlah observasi.
-  const compAcc = new Map()
-
-  for (const r of comp) {
-    if (r.completeness_pct == null) continue
-
-    const value = Number(r.completeness_pct)
-    if (!Number.isFinite(value)) continue
-
-    const acc = compAcc.get(r.location_id) ?? { sum: 0, n: 0 }
-    acc.sum += value
-    acc.n += 1
-    compAcc.set(r.location_id, acc)
-  }
-
-  const stations = stationsRaw.map((s) => {
-    const status = sensorStatusOf(s)
-    const acc = compAcc.get(s.location_id)
-
-    const completeness =
-      acc && acc.n > 0 ? acc.sum / acc.n : null
-
-    const nn = nnBy.get(s.location_id)
-    const dist = nn?.nearest_distance_km ?? null
+  return master.map((s) => {
+    const nn = nnBy.get(s.location_id) ?? {}
     return {
       ...s,
-      status_operasional: status,
-      completeness_pct: completeness,
-      nearest_distance_km: dist,
-      nearest_station_code: nn?.nearest_station_code ?? null,
-      primary_trigger: buildTrigger(status, completeness, dist),
-      recommendation_status: null,
+      pulau: s.pulau || 'Lainnya',
+      status_operasional: worstStatus(s.sensor_status),
+      nearest_distance_km: nn.nearest_distance_km ?? null,
+      nearest_station_code: nn.nearest_station_code ?? null,
     }
   })
-
-  const withDist = stations.filter(
-    (s) => s.nearest_distance_km != null &&
-      Number.isFinite(Number(s.nearest_distance_km))
-  )
-
-  const withComp = stations.filter(
-    (s) => s.completeness_pct != null &&
-      Number.isFinite(Number(s.completeness_pct))
-  )
-
-  const byDistDesc = [...withDist].sort(
-    (a, b) => b.nearest_distance_km - a.nearest_distance_km
-  )
-
-  return {
-    summary,
-    geo,
-    stations,
-
-    statusCounts: ['Active', 'Intermittent', 'Defective', 'Unknown'].map((k) => ({
-      label: k,
-      value: stations.filter((s) => s.status_operasional === k).length,
-    })),
-
-    // Pengelompokan analitis berasal dari metadata station_master,
-    // bukan dari pencocokan polygon GeoJSON.
-    provinceStations: groupCount(stations, 'provinsi'),
-    provinceSensors: groupCount(stations, 'provinsi', 'sensor_count'),
-
-    compSorted: [...withComp].sort(
-      (a, b) => a.completeness_pct - b.completeness_pct
-    ),
-
-    avgComp: withComp.length
-      ? withComp.reduce((sum, s) => sum + s.completeness_pct, 0) / withComp.length
-      : null,
-
-    belowThreshold: withComp.filter(
-      (s) => s.completeness_pct < COMP_THRESHOLD
-    ).length,
-
-    farList: byDistDesc.slice(0, 5),
-
-    farCount: withDist.filter(
-      (s) => s.nearest_distance_km > FAR_KM
-    ).length,
-
-    isolatedCount: stations.filter(
-      (s) => s.nearest_distance_km == null || s.nearest_distance_km > FAR_KM
-    ).length,
-
-    below80Count: withComp.filter(
-      (s) => s.completeness_pct < 80
-    ).length,
-
-  }
 }
 
+const SORT_GET = {
+  station_code: (r) => r.station_code,
+  kota_kabupaten: (r) => r.kota_kabupaten,
+  provinsi: (r) => r.provinsi,
+  pulau: (r) => r.pulau,
+  status_operasional: (r) => STATUS_ORDER.indexOf(r.status_operasional),
+  nearest_distance_km: (r) => r.nearest_distance_km,
+  nearest_station_code: (r) => r.nearest_station_code,
+  completeness_pct: (r) => r.completeness_pct,
+}
 
-/* ─── Komponen UI lokal ────────────────────────────────────────────────── */
+function sortRows(list, key, dir) {
+  const get = SORT_GET[key]
+  return [...list].sort((a, b) => {
+    const x = get(a)
+    const y = get(b)
+    if (x == null && y == null) return 0
+    if (x == null) return 1
+    if (y == null) return -1
+    const c = typeof x === 'string' ? x.localeCompare(y, 'id') : x - y
+    return dir === 'asc' ? c : -c
+  })
+}
 
-function HBar({ rows, format = (v) => formatNumber(v, 0), unit = '', colorOf }) {
-  const max = Math.max(...rows.map((r) => r.value ?? 0), 0) || 1
+/* ─── Komponen kecil ───────────────────────────────────────────────────── */
+function StatusPill({ status }) {
+  const info = STATUS_INFO[status] ?? STATUS_INFO.Unknown
   return (
-    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 6 }}>
-      {rows.map((r) => (
-        <li
-          key={r.label}
-          style={{ display: 'grid', gridTemplateColumns: '9rem 1fr 5rem', alignItems: 'center', gap: 8, fontSize: '0.75rem' }}
-        >
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={r.label}>
-            {r.label}
-          </span>
-          <span style={{ height: 8, background: 'rgba(24,49,79,0.08)', borderRadius: 4 }}>
-            <span style={{ display: 'block', height: '100%', width: `${((r.value ?? 0) / max) * 100}%`, background: colorOf ? colorOf(r) : '#384E77', borderRadius: 4 }} />
-          </span>
-          <strong style={{ textAlign: 'right' }}>{format(r.value)}{unit}</strong>
-        </li>
-      ))}
-    </ul>
+    <span className="kc-pill" style={{ '--c': info.color, '--ct': info.text }}>
+      <i aria-hidden="true" />
+      {status}
+    </span>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   PAGE
-═══════════════════════════════════════════════════════════════════════════ */
-export default function KecukupanStasiunPage() {
-  const summaryHook   = useMonitoringNetworkSummary()
-  const stationsHook  = useStationMaster()
-  const compHook      = useStationCompleteness()
-  const nearestHook   = useStationNearestNeighbor()
-  const geoHook       = useCoverageKabupatenGeoJSON()
-  const [selectedStation, setSelectedStation] = useState(null)
-  const onStationSelect = useCallback((station) => {
-    setSelectedStation(station)
-  }, [])
-
-  const core = [summaryHook, stationsHook, compHook, nearestHook]
-  const error = core.find((h) => h.error)?.error
-  const ready = core.every((h) => h.data) && !core.some((h) => h.loading)
-
-  const m = useMemo(
-    () =>
-      ready
-        ? buildModel({
-            summary:     summaryHook.data,
-            stationsRaw: stationsHook.data,
-            comp:        compHook.data,
-            nearest:     nearestHook.data,
-            geo:         geoHook.data,
-          })
-        : null,
-    [ready, summaryHook.data, stationsHook.data, compHook.data, nearestHook.data, geoHook.data]
+function StatusLegend({ counts }) {
+  return (
+    <div className="kc-legend" aria-label="Legenda status sensor">
+      {STATUS_ORDER.filter((s) => counts?.[s] != null).map((s) => (
+        <span key={s}>
+          <i className="kc-dot" style={{ background: STATUS_INFO[s].color }} />
+          {s} <strong>({counts[s]})</strong>
+        </span>
+      ))}
+    </div>
   )
+}
+
+function StationDetail({ station, onClose }) {
+  if (!station) {
+    return (
+      <div className="kc-empty">
+        <MapPin size={22} style={{ color: 'var(--color-elevated)' }} />
+        <strong>Pilih stasiun</strong>
+        <span>Klik titik pada peta, baris pada tabel, atau titik pada grafik untuk melihat detail.</span>
+      </div>
+    )
+  }
+  return (
+    <div className="kc-detail">
+      <div className="kc-detail-head">
+        <div>
+          <span className="kc-eyebrow">Stasiun terpilih</span>
+          <h3>{station.station_code}</h3>
+          <p>{station.kota_kabupaten} · {station.provinsi}</p>
+        </div>
+        <button type="button" className="kc-icon-btn" onClick={onClose} aria-label="Tutup detail stasiun">
+          <X size={16} />
+        </button>
+      </div>
+
+      <StatusPill status={station.status_operasional} />
+
+      <dl className="kc-dl">
+        <div><dt>Pulau</dt><dd>{station.pulau}</dd></div>
+        <div><dt>Tipe lokasi</dt><dd>{station.site_type ?? '—'}</dd></div>
+        <div><dt>Sensor aktif</dt><dd>{station.active_sensor_count ?? 0} dari {station.sensor_count ?? 0}</dd></div>
+        <div><dt>Kelengkapan</dt><dd>{pct(station.completeness_pct)}</dd></div>
+        <div><dt>Tetangga terdekat</dt><dd>{station.nearest_station_code ?? '—'}</dd></div>
+        <div><dt>Jarak</dt><dd>{km(station.nearest_distance_km)}</dd></div>
+      </dl>
+    </div>
+  )
+}
+
+/* ═══ PAGE ═════════════════════════════════════════════════════════════════ */
+export default function KecukupanStasiunPage() {
+  const summaryH = useMonitoringNetworkSummary()
+  const masterH = useStationMaster()
+  const compH = useStationCompleteness()
+  const nnH = useStationNearestNeighbor()
+
+  const [selectedId, setSelectedId] = useState(null)
+  const [pulauFilter, setPulauFilter] = useState('Semua')
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState({ key: 'nearest_distance_km', dir: 'desc' })
+
+  const core = [summaryH, masterH, compH, nnH]
+  const error = core.find((h) => h.error)?.error
+  const ready = core.every((h) => h.data)
+
+  const summary = summaryH.data
+  const ref = summary?.observation_completeness?.reference_pct ?? null
+  const refSource = summary?.observation_completeness?.reference_source ?? ''
+
+  // Kelengkapan per stasiun (rata-rata antarpolutan) sudah tersedia di station_master.completeness_pct
+  const rows = useMemo(
+    () => (ready ? buildRows(masterH.data, nnH.data) : []),
+    [ready, masterH.data, nnH.data]
+  )
+
+  /* Median jarak ke tetangga terdekat seluruh stasiun (batas "jauh"), dari JSON */
+  const distMedian = summary?.median_nearest_distance_km ?? null
+
+  const selected = useMemo(() => rows.find((r) => r.location_id === selectedId) ?? null, [rows, selectedId])
+  const onStationSelect = useCallback((station) => setSelectedId(station.location_id), [])
+  const pulauList = useMemo(() => [...new Set(rows.map((r) => r.pulau))].sort(), [rows])
+
+  /* Dua kriteria: jarak di atas median seluruh stasiun, dan kelengkapan di bawah acuan.
+     Stasiun yang memenuhi keduanya adalah prioritas dan ditampilkan lebih dulu. */
+  const isFar = (r) => distMedian != null && r.nearest_distance_km != null && r.nearest_distance_km > distMedian
+  const isLow = (r) => ref != null && r.completeness_pct != null && r.completeness_pct < ref
+  const byDistDesc = (a, b) => (b.nearest_distance_km ?? 0) - (a.nearest_distance_km ?? 0)
+
+  const priority = useMemo(
+    () => rows.filter((r) => isFar(r) && isLow(r)).sort(byDistDesc),
+    [rows, distMedian, ref] // eslint-disable-line react-hooks/exhaustive-deps
+  )
+  const secondary = useMemo(
+    () => rows.filter((r) => isFar(r) !== isLow(r)).sort(byDistDesc),
+    [rows, distMedian, ref] // eslint-disable-line react-hooks/exhaustive-deps
+  )
+  const attention = useMemo(() => [...priority, ...secondary], [priority, secondary])
+  const priorityIds = useMemo(() => new Set(priority.map((r) => r.location_id)), [priority])
+  const secondaryIds = useMemo(() => new Set(secondary.map((r) => r.location_id)), [secondary])
+
+  const belowRef = useMemo(
+    () => (ref == null ? 0 : rows.filter((r) => r.completeness_pct != null && r.completeness_pct < ref).length),
+    [rows, ref]
+  )
+
+  const tableRows = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    const filtered = rows.filter((r) => {
+      if (pulauFilter !== 'Semua' && r.pulau !== pulauFilter) return false
+      if (!q) return true
+      return [r.station_code, r.kota_kabupaten, r.provinsi].some((v) => String(v ?? '').toLowerCase().includes(q))
+    })
+    return sortRows(filtered, sort.key, sort.dir)
+  }, [rows, pulauFilter, query, sort])
+
+  /* ─── Opsi grafik ─── */
+  const pulauOption = useMemo(() => {
+    const islands = pulauList
+    return {
+      tooltip: { ...tooltipBase, trigger: 'axis', axisPointer: { type: 'shadow' } },
+      legend: { bottom: 0, textStyle: AXIS_TXT, itemWidth: 12, itemHeight: 8 },
+      grid: { left: 8, right: 16, top: 16, bottom: 42, containLabel: true },
+      xAxis: { type: 'category', data: islands, axisLabel: { ...AXIS_TXT, color: '#18314F', fontWeight: 600, interval: 0 } },
+      yAxis: { type: 'value', name: 'Stasiun', nameTextStyle: AXIS_TXT, splitLine: GRID_LINE, axisLabel: AXIS_TXT, minInterval: 1 },
+      series: STATUS_ORDER.map((st) => ({
+        name: st,
+        type: 'bar',
+        stack: 'status',
+        barMaxWidth: 46,
+        itemStyle: { color: STATUS_INFO[st].color },
+        data: islands.map((i) => rows.filter((r) => r.pulau === i && r.status_operasional === st).length),
+      })),
+    }
+  }, [pulauList, rows])
+
 
   const scatterOption = useMemo(() => {
-    const normal = []
-    const attention = []
-    const scatterStations = m?.stations ?? []
-
-    scatterStations.forEach((station) => {
-      const isolated = station.nearest_distance_km == null ||
-        station.nearest_distance_km > FAR_KM
-      const lowCompleteness = station.completeness_pct < 80
-      const point = {
-        name: station.station_code,
-        value: [
-          station.nearest_distance_km == null ? 0 : Number(station.nearest_distance_km),
-          station.completeness_pct == null ? 0 : Number(station.completeness_pct),
-        ],
-        station,
-      }
-      if (isolated || lowCompleteness) attention.push(point)
-      else normal.push(point)
+    const points = rows.filter((r) => r.nearest_distance_km != null && r.completeness_pct != null)
+    const mk = (p) => ({
+      value: [p.nearest_distance_km, p.completeness_pct],
+      code: p.station_code,
+      kota: p.kota_kabupaten,
+      id: p.location_id,
     })
-
+    const pts = (set) => points.filter((p) => set.has(p.location_id)).map(mk)
+    const restIds = new Set(points.map((p) => p.location_id).filter((id) => !priorityIds.has(id) && !secondaryIds.has(id)))
+    const markLines = [
+      distMedian != null && { xAxis: distMedian, label: { formatter: `Median jarak ${formatNumber(distMedian, 1)} km`, color: '#475569', fontSize: 10, position: 'insideEndTop' } },
+      ref != null && { yAxis: ref, label: { formatter: `Acuan ${ref}%`, color: '#475569', fontSize: 10, position: 'insideEndTop' } },
+    ].filter(Boolean)
+    const lineStyle = { color: '#64748B', type: 'dashed', width: 1.2 }
     return {
-      animation: false,
-      grid: { left: 58, right: 24, top: 24, bottom: 52 },
       tooltip: {
+        ...tooltipBase,
         trigger: 'item',
-        formatter: (params) => {
-          const station = params.data.station
-          const distance = station.nearest_distance_km == null
-            ? 'Tidak memiliki tetangga'
-            : `${formatNumber(station.nearest_distance_km, 1)} km`
-          return `<strong>${station.station_code}</strong><br/>` +
-            `Kelengkapan: ${station.completeness_pct == null ? 'Tidak tersedia' : `${formatNumber(station.completeness_pct, 1)}%`}<br/>` +
-            `Jarak terdekat: ${distance}`
-        },
+        formatter: (p) => `<strong>${p.data.code}</strong><br/>${p.data.kota}<br/>Jarak tetangga: ${km(p.value[0])}<br/>Kelengkapan: ${pct(p.value[1])}`,
       },
-      xAxis: {
-        type: 'value',
-        name: 'Jarak stasiun terdekat (km)',
-        nameLocation: 'middle',
-        nameGap: 30,
-        min: 0,
-        max: 1500,
-        splitLine: { lineStyle: { color: '#E2E8F0' } },
-      },
-      yAxis: {
-        type: 'value',
-        name: 'Kelengkapan data (%)',
-        nameLocation: 'middle',
-        nameGap: 42,
-        min: 0,
-        max: 100,
-        splitLine: { lineStyle: { color: '#E2E8F0' } },
-      },
+      legend: { top: 0, right: 0, textStyle: AXIS_TXT, itemWidth: 10, itemHeight: 10 },
+      grid: { left: 52, right: 20, top: 40, bottom: 44 },
+      xAxis: { type: 'value', name: 'Jarak ke tetangga terdekat (km)', nameLocation: 'middle', nameGap: 28, nameTextStyle: AXIS_TXT, min: 0, splitLine: GRID_LINE, axisLabel: AXIS_TXT },
+      yAxis: { type: 'value', name: 'Kelengkapan rata-rata (%)', nameTextStyle: { ...AXIS_TXT, align: 'left' }, min: 0, max: 100, splitLine: GRID_LINE, axisLabel: AXIS_TXT },
       series: [
         {
-          name: 'Dalam batas perhatian',
+          name: 'Prioritas (jarak jauh & kelengkapan rendah)',
           type: 'scatter',
-          symbolSize: 10,
-          itemStyle: { color: '#4B6B8C', opacity: 0.78 },
-          data: normal,
+          symbolSize: 15,
+          itemStyle: { color: ATTENTION_COLOR, borderColor: '#fff', borderWidth: 1.5 },
+          label: { show: true, formatter: (p) => p.data.code, position: 'top', fontSize: 9, color: '#7F1D1D', fontFamily: FONT },
+          labelLayout: { hideOverlap: true },
+          data: pts(priorityIds),
         },
         {
-          name: 'Perlu perhatian',
+          name: 'Salah satu kriteria',
           type: 'scatter',
           symbolSize: 13,
-          itemStyle: { color: '#DC2626', borderColor: '#991B1B', borderWidth: 1 },
-          data: attention,
+          itemStyle: { color: '#F59E0B', borderColor: '#fff', borderWidth: 1.5 },
+          label: { show: true, formatter: (p) => p.data.code, position: 'top', fontSize: 9, color: '#92400E', fontFamily: FONT },
+          labelLayout: { hideOverlap: true },
+          data: pts(secondaryIds),
+        },
+        {
+          name: 'Lainnya',
+          type: 'scatter',
+          symbolSize: 11,
+          itemStyle: { color: '#8BBEB2', borderColor: '#fff', borderWidth: 1.5 },
+          label: { show: true, formatter: (p) => p.data.code, position: 'top', fontSize: 9, color: '#55706E', fontFamily: FONT },
+          labelLayout: { hideOverlap: true },
+          data: pts(restIds),
+          markLine: { silent: true, symbol: 'none', lineStyle, data: markLines },
         },
       ],
     }
-  }, [m])
+  }, [rows, priorityIds, secondaryIds, distMedian, ref])
 
+  const toggleSort = (key) =>
+    setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' }))
+
+  const sortTh = (k, label, align) => (
+    <th style={{ textAlign: align ?? 'left' }} aria-sort={sort.key === k ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+      <button type="button" onClick={() => toggleSort(k)}>
+        {label}
+        {sort.key === k && (sort.dir === 'asc' ? <ArrowUp size={11} aria-hidden="true" /> : <ArrowDown size={11} aria-hidden="true" />)}
+      </button>
+    </th>
+  )
+
+  /* ─── Loading & error ─── */
   const layout = {
-    eyebrow:     'Tujuan 5',
-    title:       'Kecukupan Stasiun',
-    description: 'Apakah 27 stasiun sudah tersebar merata, dan wilayah mana yang paling butuh tambahan titik pemantauan?',
+    eyebrow: 'Tujuan 5',
+    title: 'Kecukupan Stasiun',
+    description: 'Bagaimana sebaran dan kondisi stasiun AQMS, seberapa jauh jarak antarlokasi, dan seberapa lengkap data yang tercatat?',
   }
 
-  if (error) return <ModuleLayout {...layout}><ErrorState message={error} /></ModuleLayout>
-  if (!m)    return <ModuleLayout {...layout}><LoadingSpinner label="Menyiapkan data jaringan..." /></ModuleLayout>
+  if (error) return <ModuleLayout {...layout}><ErrorState message={`Data gagal dimuat: ${error}`} /></ModuleLayout>
+  if (!ready) return <ModuleLayout {...layout}><LoadingSpinner label="Menyiapkan data jaringan..." /></ModuleLayout>
 
-  /* ── Nilai turunan untuk narasi ── */
-  const s             = m.summary
-  const needAttention = (s.sensor_status.Intermittent ?? 0) + (s.sensor_status.Defective ?? 0)
-  const topProvince = m.provinceStations[0]
-  const hasIsolated = m.farCount > 0
-  const hasWeakData = m.belowThreshold > 0
-  const attentionStations = m.stations
-    .filter((station) =>
-      station.nearest_distance_km == null ||
-      station.nearest_distance_km > FAR_KM ||
-      station.completeness_pct < 80
-    )
-    .sort((a, b) => {
-      const distanceA = a.nearest_distance_km ?? Infinity
-      const distanceB = b.nearest_distance_km ?? Infinity
-      if (distanceB !== distanceA) return distanceB - distanceA
-      return (a.completeness_pct ?? Infinity) - (b.completeness_pct ?? Infinity)
-    })
+  const s = summary
+  const activeSensors = s.sensor_status?.Active ?? 0
+  const notActive = (s.sensor_status?.Intermittent ?? 0) + (s.sensor_status?.Defective ?? 0)
 
   return (
     <ModuleLayout {...layout}>
+      <div className="kc-stack">
 
-      {/* ── Kesimpulan di awal ───────────────────────────────────────────── */}
-      <Card variant="dark">
-        <h2 className="headline">
-          Persebaran jaringan stasiun AQMS
-          {topProvince && (
-            <>
-              {' '}terbanyak berada di <strong>{topProvince.label}</strong>
-            </>
-          )}
-          .{' '}
-          {hasIsolated && (
-            <>
-              <strong>{m.farCount} stasiun</strong> memiliki jarak ke tetangga terdekat
-              lebih dari {FAR_KM} km.
-            </>
-          )}
-          {hasWeakData && (
-            <>
-              {' '}<strong>{m.belowThreshold} stasiun</strong> memiliki kelengkapan
-              data di bawah {COMP_THRESHOLD}%.
-            </>
-          )}
-        </h2>
-        <p className="headline-sub">
-          Dari {s.total_stations} stasiun, {s.sensor_status.Active} sensor aktif.
-          {needAttention > 0 && ` ${needAttention} sensor perlu diperiksa.`}{' '}
-          Halaman ini menelusuri sebab dan wilayah mana yang paling butuh tambahan titik pemantauan.
-        </p>
-      </Card>
-
-      {/* ── KPI ─────────────────────────────────────────────────────────── */}
-      <div className="kpi-grid">
-        <MetricCard
-          variant="hero"
-          label="Stasiun AQMS"
-          value={s.total_stations}
-          unit="lokasi"
-          subtext={`${s.total_sensors} sensor terdaftar`}
-          icon={<Radio size={18} />}
-        />
-        <MetricCard
-          label="Sensor aktif"
-          value={s.sensor_status.Active}
-          unit={`dari ${s.total_sensors}`}
-          subtext={needAttention > 0 ? `${needAttention} perlu diperiksa` : 'Semua beroperasi'}
-          accentColor={needAttention > 0 ? 'var(--ispu-tidak-sehat)' : 'var(--ispu-baik)'}
-          icon={<Activity size={18} />}
-        />
-        <MetricCard
-          label="Median jarak antarlokasi"
-          value={formatNumber(s.median_nearest_distance_km, 0)}
-          unit="km"
-          subtext={`${m.farCount} stasiun > ${FAR_KM} km dari yang lain`}
-          accentColor={m.farCount > 0 ? 'var(--ispu-sedang)' : 'var(--ispu-baik)'}
-          icon={<Ruler size={18} />}
-        />
-        <MetricCard
-          label="Rata-rata kelengkapan data"
-          value={pct(m.avgComp)}
-          subtext={m.belowThreshold > 0 ? `${m.belowThreshold} stasiun di bawah ${COMP_THRESHOLD}%` : `Semua di atas ${COMP_THRESHOLD}%`}
-          accentColor={m.belowThreshold > 0 ? 'var(--ispu-sedang)' : 'var(--ispu-baik)'}
-          icon={<Gauge size={18} />}
-        />
-      </div>
-
-      {/* ═══ 1. SEBARAN ═══════════════════════════════════════════════════ */}
-      <Section
-        title="Persebaran geografis dan komposisi jaringan stasiun"
-      >
-        <Card>
-          <CardHeader
-            title="Peta persebaran stasiun"
-            subtitle="Warna titik menunjukkan status sensor. Klik titik untuk melihat detail kelengkapan data dan jarak ke stasiun terdekat."
-          />
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, fontSize: '0.75rem', marginBottom: 10 }}>
-            {m.statusCounts.map((c) => (
-              <span key={c.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: STATUS_COLOR[c.label] }} />
-                {c.label}: <strong>{c.value}</strong>
-              </span>
-            ))}
-          </div>
-          <div className="layout-main">
-            <NetworkMap
-              geo={m.geo}
-              stations={m.stations}
-              height="520px"
-              onStationSelect={onStationSelect}
-            />
-            {selectedStation && (
-              <Card className="station-detail-card" style={{ padding: 0, overflow: 'hidden' }}>
-                <div style={{ padding: '1rem 1.1rem', background: 'linear-gradient(135deg, #F8FAFC, #EAF0F7)', borderBottom: '1px solid var(--color-border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                    <div>
-                      <div style={{ fontSize: '0.68rem', color: SOFT, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Detail stasiun</div>
-                      <h3 style={{ margin: '0.2rem 0 0', fontSize: '1.05rem', color: NAVY }}>{selectedStation.station_code}</h3>
-                    </div>
-                    <button type="button" aria-label="Tutup detail stasiun" onClick={() => setSelectedStation(null)}
-                      style={{ border: 0, background: '#fff', color: SOFT, borderRadius: 999, width: 28, height: 28, cursor: 'pointer', fontSize: '1rem' }}>
-                      ×
-                    </button>
-                  </div>
-                  <p style={{ margin: '0.35rem 0 0', fontSize: '0.75rem', color: SOFT, lineHeight: 1.4 }}>
-                    {selectedStation.kota_kabupaten} · {selectedStation.provinsi}
-                  </p>
-                  <span style={{ display: 'inline-flex', marginTop: 10, padding: '0.25rem 0.6rem', borderRadius: 999, background: STATUS_BG[selectedStation.status_operasional] ?? STATUS_BG.Unknown, color: STATUS_COLOR[selectedStation.status_operasional] ?? STATUS_COLOR.Unknown, fontSize: '0.7rem', fontWeight: 700 }}>
-                    {selectedStation.status_operasional}
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: '1rem 1.1rem' }}>
-                  {[
-                    ['Sensor', selectedStation.sensor_count ?? '—'],
-                    ['Kelengkapan', pct(selectedStation.completeness_pct)],
-                    ['Tetangga terdekat', selectedStation.nearest_distance_km == null ? '—' : `${formatNumber(selectedStation.nearest_distance_km, 1)} km`],
-                    ['Kode lokasi', selectedStation.location_id ?? '—'],
-                  ].map(([label, value]) => (
-                    <div key={label} style={{ padding: '0.65rem 0.7rem', borderRadius: '0.65rem', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-                      <div style={{ color: SOFT, fontSize: '0.66rem', lineHeight: 1.3 }}>{label}</div>
-                      <strong style={{ display: 'block', marginTop: 3, fontSize: '0.82rem', color: NAVY, overflowWrap: 'anywhere' }}>{value}</strong>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-          </div>
+        {/* ── Ringkasan ─────────────────────────────────────────────────── */}
+        <Card className="kc-hero">
+          <h2>
+            Jaringan terdiri atas <strong>{s.total_stations} stasiun</strong> dengan{' '}
+            <strong>{activeSensors} dari {s.total_sensors} sensor</strong> berstatus Active.
+            {priority.length > 0 && <> <strong>{priority.length} stasiun</strong> berjarak jauh sekaligus berkelengkapan rendah.</>}
+          </h2>
+          <p>
+            Rata-rata kelengkapan data {pct(s.observation_completeness.avg_completeness_pct)}.
+            {ref != null && <> {belowRef} stasiun berada di bawah acuan {ref}%.</>}
+            {notActive > 0 && <> {notActive} sensor berstatus Intermittent atau Defective.</>}
+          </p>
         </Card>
-      </Section>
 
-      {/* ═══ 2. KONDISI JARINGAN ══════════════════════════════════════════ */}
-      <Section
-        title="Jarak antarstasiun dan kelengkapan data"
-        description="Sebaran stasiun menunjukkan hubungan antara keterisolasian lokasi dan konsistensi pencatatan."
-      >
-        <div className="kpi-grid" style={{ marginBottom: 'var(--gap)' }}>
+        {/* ── KPI ───────────────────────────────────────────────────────── */}
+        <div className="kpi-grid">
           <MetricCard
-            label="Stasiun terisolasi"
-            value={m.isolatedCount}
-            unit="stasiun"
-            subtext={`Jarak > ${FAR_KM} km atau tanpa tetangga`}
-            accentColor="#DC2626"
+            variant="hero"
+            label="Stasiun AQMS"
+            value={s.total_stations}
+            unit="lokasi"
+            subtext={`${pulauList.length} pulau · ${s.total_sensors} sensor`}
+            icon={<MapPin size={18} />}
           />
           <MetricCard
-            label="Kelengkapan di bawah 80%"
-            value={m.below80Count}
-            unit="stasiun"
-            subtext="Berdasarkan ambang perhatian"
-            accentColor="#DC2626"
+            label="Sensor aktif"
+            value={activeSensors}
+            unit={`dari ${s.total_sensors}`}
+            subtext={`Intermittent ${s.sensor_status.Intermittent ?? 0} · Defective ${s.sensor_status.Defective ?? 0}`}
+            icon={<Radio size={18} />}
+          />
+          <MetricCard
+            label="Median jarak tetangga terdekat"
+            value={formatNumber(distMedian, 1)}
+            unit="km"
+            subtext={s.nearest_distance_km ? `Rentang ${formatNumber(s.nearest_distance_km.min, 1)} – ${formatNumber(s.nearest_distance_km.max, 1)} km` : '—'}
+            icon={<Ruler size={18} />}
+          />
+          <MetricCard
+            label="Rata-rata kelengkapan data"
+            value={pct(s.observation_completeness.avg_completeness_pct)}
+            subtext={ref != null ? `${belowRef} stasiun di bawah acuan ${ref}%` : '—'}
+            icon={<Gauge size={18} />}
           />
         </div>
-        <div className="layout-main">
-          <Card>
-            <CardHeader
-              title="Jarak vs kelengkapan data"
-              subtitle="Titik merah menunjukkan stasiun yang terisolasi atau memiliki kelengkapan data di bawah 80%."
-            />
-            <EChart
-              option={scatterOption}
-              height={330}
-              onEvents={{ click: (params) => params.data?.station && setSelectedStation(params.data.station) }}
-            />
-            <p style={{ margin: '0.35rem 0 0', fontSize: '0.78rem', color: SOFT, lineHeight: 1.5 }}>
-              Setiap titik merepresentasikan satu stasiun AQMS. Semakin jauh jaraknya dari stasiun lain dan semakin rendah kelengkapan datanya, semakin besar perhatian yang diperlukan.
-            </p>
-          </Card>
-          <Card>
-            <CardHeader
-              title="Stasiun perlu perhatian"
-              subtitle={`${attentionStations.length} stasiun teridentifikasi dari dua ambang perhatian.`}
-            />
-            <ol style={{ margin: 0, paddingLeft: '1.2rem', display: 'grid', gap: 8, fontSize: '0.78rem' }}>
-              {attentionStations.map((station) => (
-                <li key={station.location_id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedStation(station)}
-                    style={{ border: 0, padding: 0, background: 'none', color: NAVY, cursor: 'pointer', textAlign: 'left', font: 'inherit' }}
-                  >
-                    <strong>{station.station_code}</strong>
-                    <span style={{ display: 'inline-flex', marginLeft: 6, padding: '0.15rem 0.45rem', borderRadius: 999, background: '#FEE2E2', color: '#B91C1C', fontSize: '0.65rem', fontWeight: 700 }}>
-                      {station.nearest_distance_km == null || station.nearest_distance_km > FAR_KM
-                        ? station.completeness_pct != null && station.completeness_pct < 80 ? 'Dua indikator' : 'Terisolasi'
-                        : 'Data tipis'}
-                    </span>
-                    <span style={{ display: 'block', color: SOFT, marginTop: 2 }}>
-                      Jarak: {station.nearest_distance_km == null ? 'tanpa tetangga' : `${formatNumber(station.nearest_distance_km, 1)} km`}
-                      {' · '}Data: {pct(station.completeness_pct)}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </Card>
-        </div>
-      </Section>
 
+        {/* ── 1. Persebaran ─────────────────────────────────────────────── */}
+        <Section title="Persebaran stasiun" description="Warna titik menunjukkan status sensor. Klik titik untuk melihat detail.">
+          <div className="kc-map-grid">
+            <Card>
+              <CardHeader title="Peta stasiun AQMS" subtitle="Mode warna dapat diganti: status sensor atau satuan PM2.5." />
+              <NetworkMap stations={rows} height="480px" onStationSelect={onStationSelect} />
+              <div style={{ marginTop: '0.8rem' }}>
+                <StatusLegend counts={s.sensor_status} />
+              </div>
+            </Card>
+            <Card>
+              <StationDetail station={selected} onClose={() => setSelectedId(null)} />
+            </Card>
+          </div>
+        </Section>
+
+        {/* ── 2. Komposisi ──────────────────────────────────────────────── */}
+        <Section title="Komposisi jaringan" description="Jumlah stasiun per pulau menurut status sensor terburuk pada setiap stasiun.">
+          <Card>
+            <CardHeader title="Stasiun per pulau" subtitle="Setiap batang dibagi menurut status sensor terburuk pada stasiun." />
+            <EChart option={pulauOption} height={300} />
+          </Card>
+        </Section>
+
+        {/* ── 3. Jarak vs kelengkapan + perlu diperhatikan ──────────────── */}
+        <Section
+          title="Jarak dan kelengkapan data"
+          description="Garis putus-putus menandai median jarak ke tetangga terdekat seluruh stasiun."
+        >
+          <div className="kc-grid-attn">
+            <Card>
+              <CardHeader title="Jarak vs kelengkapan data" subtitle="Setiap titik adalah satu stasiun. Klik titik untuk melihat detail." />
+              <EChart
+                option={scatterOption}
+                height={360}
+                onEvents={{ click: (p) => p.data?.id && setSelectedId(p.data.id) }}
+              />
+            </Card>
+
+            <Card>
+              <CardHeader
+                title="Stasiun perlu diperhatikan"
+                subtitle={`${priority.length} prioritas, ${secondary.length} berdasarkan salah satu kriteria.`}
+              />
+              {attention.length === 0 ? (
+                <div className="kc-empty" style={{ minHeight: '12rem' }}>
+                  <Info size={20} style={{ color: 'var(--color-elevated)' }} />
+                  <strong>Tidak ada stasiun yang memenuhi kriteria.</strong>
+                </div>
+              ) : (
+                <ol className="kc-attn-list">
+                  {attention.map((r) => {
+                    const isPriority = priorityIds.has(r.location_id)
+                    const reason = isPriority ? 'Prioritas' : isFar(r) ? 'Jarak jauh' : 'Kelengkapan rendah'
+                    return (
+                      <li key={r.location_id}>
+                        <button
+                          type="button"
+                          className={`kc-attn-item${isPriority ? ' is-priority' : ''}${r.location_id === selectedId ? ' is-selected' : ''}`}
+                          onClick={() => setSelectedId(r.location_id)}
+                        >
+                          <div className="kc-attn-top">
+                            <strong>{r.station_code}</strong>
+                            <span className="kc-attn-badges">
+                              <span className={`kc-attn-tag${isPriority ? ' is-priority' : ''}`}>{reason}</span>
+                              <StatusPill status={r.status_operasional} />
+                            </span>
+                          </div>
+                          <div className="kc-attn-meta">{r.kota_kabupaten} · {r.provinsi}</div>
+                          <div className="kc-attn-stats">
+                            <span>Jarak <strong style={isFar(r) ? { color: '#B91C1C' } : undefined}>{km(r.nearest_distance_km)}</strong></span>
+                            <span>Kelengkapan <strong style={isLow(r) ? { color: '#B91C1C' } : undefined}>{pct(r.completeness_pct)}</strong></span>
+                          </div>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ol>
+              )}
+              <div className="kc-note-src" style={{ marginTop: '0.8rem' }}>
+                Prioritas: jarak di atas median seluruh stasiun ({formatNumber(distMedian, 1)} km) dan kelengkapan di bawah {ref ?? '—'}%. Acuan kelengkapan mengacu pada Permen LHK No. 7 dan No. 14 Tahun 2020.
+              </div>
+            </Card>
+          </div>
+        </Section>
+
+        {/* ── 4. Tabel ──────────────────────────────────────────────────── */}
+        <Section title="Tabel seluruh stasiun" description="Cari dan saring stasiun, lalu klik judul kolom untuk mengurutkan.">
+          <Card>
+            <div className="kc-toolbar">
+              <label className="kc-search">
+                <Search size={14} aria-hidden="true" />
+                <input
+                  type="search"
+                  placeholder="Cari kode stasiun, kota, atau provinsi"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  aria-label="Cari stasiun"
+                />
+              </label>
+              <select className="kc-select" value={pulauFilter} onChange={(e) => setPulauFilter(e.target.value)} aria-label="Filter pulau">
+                <option value="Semua">Semua pulau</option>
+                {pulauList.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <span className="kc-count">{tableRows.length} dari {rows.length} stasiun</span>
+            </div>
+            <div className="kc-table-wrap">
+              <table className="kc-table">
+                <caption className="kc-sr">Tabel stasiun AQMS</caption>
+                <thead>
+                  <tr>
+                    {sortTh('station_code', 'Stasiun')}
+                    {sortTh('kota_kabupaten', 'Kota/Kabupaten')}
+                    {sortTh('provinsi', 'Provinsi')}
+                    {sortTh('pulau', 'Pulau')}
+                    {sortTh('status_operasional', 'Status')}
+                    {sortTh('nearest_distance_km', 'Jarak (km)', 'right')}
+                    {sortTh('nearest_station_code', 'Tetangga')}
+                    {sortTh('completeness_pct', 'Kelengkapan', 'right')}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableRows.map((r) => (
+                    <tr
+                      key={r.location_id}
+                      className={r.location_id === selectedId ? 'is-selected' : ''}
+                      onClick={() => setSelectedId(r.location_id)}
+                    >
+                      <td><strong>{r.station_code}</strong></td>
+                      <td>{r.kota_kabupaten ?? '—'}</td>
+                      <td>{r.provinsi ?? '—'}</td>
+                      <td>{r.pulau}</td>
+                      <td><StatusPill status={r.status_operasional} /></td>
+                      <td className="kc-num">{r.nearest_distance_km != null ? formatNumber(r.nearest_distance_km, 1) : <span className="kc-na">—</span>}</td>
+                      <td>{r.nearest_station_code ?? <span className="kc-na">—</span>}</td>
+                      <td className="kc-num">
+                        {r.completeness_pct != null ? (
+                          <span className="kc-mini">
+                            <span className="kc-track">
+                              <span style={{ width: `${Math.min(100, r.completeness_pct)}%`, background: ref != null && r.completeness_pct < ref ? '#F59E0B' : '#16A34A' }} />
+                            </span>
+                            {pct(r.completeness_pct)}
+                          </span>
+                        ) : <span className="kc-na">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                  {tableRows.length === 0 && (
+                    <tr><td colSpan={8} className="kc-na" style={{ textAlign: 'center', padding: '1.5rem' }}>Tidak ada stasiun yang cocok.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </Section>
+
+      </div>
     </ModuleLayout>
   )
 }

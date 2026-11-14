@@ -16,6 +16,7 @@ import { KategorikOverview } from './kategorik'
 import { ArahAnginView } from './arah-angin'
 import { TipeLokasiView } from './tipe-lokasi'
 import './korelasi.css'
+import { SubTabs } from '@/components/ui/SubTabs'
 
 /**
  * Modul Korelasi Polutan (Tujuan 3) — satu route, navigasi bertingkat:
@@ -82,29 +83,20 @@ export default function KorelasiPage() {
         </span>
       }
     >
-      <nav className="filter-bar kor-nav" aria-label="Navigasi Tujuan 3">
-        {Object.entries(GROUPS).map(([id, g]) => {
-          const Icon = g.icon
-          const active = nav.group === id
-          return (
-            <button key={id} type="button" className={`fpill${active ? ' active is-current' : ''}`} aria-current={active ? 'page' : undefined} onClick={() => go({ ...nav, group: id, sub: null })}>
-              <Icon size={14} aria-hidden="true" /> {g.label}
-            </button>
-          )
-        })}
-        {group.subs.length > 0 && (
-          <>
-            <span className="kor-nav-sep" aria-hidden="true" />
-            <div className="kor-nav-level2" role="group" aria-label={`Subhalaman ${group.label}`}>
-              {group.subs.map((s) => (
-                <button key={s.id} type="button" className={`fpill is-sub${nav.sub === s.id ? ' is-current' : ''}`} aria-current={nav.sub === s.id ? 'page' : undefined} onClick={() => go({ ...nav, group: nav.group, sub: s.id })}>
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-      </nav>
+      <SubTabs
+        label="Navigasi Tujuan 3"
+        tabs={Object.entries(GROUPS).map(([id, g]) => ({ id, label: g.label, icon: g.icon }))}
+        value={nav.group}
+        onChange={(id) => go({ ...nav, group: id, sub: null })}
+      />
+      {group.subs.length > 0 && (
+        <SubTabs
+          label={`Subhalaman ${group.label}`}
+          tabs={group.subs.map((s) => ({ id: s.id, label: s.label }))}
+          value={nav.sub}
+          onChange={(id) => go({ ...nav, group: nav.group, sub: id })}
+        />
+      )}
 
       {error && <ErrorState message={`Data gagal dimuat: ${error}. Jalankan scripts/preprocess_t3_t4_web.py terlebih dahulu.`} />}
       {loading && <Card><LoadingSpinner label="Memuat tabel korelasi..." /></Card>}

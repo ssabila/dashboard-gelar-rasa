@@ -21,8 +21,7 @@
     "L_km": 28815.50244422305,
     "n_pairs": 207
   },
-  "radius_status": "tidak_teridentifikasi",
-  "radius_used_km": null,
+  "radius_km": null,
   "binned": [
     {
       "bin": "(0, 50]",
