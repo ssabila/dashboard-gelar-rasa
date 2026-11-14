@@ -23,7 +23,8 @@ import { EChart } from '@/components/charts/EChart'
 import { useStations, useOverviewSummary, useOverviewAnalytics } from '@/hooks/useAqmsData'
 import { useT4Data } from '@/hooks/usePm25KesehatanData'
 import { useT3Tables } from '@/hooks/useKorelasiData'
-import { useMonitoringNetworkSummary } from '@/hooks/useKecukupanData'
+import { useStationMaster, useStationCompleteness, useStationNearestNeighbor, useMonitoringNetworkSummary } from '@/hooks/useKecukupanData'
+import { buildJaringanStats, COMP_THRESHOLD, FAR_KM } from '@/lib/jaringan'
 import { formatNumber } from '@/lib/formatters'
 import { POLLUTANTS } from '@/lib/constants'
 import { ccfRows } from '@/lib/pm25kesehatan'
@@ -202,10 +203,8 @@ const STATUS_CARDS = [
     label: 'Kualitas Udara',
     status: 'kritis',
     statusColor: '#EF4444',
-    statusBg: 'rgba(239,68,68,0.08)',
-    statusBorder: 'rgba(239,68,68,0.2)',
-    statusLabel: 'Melampaui WHO AQG',
-    desc: 'PM2.5 nasional jauh di atas pedoman internasional.',
+    statusLabel: 'Di atas pedoman WHO',
+    desc: 'Rata-rata PM2.5 nasional di atas pedoman WHO dan naik pada 2025 dibanding 2024.',
     href: '/kualitas-udara',
     dot: '#EF4444',
   },
@@ -215,10 +214,8 @@ const STATUS_CARDS = [
     label: 'Korelasi Faktor',
     status: 'perhatian',
     statusColor: '#FACC15',
-    statusBg: 'rgba(250,204,21,0.08)',
-    statusBorder: 'rgba(250,204,21,0.25)',
-    statusLabel: 'Faktor kompleks teridentifikasi',
-    desc: 'Lalu lintas, suhu, kelembapan & tipe lokasi berperan.',
+    statusLabel: 'Lalu lintas paling berkaitan',
+    desc: 'Intensitas lalu lintas berkaitan dengan PM2.5 secara positif, sedangkan faktor meteorologi cenderung lemah.',
     href: '/korelasi',
     dot: '#FACC15',
   },
@@ -228,10 +225,8 @@ const STATUS_CARDS = [
     label: 'Dampak Kesehatan',
     status: 'kritis',
     statusColor: '#EF4444',
-    statusBg: 'rgba(239,68,68,0.08)',
-    statusBorder: 'rgba(239,68,68,0.2)',
-    statusLabel: 'Lag 2–5 hari signifikan',
-    desc: 'PM2.5 meningkatkan kasus ISPA dengan jeda beberapa hari.',
+    statusLabel: 'Tanpa bukti efek jeda',
+    desc: 'Kasus ISPA, asma, PPOK, kardiovaskular, dan kematian bergerak searah dengan PM2.5. Efek jeda belum terbukti.',
     href: '/pm25-kesehatan',
     dot: '#EF4444',
   },
@@ -241,16 +236,17 @@ const STATUS_CARDS = [
     label: 'Jaringan Stasiun',
     status: 'perhatian',
     statusColor: '#FACC15',
-    statusBg: 'rgba(250,204,21,0.08)',
-    statusBorder: 'rgba(250,204,21,0.25)',
-    statusLabel: 'Coverage terbatas',
-    desc: '27 stasiun tidak cukup untuk merepresentasikan Indonesia.',
+    statusLabel: 'Ada stasiun terisolasi',
+    desc: null, // diisi dari data jaringan di ScorecardSection
     href: '/kecukupan-stasiun',
     dot: '#FACC15',
   },
 ]
+function ScorecardSection({ jaringan }) {
+  const jaringanDesc = jaringan
+    ? `${jaringan.farCount} stasiun berjarak lebih dari ${FAR_KM} km dari tetangga terdekat, dan ${jaringan.belowCount} stasiun kelengkapannya di bawah ${COMP_THRESHOLD}%.`
+    : 'Data jaringan sedang dimuat.'
 
-function ScorecardSection() {
   return (
     <Section
       title="Status dashboard"
@@ -258,7 +254,12 @@ function ScorecardSection() {
     >
       <div className="ins-scorecard-grid">
         {STATUS_CARDS.map(({ id, icon: Icon, label, status, statusColor, statusLabel, desc, href, dot }) => (
-          <Link key={id} href={href} className="card kpi ins-scorecard-card" style={{ '--ins-color': statusColor, '--ins-text': statusColor === '#FACC15' ? '#78350F' : statusColor }}>
+          <Link
+            key={id}
+            href={href}
+            className="card kpi ins-scorecard-card"
+            style={{ '--ins-color': statusColor, '--ins-text': statusColor === '#FACC15' ? '#78350F' : statusColor }}
+          >
             <div className="ins-scorecard-top">
               <span className="ins-scorecard-icon">
                 <Icon size={15} />
@@ -271,7 +272,7 @@ function ScorecardSection() {
             <div>
               <p className="ins-scorecard-label">{label}</p>
               <p className="ins-scorecard-value">{status === 'kritis' ? 'Perlu perhatian' : 'Perlu penguatan'}</p>
-              <p className="ins-scorecard-desc">{desc}</p>
+              <p className="ins-scorecard-desc">{id === 'jaringan' ? jaringanDesc : desc}</p>
             </div>
             <div className="ins-scorecard-link">
               Detail <ChevronRight size={12} />
@@ -319,7 +320,7 @@ function FindingPoint({ icon: Icon = CheckCircle2, color = '#8BBEB2', text }) {
   )
 }
 
-function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
+function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary, jaringan }) {
   const [activeTab, setActiveTab] = useState('kualitas')
 
   const networkKpi = networkSummary?.kpi ?? {}
@@ -428,34 +429,72 @@ function FindingsTabsSection({ avgPm25, t3, t4, analytics, networkSummary }) {
         </div>
       </div>
     ),
-    jaringan: (
+    jaringan: !jaringan ? (
+      <LoadingSpinner label="Memuat data jaringan..." />
+    ) : (
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr)', gap: '2rem', paddingTop: '1.25rem' }} className="ins-tab-grid">
         <div>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#18314F', marginBottom: '1rem', lineHeight: 1.3 }}>
-            27 stasiun tidak mencukupi untuk Indonesia
+            {jaringan.total} stasiun, {jaringan.farCount} berjarak jauh dari tetangga, dan {jaringan.belowCount} di bawah {COMP_THRESHOLD}% kelengkapan
           </h3>
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <FindingPoint icon={Network} color="#60A5FA" text="27 stasiun untuk seluruh Indonesia yang luasnya > 1,9 juta km² menciptakan titik buta pemantauan yang besar." />
-            <FindingPoint icon={MapPin} color="#FACC15" text={`Beberapa wilayah tanpa stasiun dalam radius ${maxDistKm != null ? `>${formatNumber(maxDistKm, 0)} km` : '>400 km'} — terutama Papua, Maluku, dan Kalimantan pedalaman.`} />
-            <FindingPoint icon={AlertTriangle} color="#FB923C" text="Kelengkapan data rata-rata < 85% di sejumlah stasiun akibat gangguan sensor atau konektivitas." />
-            <FindingPoint icon={CheckCircle2} color="#22C55E" text="Distribusi tidak merata: Jawa terpantau relatif baik, namun Papua dan pulau-pulau terpencil sangat minim." />
-            <FindingPoint icon={Zap} color="#8BBEB2" text="Kalibrasi silang antarstasiun perlu distandardisasi untuk memastikan komparabilitas data nasional." />
+            <FindingPoint
+              icon={Network}
+              color="#60A5FA"
+              text={`Median jarak ke tetangga terdekat ${jaringan.medianJarak != null ? formatNumber(jaringan.medianJarak, 1) : '—'} km. ${jaringan.isolatedCount} stasiun tergolong terisolasi (tanpa tetangga atau jarak di atas ${FAR_KM} km).`}
+            />
+            <FindingPoint
+              icon={MapPin}
+              color="#FACC15"
+              text={jaringan.farCount > 0
+                ? `${jaringan.farCount} stasiun berjarak lebih dari ${FAR_KM} km dari tetangga terdekatnya: ${jaringan.far.map((s) => s.code).join(', ')}.`
+                : `Tidak ada stasiun yang berjarak lebih dari ${FAR_KM} km dari tetangga terdekatnya.`}
+            />
+            <FindingPoint
+              icon={AlertTriangle}
+              color="#FB923C"
+              text={jaringan.belowCount > 0
+                ? `${jaringan.belowCount} stasiun memiliki kelengkapan data di bawah ${COMP_THRESHOLD}%: ${jaringan.belowComp.map((s) => `${s.code} (${formatNumber(s.completeness, 1)}%)`).join(', ')}.`
+                : `Semua stasiun memiliki kelengkapan data di atas ${COMP_THRESHOLD}%.`}
+            />
+            <FindingPoint
+              icon={Zap}
+              color={jaringan.intermittent + jaringan.defective > 0 ? '#EF4444' : '#22C55E'}
+              text={`${jaringan.active} dari ${jaringan.totalSensors ?? '—'} sensor berstatus Active. ${jaringan.intermittent} Intermittent dan ${jaringan.defective} Defective perlu diperiksa.`}
+            />
+            <FindingPoint
+              icon={CheckCircle2}
+              color="#8BBEB2"
+              text={jaringan.lowest
+                ? `Kelengkapan rata-rata seluruh stasiun ${jaringan.avgComp != null ? formatNumber(jaringan.avgComp, 1) : '—'}%. Nilai terendah tercatat di ${jaringan.lowest.code} (${formatNumber(jaringan.lowest.completeness, 1)}%).`
+                : 'Data kelengkapan belum tersedia.'}
+            />
           </ul>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ padding: '1rem', borderRadius: '0.75rem', background: 'rgba(96,165,250,0.07)', border: '1px solid rgba(96,165,250,0.18)' }}>
-            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>Distribusi per pulau</p>
-            {[
-              { name: 'Jawa', pct: 48, count: 13 },
-              { name: 'Sumatera', pct: 26, count: 7 },
-              { name: 'Kalimantan', pct: 11, count: 3 },
-              { name: 'Sulawesi', pct: 7, count: 2 },
-              { name: 'Papua & lainnya', pct: 7, count: 2 },
-            ].map((p) => (
+            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.65rem' }}>
+              Jumlah stasiun per pulau
+            </p>
+            {jaringan.islands.map((p) => (
               <div key={p.name} style={{ marginBottom: '0.5rem' }}>
-                <MiniBar value={p.pct} max={100} color="#60A5FA" label={p.name} valueLabel={`${p.count} stasiun`} />
+                <MiniBar
+                  value={p.count}
+                  max={jaringan.total || 1}
+                  color="#60A5FA"
+                  label={p.name}
+                  valueLabel={`${p.count} stasiun`}
+                />
               </div>
             ))}
+          </div>
+          <div style={{ padding: '0.9rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)' }}>
+            <p style={{ fontSize: '0.68rem', fontWeight: 700, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+              Stasiun perlu perhatian ({jaringan.attention.length})
+            </p>
+            <p style={{ fontSize: '0.76rem', color: '#18314F', lineHeight: 1.6 }}>
+              {jaringan.attention.map((s) => s.code).join(', ') || 'Tidak ada.'}
+            </p>
           </div>
           <Link href="/kecukupan-stasiun" style={{ textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', borderRadius: '0.65rem', background: '#384E77', color: '#E6F9AF', fontSize: '0.78rem', fontWeight: 700 }}>
@@ -635,7 +674,19 @@ export default function InsightPage() {
   const { data: t4 } = useT4Data()
   const { data: t3 } = useT3Tables()
   const { data: networkSummary } = useMonitoringNetworkSummary()
+  const { data: stationMaster } = useStationMaster()
+  const { data: stationComp } = useStationCompleteness()
+  const { data: stationNearest } = useStationNearestNeighbor()
 
+  const jaringan = useMemo(
+    () => buildJaringanStats({
+      summary: networkSummary,
+      stationsRaw: stationMaster,
+      comp: stationComp,
+      nearest: stationNearest,
+    }),
+    [networkSummary, stationMaster, stationComp, stationNearest]
+  )
   const all = stations ?? []
 
   const avgPm25 = useMemo(() => {
@@ -672,13 +723,14 @@ export default function InsightPage() {
 
       {subTab === 'insight' && (
         <>
-          <ScorecardSection />
+          <ScorecardSection jaringan={jaringan}/>
           <FindingsTabsSection
             avgPm25={avgPm25}
             t3={t3}
             t4={t4}
             analytics={analytics}
             networkSummary={networkSummary}
+            jaringan={jaringan}
           />
         </>
       )}

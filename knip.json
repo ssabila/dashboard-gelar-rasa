@@ -1,0 +1,6 @@
+{
+  "entry": ["src/app/**/{page,layout}.jsx", "src/app/**/page.jsx"],
+  "project": ["src/**/*.{js,jsx,css}"],
+  "paths": { "@/*": ["./src/*"] },
+  "ignoreDependencies": []
+}
